@@ -1,0 +1,328 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 57" itemID="6a792200-0000003c" linkageExportForAS="true" linkageClassName="StaticFullBody" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 57">
+      <layers>
+        <DOMLayer name="Layer 1" color="#7E28F9">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 53" name="handweapon">
+                  <matrix>
+                    <Matrix a="-0.246978759765625" b="-0.926773071289062" c="0.926773071289062" d="-0.246978759765625" tx="34.65" ty="128.3"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 2" color="#21B8F4">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 56" name="left_hand">
+                  <matrix>
+                    <Matrix a="0.988571166992188" b="0.0966339111328125" c="-0.0966339111328125" d="0.988571166992188" tx="78.85" ty="110.2"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 3" color="#8DE1ED">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 53" name="weapon">
+                  <matrix>
+                    <Matrix a="-0.246978759765625" b="-0.926773071289062" c="0.926773071289062" d="-0.246978759765625" tx="34.65" ty="128.3"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 4" color="#9F9AA1">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 50" name="left_lower_arm">
+                  <matrix>
+                    <Matrix a="0.966033935546875" b="0.252044677734375" c="-0.252044677734375" d="0.966033935546875" tx="85.2" ty="85.55"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 5" color="#E6DE2E">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 47" name="left_upper_arm">
+                  <matrix>
+                    <Matrix a="0.490859985351562" b="-0.861923217773438" c="0.861923217773438" d="0.490859985351562" tx="74.7" ty="62.45"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 6" color="#7ED976">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 44" name="head">
+                  <matrix>
+                    <Matrix a="0.993209838867188" b="-0.0047760009765625" c="0.0047760009765625" d="0.993209838867188" tx="42.35" ty="26.35"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 7" color="#CBCF26">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 40" name="upper_body">
+                  <matrix>
+                    <Matrix a="0.978012084960938" b="-0.205184936523438" c="0.205184936523438" d="0.978012084960938" tx="48.85" ty="73.1"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 8" color="#D6C3F3">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 37" name="skirt">
+                  <matrix>
+                    <Matrix a="0.930419921875" b="0.363449096679688" c="-0.363449096679688" d="0.930419921875" tx="56.45" ty="126"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 9" color="#E0368C">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 35" name="lower_body">
+                  <matrix>
+                    <Matrix a="0.990234375" b="0.0818328857421875" c="-0.0818328857421875" d="0.990234375" tx="56.8" ty="115.95"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 10" color="#58FD69">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 32" name="left_lower_leg">
+                  <matrix>
+                    <Matrix a="0.82537841796875" b="-0.552032470703125" c="0.552032470703125" d="0.82537841796875" tx="78.25" ty="186.9"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 11" color="#CE457F">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 29" name="left_shoe">
+                  <matrix>
+                    <Matrix a="0.962539672851562" b="-0.250381469726562" c="0.250381469726562" d="0.962539672851562" tx="86.8" ty="218.8"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 12" color="#D7F23B">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 26" name="left_upper_leg">
+                  <matrix>
+                    <Matrix a="0.965927124023438" b="0.258819580078125" c="-0.258819580078125" d="0.965927124023438" tx="63.55" ty="140.6"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 13" color="#13ACD3">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 23" name="right_lower_leg">
+                  <matrix>
+                    <Matrix a="0.9837646484375" b="-0.13067626953125" c="0.13067626953125" d="0.9837646484375" tx="17.65" ty="183.5"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 14" color="#8E66DD">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 20" name="right_upper_leg">
+                  <matrix>
+                    <Matrix a="0.775680541992188" b="0.616607666015625" c="-0.6165771484375" d="0.775665283203125" tx="27.75" ty="141.45"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 15" color="#D8FCC2">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 17" name="right_shoe">
+                  <matrix>
+                    <Matrix a="0.99127197265625" b="-0.087127685546875" c="0.087127685546875" d="0.99127197265625" tx="15.1" ty="218"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 16" color="#37A8D3">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 14" name="right_hand">
+                  <matrix>
+                    <Matrix a="0.83642578125" b="0.5291748046875" c="-0.5291748046875" d="0.83642578125" tx="4.6" ty="117.1"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 17" color="#E1FA9F">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 11" name="right_lower_arm">
+                  <matrix>
+                    <Matrix a="0.69305419921875" b="0.718063354492188" c="-0.718063354492188" d="0.69305419921875" tx="22.2" ty="101.45"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 18" color="#F301A3">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 8" name="right_upper_arm">
+                  <matrix>
+                    <Matrix a="0.997329711914062" b="-0.053375244140625" c="0.053375244140625" d="0.997329711914062" tx="32.85" ty="75.5"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 19" color="#80ECB6">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 5" name="back_hair">
+                  <matrix>
+                    <Matrix a="0.998062133789062" b="-0.048919677734375" c="0.048919677734375" d="0.998062133789062" tx="61.5" ty="85.55"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 20" color="#F5B0A5" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 4" name="back">
+                  <matrix>
+                    <Matrix a="0.996292114257812" b="-0.08282470703125" c="0.08282470703125" d="0.996292114257812" tx="62.2" ty="92.3"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

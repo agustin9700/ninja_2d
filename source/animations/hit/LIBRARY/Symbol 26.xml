@@ -1,0 +1,52 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 26" itemID="6a792200-00000020" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 26">
+      <layers>
+        <DOMLayer name="Layer 1" color="#38E09F">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 25" name="holderMc">
+                  <matrix>
+                    <Matrix tx="0.15" ty="0.2"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 2" color="#B0DFF4" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#66A4FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" solidStyle="hairline">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle0="1" strokeStyle="1" edges="!25 -416[4 -530 -8 -563!-8 -563[-18 -598 -27 -612!-27 -612[-39 -624 -61 -622!-61 -622[-83 -620 -99 -597!-99 -597[-116 -573 -111 -512!-111 -512[-107 -450 -79 -272!-79 -272|-19 93!-19 93|32 364!32 364|52 478!52 478|65 547!65 547[73 582
+ 93 602!93 602[113 620 128 613!128 613|150 593!150 593|160 571!160 571[169 553 168 527!168 527|161 447!161 447|142 309!142 309|123 175!123 175|71 -153!71 -153|25 -416"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

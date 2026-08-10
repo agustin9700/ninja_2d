@@ -1,0 +1,52 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 23" itemID="6a781c80-00000012" lastModified="1669385713">
+  <timeline>
+    <DOMTimeline name="Symbol 23" layerDepthEnabled="true">
+      <layers>
+        <DOMLayer name="Layer_1" color="#A64F9D">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 22" name="holderMc" centerPoint3DX="0.05" centerPoint3DY="0.05">
+                  <matrix>
+                    <Matrix tx="0.05" ty="0.05"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer_2" color="#5976C3" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#66A4FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" solidStyle="hairline">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle0="1" strokeStyle="1" edges="!47 -421|32 -575!32 -575|19 -627!19 -627[8 -642 -14 -642!-14 -642[-35 -643 -54 -621!-54 -621[-74 -599 -76 -534!-76 -534[-80 -471 -74 -286!-74 -286|-59 95!-59 95|-41 378!-41 378|-35 497!-35 497|-31 570!-31 570[-28 607 -10 629!-10 629[7
+ 650 23 644!23 644|48 627!48 627|60 606!60 606[71 588 74 562!74 562|76 478!76 478|74 335!74 335|72 197!72 197|60 -146!60 -146|47 -421"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

@@ -1,0 +1,101 @@
+{
+  "generator": "export_linked_symbols_WITH_UNITY_PIVOTS.jsfl",
+  "sourceDocument": "weapon_180.xfl",
+  "outputName": "weapon_180",
+  "targetPpi": 150,
+  "basePpi": 72,
+  "scaleFactor": 2.083333,
+  "margin": 2,
+  "stats": {
+    "exported": 2,
+    "skipped": 4,
+    "errors": 0,
+    "errorDetails": []
+  },
+  "parts": {
+    "weapon": {
+      "partName": "weapon",
+      "png": "weapon.png",
+      "symbolName": "Symbol 8",
+      "linkageName": "weapon",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 196,
+      "exportHeight": 442,
+      "registrationPx": {
+        "x": 65.1,
+        "y": 240.85
+      },
+      "unityPivot": {
+        "x": 0.332143,
+        "y": 0.45509
+      },
+      "boundsBeforeScale": {
+        "left": -45.9,
+        "top": -105,
+        "right": 46,
+        "bottom": 105.1,
+        "width": 91.9,
+        "height": 210.1
+      },
+      "boundsAfterScale": {
+        "left": -95.95,
+        "top": -216.3,
+        "right": 95.5,
+        "bottom": 221.4,
+        "width": 191.45,
+        "height": 437.7
+      },
+      "boundsFinal": {
+        "left": 2,
+        "top": 2,
+        "right": 193.4,
+        "bottom": 439.7,
+        "width": 191.4,
+        "height": 437.7
+      }
+    },
+    "icon": {
+      "partName": "icon",
+      "png": "icon.png",
+      "symbolName": "Symbol 9",
+      "linkageName": "icon",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 213,
+      "exportHeight": 213,
+      "registrationPx": {
+        "x": 106.1,
+        "y": 210.35
+      },
+      "unityPivot": {
+        "x": 0.498122,
+        "y": 0.012441
+      },
+      "boundsBeforeScale": {
+        "left": -49.95,
+        "top": -49.95,
+        "right": 50.05,
+        "bottom": 50.1,
+        "width": 100,
+        "height": 100.05
+      },
+      "boundsAfterScale": {
+        "left": -102.7,
+        "top": -99.55,
+        "right": 105.6,
+        "bottom": 108.9,
+        "width": 208.3,
+        "height": 208.45
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 2.05,
+        "right": 210.25,
+        "bottom": 210.45,
+        "width": 208.3,
+        "height": 208.4
+      }
+    }
+  }
+}

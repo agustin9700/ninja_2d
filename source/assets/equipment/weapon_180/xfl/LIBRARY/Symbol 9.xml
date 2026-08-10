@@ -1,0 +1,66 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 9" itemID="6a793463-00000124" linkageExportForAS="true" linkageClassName="icon" lastModified="1597033034">
+  <timeline>
+    <DOMTimeline name="Symbol 9">
+      <layers>
+        <DOMLayer name="Layer 1" color="#D428BA" locked="true" current="true" isSelected="true" layerType="mask">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#00FF00"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!-1000 -2000|1000 -2000!1000 -2000|1000 1!1000 1|-1000 1!-1000 1|-1000 -2000"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 2" color="#88F25D" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 8" centerPoint3DX="56.75" centerPoint3DY="63.45">
+                  <matrix>
+                    <Matrix a="0.454193115234375" b="-0.450698852539062" c="0.450698852539062" d="0.454193115234375" tx="-3.25" ty="-41.6"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 3" color="#A64F9D" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <RadialGradient interpolationMethod="linearRGB">
+                        <matrix>
+                          <Matrix a="0.0684051513671875" b="-0.0230560302734375" c="0.022674560546875" d="0.0672760009765625" tx="2" ty="-46.6"/>
+                        </matrix>
+                        <GradientEntry color="#C8E7FB" ratio="0.345098039215686"/>
+                        <GradientEntry color="#277CCF" ratio="1"/>
+                      </RadialGradient>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!1010 10|-990 10!-990 10|-990 -1990!-990 -1990|1010 -1990!1010 -1990|1010 10"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

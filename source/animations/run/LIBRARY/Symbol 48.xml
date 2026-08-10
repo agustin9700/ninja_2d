@@ -1,0 +1,68 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 48" itemID="6a781c80-00000026" lastModified="1669385713">
+  <timeline>
+    <DOMTimeline name="Symbol 48" layerDepthEnabled="true">
+      <layers>
+        <DOMLayer name="Layer_1" color="#9C59C6">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 47" name="hair" centerPoint3DX="-23.15" centerPoint3DY="-26.5">
+                  <matrix>
+                    <Matrix tx="-23.15" ty="-26.5"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer_2" color="#33B0A8">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 46" name="face" centerPoint3DX="-17" centerPoint3DY="-13.15">
+                  <matrix>
+                    <Matrix a="0.8990478515625" d="0.8990478515625" tx="-17" ty="-13.15"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer_3" color="#B1E53E" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#6699FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" solidStyle="hairline">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle1="1" strokeStyle="1" edges="!-74 -270[27 -271 100 -167!100 -167[173 -63 175 83!175 83[177 231 107 335!107 335[37 440 -64 441!-64 441[-164 443 -237 339!-237 339[-310 236 -312 89!-312 89[-314 -58 -244 -163!-244 -163[-174 -268 -74 -270"/>
+                    <Edge fillStyle0="1" fillStyle1="1" strokeStyle="1" edges="!-164 128[-231 206 -178 231"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

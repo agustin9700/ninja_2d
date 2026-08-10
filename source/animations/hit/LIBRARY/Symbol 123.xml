@@ -1,0 +1,28 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 123" itemID="6a792200-00000068" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 123">
+      <layers>
+        <DOMLayer name="Layer 1" color="#FB1081" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#C4D5E6"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!539 241[523 300 467 321!467 321[430 336 352 339!352 339|239 349!239 349[184 364 172 410!172 410[160 453 204 489!204 489|286 535!286 535|233 565!233 565|173 557!173 557[85 534 34 426!34 426[-19 318 10 212!10 212[42 93 179 34!179 34[296
+ -15 376 6!376 6[461 29 509 96!509 96[559 165 539 241!659 269[725 261 804 353!804 353[882 444 882 555!882 555[882 677 764 770!764 770[664 847 582 847!582 847[493 847 429 796!429 796[363 742 363 664!363 664[363 603 411 567!411 567[443
+ 543 518 520!518 520|625 481!625 481[674 453 674 405!674 405[674 360 621 337!621 337|531 313!531 313|576 285!576 285|659 269"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

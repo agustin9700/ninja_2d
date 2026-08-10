@@ -1,0 +1,30 @@
+# Local backups and generated visual reviews
+/backups/
+/artifacts/
+
+# Dependencies and test output
+node_modules/
+coverage/
+
+# Adobe Animate generated caches and publish output
+**/bin/
+*.swf
+*.swc
+*.oam
+*.air
+*.apk
+
+# Temporary and recovery files
+*.tmp
+*.temp
+*.bak
+*.autosave
+RECOVER_*
+*.log
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

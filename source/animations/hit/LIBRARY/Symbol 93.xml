@@ -1,0 +1,28 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 93" itemID="6a792200-00000051" symbolType="graphic" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 93">
+      <layers>
+        <DOMLayer name="Layer 1" color="#000000" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" motionTweenScale="false" keyMode="8192">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#FFFFFF"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!1713 1239|1606 1214!1606 1214|1561 1209!1561 1209[1391 1209 1301 1327!1301 1327[1228 1423 1169 1660!1169 1660|1156 1660!1156 1660[1126 1545 1022 1404!1022 1404[868 1195 684 1195!684 1195[577 1195 366 1317!366 1317|133 1461!133 1461|285
+ 1255!285 1255[425 1042 425 917!425 917[425 762 242 675!242 675[183 646 99 624!99 624|0 598!0 598|401 611!401 611[741 624 1036 0!1036 0|1050 0!1050 0|1032 91!1032 91[1023 142 1023 166!1023 166[1023 332 1156 439!1156 439[1273 531 1415
+ 531!1415 531|1538 524!1538 524|1687 505!1687 505[1621 520 1569 606!1569 606[1501 719 1501 910!1501 910[1501 1087 1663 1207!1663 1207|1713 1239"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

@@ -1,0 +1,18 @@
+* text=auto
+
+*.js text eol=lf
+*.jsfl text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.xml text eol=lf
+*.xfl text eol=lf
+*.as text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.fla binary
+*.zip binary

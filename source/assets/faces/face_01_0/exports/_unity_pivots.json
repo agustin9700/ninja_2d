@@ -1,0 +1,59 @@
+{
+  "generator": "export_linked_symbols_WITH_UNITY_PIVOTS.jsfl",
+  "sourceDocument": "face_01_0.xfl",
+  "outputName": "face_01_0",
+  "targetPpi": 150,
+  "basePpi": 72,
+  "scaleFactor": 2.083333,
+  "margin": 2,
+  "stats": {
+    "exported": 1,
+    "skipped": 5,
+    "errors": 0,
+    "errorDetails": []
+  },
+  "parts": {
+    "face": {
+      "partName": "face",
+      "png": "face.png",
+      "symbolName": "Symbol 7",
+      "linkageName": "face",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 74,
+      "exportHeight": 95,
+      "registrationPx": {
+        "x": 1.95,
+        "y": 2.05
+      },
+      "unityPivot": {
+        "x": 0.026351,
+        "y": 0.978421
+      },
+      "boundsBeforeScale": {
+        "left": -16.65,
+        "top": -21.7,
+        "right": 16.75,
+        "bottom": 21.8,
+        "width": 33.4,
+        "height": 43.5
+      },
+      "boundsAfterScale": {
+        "left": -34.65,
+        "top": -45.25,
+        "right": 34.95,
+        "bottom": 45.35,
+        "width": 69.6,
+        "height": 90.6
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 2.05,
+        "right": 71.55,
+        "bottom": 92.65,
+        "width": 69.6,
+        "height": 90.6
+      }
+    }
+  }
+}

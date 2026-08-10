@@ -1,0 +1,27 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 45" itemID="6a3c75c9-00000141" lastModified="1597035306">
+  <timeline>
+    <DOMTimeline name="Symbol 45">
+      <layers>
+        <DOMLayer name="Layer 1" color="#F5B0A5" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#F8D3C1"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!554 129|559 156!559 156|576 222!576 222|586 265!586 265|588 314!588 314|585 340!585 340[582 359 546 369!546 369|528 374!528 374|486 377!486 377|421 378!421 378|259 403!259 403|91 424!91 424[44 421 20 400!20 400[-4 378 1 354!1 354[5 330
+ 148 264!148 264[291 199 319 168!319 168|354 121!354 121|368 64!368 64[375 25 430 9!430 9|513 7!513 7[540 20 545 67!545 67|554 129"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

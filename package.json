@@ -1,0 +1,13 @@
+{
+  "name": "ninja-2d-runtime-poc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canvas 2D runtime for Adobe Animate XFL character animations",
+  "scripts": {
+    "test": "node tools/test_runtime_data.js",
+    "serve": "python -m http.server 8080 --directory prototype"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

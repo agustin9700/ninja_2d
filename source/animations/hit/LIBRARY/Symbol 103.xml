@@ -1,0 +1,40 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 103" itemID="6a792200-0000005a" symbolType="graphic" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 103">
+      <layers>
+        <DOMLayer name="Layer 1" color="#000000" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" motionTweenScale="false" keyMode="8192">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#5C3701"/>
+                    </FillStyle>
+                    <FillStyle index="2">
+                      <SolidColor color="#3A2301"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle0="1" strokeStyle="1" edges="!2460 40|2080 0!2080 0[1220 0 600 620!600 620[0 1240 0 2100!0 2100[0 2960 600 3560!600 3560[900 3860 1280 4040"/>
+                    <Edge fillStyle0="2" strokeStyle="1" edges="!1280 4040|2080 4180!2080 4180[2940 4180 3560 3560!3560 3560[4180 2960 4180 2100!4180 2100[4180 1240 3560 620!3560 620[3080 140 2460 40"/>
+                    <Edge fillStyle0="1" fillStyle1="2" edges="!1280 4040[2620 2180 2620 1020!2620 1020[2620 640 2460 40"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

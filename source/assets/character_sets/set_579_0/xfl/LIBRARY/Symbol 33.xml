@@ -1,0 +1,27 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 33" itemID="6a3c75c9-00000138" lastModified="1597035306">
+  <timeline>
+    <DOMTimeline name="Symbol 33">
+      <layers>
+        <DOMLayer name="Layer 1" color="#B0F85A" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#F8D3C1"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!324 52|335 87!335 87|342 121!342 121|335 172!335 172|327 204!327 204[317 228 296 242!296 242|272 257!272 257|254 273!254 273[242 292 214 307!214 307[202 312 197 324!197 324[175 347 157 346!157 346[156 361 123 380!123 380[89 398 58 333
+!58 333|50 256!50 256|45 248!45 248|24 234!24 234|18 229!18 229[-1 209 0 183!0 183[1 137 24 90!24 90|49 46!49 46[78 18 124 13!124 13|135 13!135 13|156 1!156 1|191 -7!191 -7[226 -14 276 10!276 10[326 34 310 33!310 33[320 35 324 52"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

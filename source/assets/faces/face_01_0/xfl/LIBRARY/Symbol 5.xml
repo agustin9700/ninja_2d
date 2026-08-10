@@ -1,0 +1,36 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 5" itemID="6a794080-00000004" lastModified="1786331257">
+  <timeline>
+    <DOMTimeline name="Symbol 5">
+      <layers>
+        <DOMLayer name="Layer 1" color="#AECB44" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#222222"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" solidStyle="hairline">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle0="1" strokeStyle="1" edges="!324 12|324 0!324 0|295 1!295 1|257 9!257 9|250 12!250 12|249 18!249 18[256 43 281 46!281 46[297 48 310 36!310 36[322 26 324 12!1 14[-3 27 6 39!6 39[15 50 28 52!28 52[41 54 45 42!45 42|47 25!47 25|46 24"/>
+                    <Edge fillStyle0="1" edges="!46 24|43 22!43 22|1 14"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

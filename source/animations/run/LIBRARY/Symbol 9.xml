@@ -1,0 +1,66 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 9" itemID="6a781c80-00000006" symbolType="graphic" lastModified="1669385713">
+  <timeline>
+    <DOMTimeline name="Symbol 9" layerDepthEnabled="true">
+      <layers>
+        <DOMLayer name="Layer_1" color="#4F4FFF" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" motionTweenScale="false" keyMode="8192">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#66A4FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle1="1" strokeStyle="1" edges="!1280 -7480[1800 -7160 1940 -6600!1940 -6600[2080 -6040 1800 -5540!1800 -5540[1500 -5040 940 -4880!940 -4880[380 -4720 -160 -5040!-160 -5040[-660 -5320 -820 -5900!-820 -5900[-960 -6460 -660 -6960!-660 -6960[-360 -7480 200 -7640!200 -7640
+[780 -7780 1280 -7480"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer_2" color="#4F4FFF">
+          <frames>
+            <DOMFrame index="0" motionTweenScale="false" keyMode="8192">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#66A4FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle0="1" strokeStyle="1" edges="
+!260 -7540[-140 -7300 -460 -6560!-460 -6560[-860 -5880 -1040 -3660!-1040 -3660|-1340 940!-1340 940|-1440 4340!-1440 4340[-1440 5400 -1500 5800!-1500 5800|-1500 6660!-1500 6660[-1500 7120 -1180 7420!-1180 7420[-860 7700 -560 7680!-560
+ 7680|-40 7520!-40 7520|260 7300!260 7300[520 7100 580 6780!580 6780|760 5800!760 5800|960 4080!960 4080|1120 2440!1120 2440|1420 -1680!1420 -1680|1600 -5020!1600 -5020[1660 -6420 1560 -6860!1560 -6860|1360 -7520!1360 -7520[1180 -7720
+ 800 -7740!800 -7740[620 -7760 260 -7540"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

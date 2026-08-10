@@ -1,0 +1,30 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 20" itemID="6a3c75c9-0000012e" symbolType="graphic" lastModified="1597035306">
+  <timeline>
+    <DOMTimeline name="Symbol 20">
+      <layers>
+        <DOMLayer name="Layer 1" color="#4F4FFF" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" motionTweenScale="false" keyMode="8192">
+              <elements>
+                <DOMShape isFloating="true">
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" joints="miter" solidStyle="hairline">
+                        <fill>
+                          <SolidColor color="#282F3E"/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge strokeStyle="1" edges="!152 -69[125 -43 88 -25!88 -25[-3 23 -150 25!-150 25[-166 30 -165 38!-165 38|-163 44!-163 44[-161 57 -149 64!-149 64|-130 67!-130 67|-16 57!-16 57[67 36 159 -23!159 -23[175 -53 152 -69"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

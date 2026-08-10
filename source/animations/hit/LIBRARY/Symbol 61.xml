@@ -1,0 +1,103 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 61" itemID="6a792200-0000003e" linkageExportForAS="true" linkageClassName="Head" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 61">
+      <layers>
+        <DOMLayer name="Layer 1" color="#AA6BCF" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 43" name="hair">
+                  <matrix>
+                    <Matrix a="-1" tx="31.9"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 2" color="#6788CD">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 42" name="face">
+                  <matrix>
+                    <Matrix a="-0.8990478515625" d="0.8990478515625" tx="25.75" ty="13.35"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 3" color="#F27FAC">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#6699FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" solidStyle="hairline">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle0="1" fillStyle1="1" strokeStyle="1" edges="!339 658[406 736 353 761"/>
+                    <Edge fillStyle0="1" strokeStyle="1" edges="!487 619[489 472 419 367!419 367[349 262 249 260!249 260[148 259 75 363!75 363[2 467 0 613!0 613[-2 761 68 865!68 865[138 970 239 971!239 971[339 973 412 869!412 869[485 766 487 619"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 4" color="#2ABBDE" locked="true" layerType="mask">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#66CC00"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!623 -147[805 81 769 274!769 274[732 467 643 634!643 634|497 904!497 904[474 946 430 976!430 976[365 1019 256 1035!256 1035[71 1062 -183 776!-183 776[-469 864 -764 747!-764 747[-1114 529 -1143 97!-1143 97[-1172 -335 -666 -409!-666 -409
+[-160 -484 140 -430!140 -430[440 -376 623 -147"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 5" color="#6E7EAD" parentLayerIndex="3" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 59" name="back_hair">
+                  <matrix>
+                    <Matrix a="-1" tx="-7.5" ty="86.15"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

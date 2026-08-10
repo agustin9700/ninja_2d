@@ -1,0 +1,30 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 188" itemID="6a792200-0000009d" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 188">
+      <layers>
+        <DOMLayer name="Layer 1" color="#BD69A0" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#FFFFFF" alpha="0.854901960784314"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle0="1" edges="!5187 2231[4816 283 2430 0!2430 0[3196 212 3511 504!3511 504[3068 290 2463 521!2463 521[3140 495 3542 842!3542 842[3128 687 2634 876!2634 876[3697 1077 4056 2157!4056 2157[4090 1610 3924 1229!3924 1229[4359 1514 4607 2159!4607 2159[4646
+ 1650 4382 1224!4382 1224[4891 1572 5187 2231"/>
+                    <Edge fillStyle1="1" edges="
+!630 3448[394 3026 466 2490!466 2490[684 2974 1078 3207!1078 3207[887 2749 981 2247!981 2247[1189 2748 1581 2985!1581 2985[1469 2698 1558 2270!1558 2270[1699 3141 2566 3559!2566 3559[2134 3760 1695 3515!1695 3515[1882 3944 2300 4095!2300
+ 4095[1746 4226 1237 3928!1237 3928[1450 4324 1921 4559!1921 4559[1431 4541 1014 4206!1014 4206[1100 4564 1439 4810!1439 4810[-11 4193 0 2664!0 2664[250 3199 630 3448"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

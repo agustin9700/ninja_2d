@@ -1,0 +1,52 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 29" itemID="6a792200-00000022" lastModified="1786323479">
+  <timeline>
+    <DOMTimeline name="Symbol 29" layerDepthEnabled="true">
+      <layers>
+        <DOMLayer name="Layer_1" color="#7894DB">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 28" name="holderMc">
+                  <matrix>
+                    <Matrix tx="-0.05" ty="0.15"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer_2" color="#EAE212" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#66A4FF"/>
+                    </FillStyle>
+                  </fills>
+                  <strokes>
+                    <StrokeStyle index="1">
+                      <SolidStroke scaleMode="normal" weight="0.05" solidStyle="hairline">
+                        <fill>
+                          <SolidColor/>
+                        </fill>
+                      </SolidStroke>
+                    </StrokeStyle>
+                  </strokes>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!121 -203|140 -212!140 -212|178 -217!178 -217|215 -213"/>
+                    <Edge fillStyle1="1" strokeStyle="1" edges="!215 -213|233 -132!233 -132|278 44!278 44[297 118 163 137!163 137|-49 164!-49 164|-185 175!-185 175[-241 177 -229 149!-229 149[-219 126 -178 99!-178 99|-15 -6!-15 -6[92 -74 114 -192!114 -192|121 -203"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

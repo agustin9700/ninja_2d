@@ -1,0 +1,15 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 9" itemID="6a782380-00000009" lastModified="1669385713">
+  <timeline>
+    <DOMTimeline name="Symbol 9" layerDepthEnabled="true">
+      <layers>
+        <DOMLayer name="Layer_1" color="#D3D352" current="true" isSelected="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements/>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>

@@ -1,0 +1,1133 @@
+{
+  "manifestVersion": "3.0",
+  "generator": "Ninja 2D Runtime Exporter v3",
+  "sourceDocument": "back_item_261.xfl",
+  "outputName": "back_item_261",
+  "source": {
+    "document": {
+      "name": "back_item_261.xfl",
+      "width": 50,
+      "height": 50,
+      "backgroundColor": "#FFFFFF",
+      "frameRate": 12
+    },
+    "defaultTimelineId": "scene:0",
+    "documentTimelines": [
+      {
+        "id": "scene:0",
+        "name": "Scene 1",
+        "ownerType": "document",
+        "ownerName": "Scene 1",
+        "frameRate": 12,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "scene:0/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 4",
+                    "linkageName": "back_item",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 22.35,
+                      "ty": 21.4
+                    },
+                    "x": 22.35,
+                    "y": 21.4,
+                    "width": 124.45,
+                    "height": 176.85,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "movie clip",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 22.35,
+                      "y": 21.4,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "symbolTimelines": [
+      {
+        "id": "library:Symbol 3",
+        "name": "Symbol 3",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 3",
+        "frameRate": 12,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 3.4,
+                    "y": 0.5,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 3.4,
+                      "y": 0.5,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "name": "Layer 2",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:1/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": -12.15,
+                    "y": -10.1,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": -12.15,
+                      "y": -10.1,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "name": "Layer 3",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:2/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 26.1,
+                    "y": -74.85,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 26.1,
+                      "y": -74.85,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 3,
+            "name": "Layer 4",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:3/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 3.25,
+                    "y": 0.5,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 3.25,
+                      "y": 0.5,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 4,
+            "name": "Layer 5",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:4/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": -12.25,
+                    "y": -10.25,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": -12.25,
+                      "y": -10.25,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 5,
+            "name": "Layer 6",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:5/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 25.85,
+                    "y": -75.05,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 25.85,
+                      "y": -75.05,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 6,
+            "name": "Layer 7",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:6/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 49.6,
+                    "y": -58,
+                    "width": 8.25,
+                    "height": 8.45,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 49.6,
+                      "y": -58,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 7,
+            "name": "Layer 8",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:7/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 8.25,
+                    "y": -9.5,
+                    "width": 124.45,
+                    "height": 176.85,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 8.25,
+                      "y": -9.5,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 8,
+            "name": "Layer 9",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 3/layer:8/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 4.6,
+                    "y": 1.3,
+                    "width": 10.25,
+                    "height": 9.15,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 4.6,
+                      "y": 1.3,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 4",
+        "name": "Symbol 4",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 4",
+        "frameRate": 12,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 4/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 3",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0,
+                    "y": 0,
+                    "width": 124.45,
+                    "height": 176.85,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "graphic",
+                    "loop": "loop",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0,
+                      "y": 0,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 5",
+        "name": "Symbol 5",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 5",
+        "frameRate": 12,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "mask",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": true,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 5/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0,
+                    "y": -50,
+                    "width": 100,
+                    "height": 100.05,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0,
+                      "y": -50,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "name": "Layer 2",
+            "layerType": "masked",
+            "parentLayerIndex": 0,
+            "visible": true,
+            "locked": true,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 5/layer:1/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 4",
+                    "linkageName": "back_item",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 0.597046,
+                      "b": 0.118347,
+                      "c": -0.118347,
+                      "d": 0.597046,
+                      "tx": -4.25,
+                      "ty": -41.45
+                    },
+                    "x": -4.25,
+                    "y": -41.45,
+                    "width": 95.25,
+                    "height": 120.35,
+                    "rotation": 11.212219,
+                    "scaleX": 0.608673,
+                    "scaleY": 0.608673,
+                    "skewX": 11.212219,
+                    "skewY": 11.212219,
+                    "symbolType": "movie clip",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": -4.25,
+                      "y": -41.45,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "name": "Layer 3",
+            "layerType": "masked",
+            "parentLayerIndex": 0,
+            "visible": true,
+            "locked": true,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 5/layer:2/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0.5,
+                    "y": -49.5,
+                    "width": 100,
+                    "height": 100,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0.5,
+                      "y": -49.5,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "coordinateSystem": {
+    "sourceUnits": "Animate document pixels at basePpi",
+    "xAxis": "right",
+    "yAxis": "down",
+    "angles": "degrees clockwise in screen coordinates",
+    "matrixConvention": "columnVector",
+    "matrixEquation": "x' = a*x + c*y + tx; y' = b*x + d*y + ty",
+    "rasterPixelsPerSourceUnit": 2.083333
+  },
+  "rendering": {
+    "layerIndex0": "front",
+    "canvasLayerIteration": "descending",
+    "authoritativeTransform": "element.matrix",
+    "rasterCompensation": "draw PNG at 1 / rasterPixelsPerSourceUnit in symbol-local space"
+  },
+  "hierarchy": {
+    "model": "timeline-instance nesting",
+    "note": "A symbol instance is parented by the timeline that owns it. No anatomical bone parent is inferred from layer names or proximity."
+  },
+  "raster": {
+    "targetPpi": 150,
+    "basePpi": 72,
+    "scaleFactor": 2.083333,
+    "margin": 2
+  },
+  "stats": {
+    "exported": 2,
+    "skipped": 1,
+    "errors": 0,
+    "errorDetails": []
+  },
+  "symbols": [
+    {
+      "libraryName": "Symbol 3",
+      "itemType": "graphic",
+      "linkageName": "",
+      "timelineId": "library:Symbol 3"
+    },
+    {
+      "libraryName": "Symbol 4",
+      "itemType": "movie clip",
+      "linkageName": "back_item",
+      "timelineId": "library:Symbol 4"
+    },
+    {
+      "libraryName": "Symbol 5",
+      "itemType": "movie clip",
+      "linkageName": "icon",
+      "timelineId": "library:Symbol 5"
+    }
+  ],
+  "parts": [
+    {
+      "partName": "back_item",
+      "png": "back_item.png",
+      "symbolName": "Symbol 4",
+      "linkageName": "back_item",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 264,
+      "exportHeight": 373,
+      "rasterPixelsPerSourceUnit": 2.083333,
+      "registrationSource": {
+        "x": 0,
+        "y": 0
+      },
+      "registrationPx": {
+        "x": 114.35,
+        "y": 205.9
+      },
+      "pivot": {
+        "x": 114.35,
+        "y": 205.9,
+        "normalizedX": 0.433144,
+        "normalizedYTop": 0.552011,
+        "normalizedYUp": 0.447989
+      },
+      "boundsBeforeScale": {
+        "left": -62.15,
+        "top": -88.35,
+        "right": 62.3,
+        "bottom": 88.5,
+        "width": 124.45,
+        "height": 176.85
+      },
+      "boundsAfterScale": {
+        "left": -129.45,
+        "top": -184.15,
+        "right": 129.8,
+        "bottom": 184.3,
+        "width": 259.25,
+        "height": 368.45
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 1.95,
+        "right": 261.2,
+        "bottom": 370.35,
+        "width": 259.25,
+        "height": 368.4
+      }
+    },
+    {
+      "partName": "icon",
+      "png": "icon.png",
+      "symbolName": "Symbol 5",
+      "linkageName": "icon",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 212,
+      "exportHeight": 213,
+      "rasterPixelsPerSourceUnit": 2.083333,
+      "registrationSource": {
+        "x": 0,
+        "y": 0
+      },
+      "registrationPx": {
+        "x": 105.05,
+        "y": 210.35
+      },
+      "pivot": {
+        "x": 105.05,
+        "y": 210.35,
+        "normalizedX": 0.495519,
+        "normalizedYTop": 0.987559,
+        "normalizedYUp": 0.012441
+      },
+      "boundsBeforeScale": {
+        "left": -49.7,
+        "top": -49.95,
+        "right": 49.8,
+        "bottom": 50.1,
+        "width": 99.5,
+        "height": 100.05
+      },
+      "boundsAfterScale": {
+        "left": -103.5,
+        "top": -108.3,
+        "right": 103.75,
+        "bottom": 100.15,
+        "width": 207.25,
+        "height": 208.45
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 2.05,
+        "right": 209.2,
+        "bottom": 210.45,
+        "width": 207.25,
+        "height": 208.4
+      }
+    }
+  ],
+  "timeline": {
+    "id": "scene:0",
+    "name": "Scene 1",
+    "ownerType": "document",
+    "ownerName": "Scene 1",
+    "frameRate": 12,
+    "frameCount": 1,
+    "currentFrame": 0,
+    "layerOrder": {
+      "arrayIndex0": "front",
+      "canvasRenderOrder": "descendingLayerIndex"
+    },
+    "layers": [
+      {
+        "index": 0,
+        "name": "Layer 1",
+        "layerType": "normal",
+        "parentLayerIndex": null,
+        "visible": true,
+        "locked": false,
+        "outline": false,
+        "frames": [
+          {
+            "index": 0,
+            "duration": 1,
+            "name": "",
+            "labelType": "none",
+            "tweenType": "none",
+            "tweenEasing": 0,
+            "actionScript": "",
+            "elements": [
+              {
+                "id": "scene:0/layer:0/frame:0/element:0",
+                "index": 0,
+                "elementType": "instance",
+                "name": "",
+                "libraryItemName": "Symbol 4",
+                "linkageName": "back_item",
+                "matrixSpace": "ownerTimeline",
+                "matrix": {
+                  "a": 1,
+                  "b": 0,
+                  "c": 0,
+                  "d": 1,
+                  "tx": 22.35,
+                  "ty": 21.4
+                },
+                "x": 22.35,
+                "y": 21.4,
+                "width": 124.45,
+                "height": 176.85,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "skewX": 0,
+                "skewY": 0,
+                "symbolType": "movie clip",
+                "loop": "",
+                "firstFrame": 0,
+                "blendMode": "normal",
+                "visible": true,
+                "colorAlphaPercent": 100,
+                "transformationPoint": {
+                  "x": 22.35,
+                  "y": 21.4,
+                  "space": "ownerTimeline"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

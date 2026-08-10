@@ -1,0 +1,75 @@
+<DOMDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" width="640" height="480" frameRate="30" currentTimeline="1" xflVersion="22.02" creatorInfo="Adobe Animate" platform="Windows" versionInfo="Saved by Animate Windows 22.0 build 168" majorVersion="22" buildNumber="168" objectsSnapTo="false" viewAngle3D="62.4108334222142" vanishingPoint3DX="320" vanishingPoint3DY="240" nextSceneIdentifier="2" playOptionsPlayLoop="false" playOptionsPlayPages="false" playOptionsPlayFrameActions="false" filetypeGUID="DD0DDBBF-5BEF-45B2-9F24-A3048D2A676F" fileGUID="1D5577D724B21149BE23331D997BA1E6">
+     <symbols>
+          <Include href="Symbol 3.xml" loadImmediate="false" itemID="6a792200-0000000c" lastModified="1786323479"/>
+          <Include href="Symbol 4.xml" loadImmediate="false" itemID="6a792200-0000000d" lastModified="1786323479"/>
+          <Include href="Symbol 5.xml" loadImmediate="false" itemID="6a792200-0000000e" lastModified="1786323479"/>
+          <Include href="Symbol 6.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-0000000f" lastModified="1786323479"/>
+          <Include href="Symbol 7.xml" loadImmediate="false" itemID="6a792200-00000010" lastModified="1786323479"/>
+          <Include href="Symbol 8.xml" loadImmediate="false" itemID="6a792200-00000011" lastModified="1786323479"/>
+          <Include href="Symbol 9.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-00000012" lastModified="1786323479"/>
+          <Include href="Symbol 10.xml" loadImmediate="false" itemID="6a792200-00000013" lastModified="1786323479"/>
+          <Include href="Symbol 11.xml" loadImmediate="false" itemID="6a792200-00000014" lastModified="1786323479"/>
+          <Include href="Symbol 12.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-00000015" lastModified="1786323479"/>
+          <Include href="Symbol 13.xml" loadImmediate="false" itemID="6a792200-00000016" lastModified="1786323479"/>
+          <Include href="Symbol 14.xml" loadImmediate="false" itemID="6a792200-00000017" lastModified="1786323479"/>
+          <Include href="Symbol 16.xml" loadImmediate="false" itemID="6a792200-00000018" lastModified="1786323479"/>
+          <Include href="Symbol 17.xml" loadImmediate="false" itemID="6a792200-00000019" lastModified="1786323479"/>
+          <Include href="Symbol 19.xml" loadImmediate="false" itemID="6a792200-0000001a" lastModified="1786323479"/>
+          <Include href="Symbol 20.xml" loadImmediate="false" itemID="6a792200-0000001b" lastModified="1786323479"/>
+          <Include href="Symbol 21.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-0000001c" lastModified="1786323479"/>
+          <Include href="Symbol 22.xml" loadImmediate="false" itemID="6a792200-0000001d" lastModified="1786323479"/>
+          <Include href="Symbol 23.xml" loadImmediate="false" itemID="6a792200-0000001e" lastModified="1786323479"/>
+          <Include href="Symbol 25.xml" loadImmediate="false" itemID="6a792200-0000001f" lastModified="1786323479"/>
+          <Include href="Symbol 26.xml" loadImmediate="false" itemID="6a792200-00000020" lastModified="1786323479"/>
+          <Include href="Symbol 28.xml" loadImmediate="false" itemID="6a792200-00000021" lastModified="1786323479"/>
+          <Include href="Symbol 29.xml" loadImmediate="false" itemID="6a792200-00000022" lastModified="1786323479"/>
+          <Include href="Symbol 30.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-00000023" lastModified="1786323479"/>
+          <Include href="Symbol 31.xml" loadImmediate="false" itemID="6a792200-00000024" lastModified="1786323479"/>
+          <Include href="Symbol 32.xml" loadImmediate="false" itemID="6a792200-00000025" lastModified="1786323479"/>
+          <Include href="Symbol 34.xml" loadImmediate="false" itemID="6a792200-00000026" lastModified="1786323479"/>
+          <Include href="Symbol 35.xml" loadImmediate="false" itemID="6a792200-00000027" lastModified="1786323479"/>
+          <Include href="Symbol 36.xml" loadImmediate="false" itemID="6a792200-00000028" lastModified="1786323479"/>
+          <Include href="Symbol 37.xml" loadImmediate="false" itemID="6a792200-00000029" lastModified="1786323479"/>
+          <Include href="Symbol 38.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-0000002a" lastModified="1786323479"/>
+          <Include href="Symbol 39.xml" loadImmediate="false" itemID="6a792200-0000002b" lastModified="1786323479"/>
+          <Include href="Symbol 40.xml" loadImmediate="false" itemID="6a792200-0000002c" lastModified="1786323479"/>
+          <Include href="Symbol 42.xml" loadImmediate="false" itemID="6a792200-0000002d" lastModified="1786323479"/>
+          <Include href="Symbol 43.xml" loadImmediate="false" itemID="6a792200-0000002e" lastModified="1786323479"/>
+          <Include href="Symbol 44.xml" loadImmediate="false" itemID="6a792200-0000002f" lastModified="1786323479"/>
+          <Include href="Symbol 45.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-00000030" lastModified="1786323479"/>
+          <Include href="Symbol 46.xml" loadImmediate="false" itemID="6a792200-00000031" lastModified="1786323479"/>
+          <Include href="Symbol 47.xml" loadImmediate="false" itemID="6a792200-00000032" lastModified="1786323479"/>
+          <Include href="Symbol 48.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-00000033" lastModified="1786323479"/>
+          <Include href="Symbol 49.xml" loadImmediate="false" itemID="6a792200-00000034" lastModified="1786323479"/>
+          <Include href="Symbol 50.xml" loadImmediate="false" itemID="6a792200-00000035" lastModified="1786323479"/>
+          <Include href="Symbol 54.xml" itemIcon="1" loadImmediate="false" itemID="6a792200-00000039" lastModified="1786323479"/>
+          <Include href="Symbol 55.xml" loadImmediate="false" itemID="6a792200-0000003a" lastModified="1786323479"/>
+          <Include href="Symbol 56.xml" loadImmediate="false" itemID="6a792200-0000003b" lastModified="1786323479"/>
+          <Include href="Símbolo 1.xml" loadImmediate="false" itemID="6a7922e6-000001c0" lastModified="1786323728"/>
+     </symbols>
+     <timelines>
+          <DOMTimeline name="Escena 1" layerDepthEnabled="true">
+               <layers>
+                    <DOMLayer name="Capa_1" color="#00FFFF" current="true" isSelected="true">
+                         <frames>
+                              <DOMFrame index="0" keyMode="9728">
+                                   <elements>
+                                        <DOMSymbolInstance libraryItemName="Símbolo 1" selected="true">
+                                             <matrix>
+                                                  <Matrix tx="383.6" ty="355.9"/>
+                                             </matrix>
+                                             <transformationPoint>
+                                                  <Point x="-63.15" y="-115.9"/>
+                                             </transformationPoint>
+                                        </DOMSymbolInstance>
+                                   </elements>
+                              </DOMFrame>
+                         </frames>
+                    </DOMLayer>
+               </layers>
+          </DOMTimeline>
+     </timelines>
+     <scripts/>
+     <PrinterSettings/>
+     <publishHistory/>
+</DOMDocument>

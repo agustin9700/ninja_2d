@@ -1,0 +1,101 @@
+{
+  "generator": "export_linked_symbols_WITH_UNITY_PIVOTS.jsfl",
+  "sourceDocument": "back_item_261.xfl",
+  "outputName": "back_item_261",
+  "targetPpi": 150,
+  "basePpi": 72,
+  "scaleFactor": 2.083333,
+  "margin": 2,
+  "stats": {
+    "exported": 2,
+    "skipped": 1,
+    "errors": 0,
+    "errorDetails": []
+  },
+  "parts": {
+    "back_item": {
+      "partName": "back_item",
+      "png": "back_item.png",
+      "symbolName": "Symbol 4",
+      "linkageName": "back_item",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 264,
+      "exportHeight": 373,
+      "registrationPx": {
+        "x": 114.35,
+        "y": 205.9
+      },
+      "unityPivot": {
+        "x": 0.433144,
+        "y": 0.447989
+      },
+      "boundsBeforeScale": {
+        "left": -62.15,
+        "top": -88.35,
+        "right": 62.3,
+        "bottom": 88.5,
+        "width": 124.45,
+        "height": 176.85
+      },
+      "boundsAfterScale": {
+        "left": -129.45,
+        "top": -184.15,
+        "right": 129.8,
+        "bottom": 184.3,
+        "width": 259.25,
+        "height": 368.45
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 1.95,
+        "right": 261.2,
+        "bottom": 370.35,
+        "width": 259.25,
+        "height": 368.4
+      }
+    },
+    "icon": {
+      "partName": "icon",
+      "png": "icon.png",
+      "symbolName": "Symbol 5",
+      "linkageName": "icon",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 212,
+      "exportHeight": 213,
+      "registrationPx": {
+        "x": 105.05,
+        "y": 210.35
+      },
+      "unityPivot": {
+        "x": 0.495519,
+        "y": 0.012441
+      },
+      "boundsBeforeScale": {
+        "left": -49.7,
+        "top": -49.95,
+        "right": 49.8,
+        "bottom": 50.1,
+        "width": 99.5,
+        "height": 100.05
+      },
+      "boundsAfterScale": {
+        "left": -103.5,
+        "top": -108.3,
+        "right": 103.75,
+        "bottom": 100.15,
+        "width": 207.25,
+        "height": 208.45
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 2.05,
+        "right": 209.2,
+        "bottom": 210.45,
+        "width": 207.25,
+        "height": 208.4
+      }
+    }
+  }
+}

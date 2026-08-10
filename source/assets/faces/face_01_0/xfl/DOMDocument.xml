@@ -1,0 +1,26 @@
+<DOMDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" currentTimeline="1" xflVersion="22.02" creatorInfo="Adobe Animate" platform="Windows" versionInfo="Saved by Animate Windows 22.0 build 168" majorVersion="22" buildNumber="168" timelineLabelWidth="-1" viewAngle3D="1" vanishingPoint3DX="115200" vanishingPoint3DY="115200" nextSceneIdentifier="2" playOptionsPlayLoop="false" playOptionsPlayPages="false" playOptionsPlayFrameActions="false" filetypeGUID="DD0DDBBF-5BEF-45B2-9F24-A3048D2A676F" fileGUID="341D011C4034F445B608A2AC636D886A">
+     <symbols>
+          <Include href="Symbol 1.xml" itemIcon="1" loadImmediate="false" itemID="6a794080-00000001" lastModified="1786331257"/>
+          <Include href="Symbol 2.xml" loadImmediate="false" itemID="6a794080-00000002" lastModified="1786331257"/>
+          <Include href="Symbol 3.xml" itemIcon="1" loadImmediate="false" itemID="6a794080-00000003" lastModified="1786331257"/>
+          <Include href="Symbol 5.xml" loadImmediate="false" itemID="6a794080-00000004" lastModified="1786331257"/>
+          <Include href="Symbol 6.xml" itemIcon="1" loadImmediate="false" itemID="6a794080-00000005" lastModified="1786331257"/>
+          <Include href="Symbol 7.xml" itemID="6a794080-00000006" lastModified="1786331257"/>
+     </symbols>
+     <timelines>
+          <DOMTimeline name="Scene 1">
+               <layers>
+                    <DOMLayer name="Layer 1" color="#F55D7C" current="true" isSelected="true">
+                         <frames>
+                              <DOMFrame index="0" keyMode="9728">
+                                   <elements/>
+                              </DOMFrame>
+                         </frames>
+                    </DOMLayer>
+               </layers>
+          </DOMTimeline>
+     </timelines>
+     <scripts/>
+     <PrinterSettings/>
+     <publishHistory/>
+</DOMDocument>

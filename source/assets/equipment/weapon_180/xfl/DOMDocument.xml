@@ -1,0 +1,35 @@
+<DOMDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" width="130" height="200" currentTimeline="1" xflVersion="22.02" creatorInfo="Adobe Animate" platform="Windows" versionInfo="Saved by Animate Windows 22.0 build 168" majorVersion="22" buildNumber="168" vanishingPoint3DX="65" vanishingPoint3DY="100" nextSceneIdentifier="2" playOptionsPlayLoop="false" playOptionsPlayPages="false" playOptionsPlayFrameActions="false" autoSaveHasPrompted="true" filetypeGUID="DD0DDBBF-5BEF-45B2-9F24-A3048D2A676F" fileGUID="B22700DF9DA1614A9E71B8F8B8B2F168">
+     <symbols>
+          <Include href="Symbol 3.xml" itemIcon="1" loadImmediate="false" itemID="6a793463-0000011f" lastModified="1597033034"/>
+          <Include href="Symbol 5.xml" loadImmediate="false" itemID="6a793463-00000120" lastModified="1597033034"/>
+          <Include href="Symbol 6.xml" loadImmediate="false" itemID="6a793463-00000121" lastModified="1597033034"/>
+          <Include href="Symbol 7.xml" loadImmediate="false" itemID="6a793463-00000122" lastModified="1597033034"/>
+          <Include href="Symbol 8.xml" itemID="6a793463-00000123" lastModified="1597033034"/>
+          <Include href="Symbol 9.xml" itemID="6a793463-00000124" lastModified="1597033034"/>
+     </symbols>
+     <timelines>
+          <DOMTimeline name="Scene 1">
+               <layers>
+                    <DOMLayer name="Layer 1" color="#B0DFF4" current="true" isSelected="true">
+                         <frames>
+                              <DOMFrame index="0" keyMode="9728">
+                                   <elements>
+                                        <DOMSymbolInstance libraryItemName="Symbol 8" centerPoint3DX="112.2" centerPoint3DY="205">
+                                             <matrix>
+                                                  <Matrix tx="52.2" ty="99.95"/>
+                                             </matrix>
+                                             <transformationPoint>
+                                                  <Point/>
+                                             </transformationPoint>
+                                        </DOMSymbolInstance>
+                                   </elements>
+                              </DOMFrame>
+                         </frames>
+                    </DOMLayer>
+               </layers>
+          </DOMTimeline>
+     </timelines>
+     <scripts/>
+     <PrinterSettings/>
+     <publishHistory/>
+</DOMDocument>

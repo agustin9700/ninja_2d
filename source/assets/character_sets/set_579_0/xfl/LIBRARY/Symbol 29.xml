@@ -1,0 +1,138 @@
+<DOMSymbolItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ns.adobe.com/xfl/2008/" name="Symbol 29" itemID="6a3c75c9-00000135" linkageExportForAS="true" linkageClassName="icon" lastModified="1597035306">
+  <timeline>
+    <DOMTimeline name="Symbol 29">
+      <layers>
+        <DOMLayer name="Layer 1" color="#F619B9" locked="true" current="true" isSelected="true" layerType="mask">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMShape isFloating="true">
+                  <fills>
+                    <FillStyle index="1">
+                      <SolidColor color="#00FF00"/>
+                    </FillStyle>
+                  </fills>
+                  <edges>
+                    <Edge fillStyle1="1" edges="!1000 1|-1000 1!-1000 1|-1000 -2000!-1000 -2000|1000 -2000!1000 -2000|1000 1"/>
+                  </edges>
+                </DOMShape>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 2" color="#F6D022" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 28" centerPoint3DX="34.6" centerPoint3DY="-13.85">
+                  <matrix>
+                    <Matrix tx="27.45" ty="-33.85"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 3" color="#C2D25C" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 24" centerPoint3DX="31.35" centerPoint3DY="-43.3">
+                  <matrix>
+                    <Matrix a="0.876876831054688" b="-0.47784423828125" c="0.47784423828125" d="0.876876831054688" tx="17" ty="-65"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 4" color="#5591E7" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 16" centerPoint3DX="18.45" centerPoint3DY="-20.45">
+                  <matrix>
+                    <Matrix tx="-4.1" ty="-63.45"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 5" color="#FFB4AD" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 12" centerPoint3DX="-2.7" centerPoint3DY="-10.6">
+                  <matrix>
+                    <Matrix a="0.945999145507812" d="0.945999145507812" tx="-2.7" ty="-10.6"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 6" color="#CC7E63" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 11" centerPoint3DX="19.35" centerPoint3DY="2.9">
+                  <matrix>
+                    <Matrix tx="-4.4" ty="-17.2"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 7" color="#5BAF8B" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 9" centerPoint3DX="-20.5" centerPoint3DY="-15.5">
+                  <matrix>
+                    <Matrix a="0.957809448242188" b="0.28424072265625" c="-0.28424072265625" d="0.957809448242188" tx="-26.9" ty="-34.1"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+        <DOMLayer name="Layer 8" color="#CDB6B4" parentLayerIndex="0" locked="true">
+          <frames>
+            <DOMFrame index="0" keyMode="9728">
+              <elements>
+                <DOMSymbolInstance libraryItemName="Symbol 5" centerPoint3DX="-5.05" centerPoint3DY="-38.25">
+                  <matrix>
+                    <Matrix a="0.989776611328125" b="0.139434814453125" c="-0.139434814453125" d="0.989776611328125" tx="-19.55" ty="-65.65"/>
+                  </matrix>
+                  <transformationPoint>
+                    <Point/>
+                  </transformationPoint>
+                </DOMSymbolInstance>
+              </elements>
+            </DOMFrame>
+          </frames>
+        </DOMLayer>
+      </layers>
+    </DOMTimeline>
+  </timeline>
+</DOMSymbolItem>
