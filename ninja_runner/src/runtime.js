@@ -88,6 +88,8 @@ const idleAnim = {
 
 const pressedKeys = new Set();
 let lastRunDirection = 1;
+const runnerMode = document.body?.dataset.mode === 'runner';
+let runnerAutoRunActive = false;
 
 const identity = () => ({ a: 1, b: 0, c: 0, d: 1, tx: 0, ty: 0 });
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
@@ -252,6 +254,17 @@ function appearanceFor(partName, loadout) {
     }
   }
   return { part: state.parts.get(partName), image: state.images.get(partName) };
+}
+
+function isPartSuppressedByLoadout(partName, loadout) {
+  if (!partName || !loadout || !state.outfitRegistry) return false;
+  for (const [slot, options] of Object.entries(state.outfitRegistry.slots || {})) {
+    const optionId = loadout[slot];
+    if (!optionId) continue;
+    const option = (options || []).find(candidate => candidate.id === optionId);
+    if (option?.suppressParts?.includes(partName)) return true;
+  }
+  return false;
 }
 
 function resolvePartName(linkageName) {
@@ -536,6 +549,7 @@ function applyElementMatrix(matrix) {
 }
 
 function drawPart(command, view = null) {
+  if (isPartSuppressedByLoadout(command.partName, view?.loadout)) return;
   const appearance = appearanceFor(command.partName, view?.loadout);
   const image = appearance.image;
   const part = appearance.part;
@@ -1198,8 +1212,8 @@ function syncAnimationInput(now = performance.now()) {
   anim.active = false;
   anim.frame = 0;
   anim.holding = false;
-  const wantsLeft = pressedKeys.has('a');
-  const wantsRight = pressedKeys.has('d');
+  const wantsLeft = !runnerMode && pressedKeys.has('a');
+  const wantsRight = runnerMode ? runnerAutoRunActive : pressedKeys.has('d');
   const wantsRun = state.runTimeline && state.loaded && (wantsLeft || wantsRight);
   if (!wantsRun) {
     runAnim.active = false;
@@ -1207,7 +1221,8 @@ function syncAnimationInput(now = performance.now()) {
     return;
   }
 
-  const direction = wantsLeft && wantsRight ? lastRunDirection : (wantsRight ? 1 : -1);
+  const direction = runnerMode ? 1 :
+    (wantsLeft && wantsRight ? lastRunDirection : (wantsRight ? 1 : -1));
   if (!runAnim.active) {
     runAnim.frame = 0;
     runAnim.lastTime = now;
@@ -1216,10 +1231,33 @@ function syncAnimationInput(now = performance.now()) {
   runAnim.dir = direction;
 }
 
+function setRunnerAutoRun(active, now = performance.now()) {
+  if (!runnerMode) return false;
+  runnerAutoRunActive = Boolean(active);
+  pressedKeys.delete('a');
+  pressedKeys.delete('d');
+  if (!runnerAutoRunActive) {
+    runAnim.active = false;
+    runAnim.frame = 0;
+  }
+  syncAnimationInput(now);
+  return runnerAutoRunActive;
+}
+
+window.NinjaRunnerAnimation = Object.freeze({
+  setAutoRun: setRunnerAutoRun,
+  snapshot: () => ({
+    active: runnerAutoRunActive,
+    running: runAnim.active,
+    direction: runAnim.dir
+  })
+});
+
 document.addEventListener('keydown', event => {
   const key = event.key.toLowerCase();
   if (!['a', 'd', 's', 'w', 'j', 'g', 'm'].includes(key)) return;
   event.preventDefault();
+  if (runnerMode && (key === 'a' || key === 'd')) return;
   if (key === 'm') {
     if (event.repeat || deathAnim.active || !state.deathTimeline || !state.loaded) return;
     pressedKeys.clear();
@@ -1272,6 +1310,7 @@ document.addEventListener('keyup', event => {
   const key = event.key.toLowerCase();
   if (!['a', 'd', 's', 'w', 'j', 'g', 'm'].includes(key)) return;
   event.preventDefault();
+  if (runnerMode && (key === 'a' || key === 'd')) return;
   if (key === 'w' || key === 'j' || key === 'g' || key === 'm') return;
   pressedKeys.delete(key);
   syncAnimationInput();

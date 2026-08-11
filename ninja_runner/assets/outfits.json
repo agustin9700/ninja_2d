@@ -71,7 +71,8 @@
       {
         "id": "classic",
         "label": "Estandarte",
-        "icon": "assets/outfits/icons/back_classic.png"
+        "icon": "assets/outfits/icons/back_classic.png",
+        "suppressParts": ["back"]
       },
       {
         "id": "back_item_351",
@@ -79,7 +80,8 @@
         "icon": "assets/outfits/back_item_351/icon.png",
         "manifest": "assets/outfits/back_item_351/asset_manifest.json",
         "basePath": "assets/outfits/back_item_351/",
-        "parts": ["back_item"]
+        "parts": ["back_item"],
+        "suppressParts": ["back"]
       }
     ]
   }

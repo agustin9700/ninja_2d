@@ -185,6 +185,10 @@
     document.dispatchEvent(new KeyboardEvent('keyup', { key }));
   }
 
+  function setRunnerAutoRun(active) {
+    return window.NinjaRunnerAnimation?.setAutoRun(Boolean(active)) || false;
+  }
+
   function setPlayerMode(mode, duration, now = performance.now()) {
     game.player.mode = mode;
     game.player.actionStarted = now;
@@ -432,6 +436,7 @@
       game.over = true;
       game.running = false;
       game.outcome = 'knockout';
+      setRunnerAutoRun(false);
       setPlayerMode('dead', 0, now);
       press('m');
       setTimeout(showGameOver, CONFIG.deathMs);
@@ -566,7 +571,7 @@
       game.outcome = game.playerMeters >= game.rivalMeters ? 'victory' : 'race-loss';
       game.over = true;
       game.running = false;
-      release('d');
+      setRunnerAutoRun(false);
       setTimeout(showGameOver, 260);
     }
   }
@@ -1025,6 +1030,7 @@
     if (!game.ready || game.running) return;
     const previousMode = game.matchMode;
     if (mode === 'bot' && previousMode === 'matchmaking') window.NinjaNetwork?.leave();
+    setRunnerAutoRun(false);
     release('a');
     release('d');
     release('s');
@@ -1041,8 +1047,8 @@
     elements.startScreen.classList.add('hidden');
     elements.gameOverScreen.classList.add('hidden');
     renderHud();
-    press('d');
     game.running = true;
+    setRunnerAutoRun(true);
     drawFrame();
     requestAnimationFrame(loop);
   }
@@ -1120,7 +1126,7 @@
     game.outcome = detail.won ? 'victory' : (detail.reason === 'knockout' ? 'knockout' : 'race-loss');
     game.over = true;
     game.running = false;
-    release('d');
+    setRunnerAutoRun(false);
     release('s');
     setNetworkStatus('online', detail.won ? 'VICTORIA ONLINE' : 'DERROTA ONLINE');
     setTimeout(showGameOver, 220);

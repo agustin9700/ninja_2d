@@ -22,6 +22,9 @@ for (const [slot, options] of Object.entries(outfits.slots)) {
     for (const partName of option.parts) assert.ok(available.has(partName), `${option.id}: falta ${partName}`);
   }
 }
+for (const option of outfits.slots.back) {
+  assert.ok(option.suppressParts?.includes('back'), option.id + ': debe ocultar el accesorio base back');
+}
 
 const timelines = ['idle', 'crouch', 'run', 'jump', 'attack', 'hit', 'death'];
 for (const name of timelines) {
@@ -44,12 +47,15 @@ const runtime = read('src/runtime.js');
 const network = read('src/network.js');
 const server = read('server.js');
 assert.match(game, /kunai\.x -= game\.speed \* dt/, 'El kunai debe moverse a la izquierda');
-assert.match(game, /press\('d'\)/, 'El ninja debe correr hacia la derecha');
+assert.match(game, /setRunnerAutoRun\(true\)/, 'El ninja debe comenzar a correr automáticamente');
 assert.match(game, /spawnExplosion\(contactX, kunai\.y, 'player'\)/, 'Falta el efecto del choque');
 assert.match(game, /role: 'rival'/, 'Falta el corredor rival');
 assert.match(game, /function tickRival\(now\)/, 'Falta la inteligencia del bot rival');
 assert.match(game, /kunai\.lane === 'rival'/, 'El rival debe recibir kunais en su propia senda');
 assert.match(runtime, /commandsForRunnerView\(view, now\)/, 'El rival debe reproducir sus acciones');
+assert.match(runtime, /isPartSuppressedByLoadout/, 'Los slots exclusivos deben ocultar piezas base incompatibles');
+assert.match(runtime, /runnerAutoRunActive/, 'La carrera automática debe sobrevivir a cambios de foco');
+assert.match(runtime, /runnerMode && \(key === 'a' \|\| key === 'd'\)/, 'A y D deben quedar deshabilitadas en modo runner');
 assert.match(game, /applyRemoteState/, 'Falta sincronizar el estado del rival online');
 assert.match(game, /fallBackToBot/, 'Falta continuar contra el bot al perder conexión');
 assert.match(game, /const phase = Number.isFinite/, 'El kunai remoto necesita una fase visual válida');
