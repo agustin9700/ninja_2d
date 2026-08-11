@@ -1,0 +1,1255 @@
+{
+  "manifestVersion": "3.0",
+  "generator": "Ninja 2D Runtime Exporter v3",
+  "sourceDocument": "hair_83_0.fla",
+  "outputName": "hair_83_0",
+  "source": {
+    "document": {
+      "name": "hair_83_0.fla",
+      "width": 60,
+      "height": 80,
+      "backgroundColor": "#FFFFFF",
+      "frameRate": 24
+    },
+    "defaultTimelineId": "scene:0",
+    "documentTimelines": [
+      {
+        "id": "scene:0",
+        "name": "Scene 1",
+        "ownerType": "document",
+        "ownerName": "Scene 1",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "scene:0/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 8",
+                    "linkageName": "hair",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 8.85,
+                      "ty": 34
+                    },
+                    "x": 8.85,
+                    "y": 34,
+                    "width": 45.9,
+                    "height": 53.5,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "movie clip",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 8.85,
+                      "y": 34,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "symbolTimelines": [
+      {
+        "id": "library:Symbol 2",
+        "name": "Symbol 2",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 2",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 2/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0.05,
+                    "y": -41.5,
+                    "width": 52.3,
+                    "height": 68,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0.05,
+                      "y": -41.5,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "name": "Layer 2",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 2/layer:1/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0,
+                    "y": -50,
+                    "width": 100,
+                    "height": 100,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0,
+                      "y": -50,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 4",
+        "name": "Symbol 4",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 4",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 4/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 22.8,
+                    "y": 19.05,
+                    "width": 45.65,
+                    "height": 38.15,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 22.8,
+                      "y": 19.05,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 6",
+        "name": "Symbol 6",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 6",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 6/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 22.85,
+                    "y": 22.35,
+                    "width": 45.75,
+                    "height": 44.75,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 22.85,
+                      "y": 22.35,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 7",
+        "name": "Symbol 7",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 7",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 7/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 18.7,
+                    "y": 35.9,
+                    "width": 24.95,
+                    "height": 26.75,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 18.7,
+                      "y": 35.9,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "name": "Layer 2",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 7/layer:1/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 19.15,
+                    "y": 36.45,
+                    "width": 25.85,
+                    "height": 34.75,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 19.15,
+                      "y": 36.45,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "name": "Layer 3",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 7/layer:2/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 19.85,
+                    "y": 21.85,
+                    "width": 30.4,
+                    "height": 14.85,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 19.85,
+                      "y": 21.85,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 3,
+            "name": "Layer 4",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 7/layer:3/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 21.15,
+                    "y": 22.9,
+                    "width": 45.9,
+                    "height": 45.15,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 21.15,
+                      "y": 22.9,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 8",
+        "name": "Symbol 8",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 8",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 8/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 7",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0,
+                    "y": 0,
+                    "width": 45.9,
+                    "height": 53.5,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "graphic",
+                    "loop": "loop",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0,
+                      "y": 0,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "name": "Layer 2",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 8/layer:1/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "hair_color_2",
+                    "libraryItemName": "Symbol 6",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": -1.75,
+                      "ty": 0.75
+                    },
+                    "x": -1.75,
+                    "y": 0.75,
+                    "width": 45.75,
+                    "height": 44.75,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "movie clip",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": -1.75,
+                      "y": 0.75,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "name": "Layer 3",
+            "layerType": "normal",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": false,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 8/layer:2/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "hair_color_1",
+                    "libraryItemName": "Symbol 4",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": -1.7,
+                      "ty": 0.75
+                    },
+                    "x": -1.7,
+                    "y": 0.75,
+                    "width": 45.65,
+                    "height": 38.15,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "movie clip",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": -1.7,
+                      "y": 0.75,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "library:Symbol 9",
+        "name": "Symbol 9",
+        "ownerType": "librarySymbol",
+        "ownerName": "Symbol 9",
+        "frameRate": 24,
+        "frameCount": 1,
+        "currentFrame": 0,
+        "layerOrder": {
+          "arrayIndex0": "front",
+          "canvasRenderOrder": "descendingLayerIndex"
+        },
+        "layers": [
+          {
+            "index": 0,
+            "name": "Layer 1",
+            "layerType": "mask",
+            "parentLayerIndex": null,
+            "visible": true,
+            "locked": true,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 9/layer:0/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "shape",
+                    "name": "",
+                    "libraryItemName": "",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0,
+                    "y": -50,
+                    "width": 100,
+                    "height": 100.05,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0,
+                      "y": -50,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "name": "Layer 2",
+            "layerType": "masked",
+            "parentLayerIndex": 0,
+            "visible": true,
+            "locked": true,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 9/layer:1/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 8",
+                    "linkageName": "hair",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1.762909,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1.762909,
+                      "tx": -37.4,
+                      "ty": -99.1
+                    },
+                    "x": -37.4,
+                    "y": -99.1,
+                    "width": 80.9,
+                    "height": 94.35,
+                    "rotation": 0,
+                    "scaleX": 1.762909,
+                    "scaleY": 1.762909,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "movie clip",
+                    "loop": "",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": -37.4,
+                      "y": -99.1,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "name": "Layer 3",
+            "layerType": "masked",
+            "parentLayerIndex": 0,
+            "visible": true,
+            "locked": true,
+            "outline": false,
+            "frames": [
+              {
+                "index": 0,
+                "duration": 1,
+                "name": "",
+                "labelType": "none",
+                "tweenType": "none",
+                "tweenEasing": 0,
+                "actionScript": "",
+                "elements": [
+                  {
+                    "id": "library:Symbol 9/layer:2/frame:0/element:0",
+                    "index": 0,
+                    "elementType": "instance",
+                    "name": "",
+                    "libraryItemName": "Symbol 2",
+                    "linkageName": "",
+                    "matrixSpace": "ownerTimeline",
+                    "matrix": {
+                      "a": 1,
+                      "b": 0,
+                      "c": 0,
+                      "d": 1,
+                      "tx": 0,
+                      "ty": 0
+                    },
+                    "x": 0,
+                    "y": 0,
+                    "width": 100,
+                    "height": 100,
+                    "rotation": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "skewX": 0,
+                    "skewY": 0,
+                    "symbolType": "graphic",
+                    "loop": "loop",
+                    "firstFrame": 0,
+                    "blendMode": "normal",
+                    "visible": true,
+                    "colorAlphaPercent": 100,
+                    "transformationPoint": {
+                      "x": 0,
+                      "y": 0,
+                      "space": "ownerTimeline"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "coordinateSystem": {
+    "sourceUnits": "Animate document pixels at basePpi",
+    "xAxis": "right",
+    "yAxis": "down",
+    "angles": "degrees clockwise in screen coordinates",
+    "matrixConvention": "columnVector",
+    "matrixEquation": "x' = a*x + c*y + tx; y' = b*x + d*y + ty",
+    "rasterPixelsPerSourceUnit": 2.083333
+  },
+  "rendering": {
+    "layerIndex0": "front",
+    "canvasLayerIteration": "descending",
+    "authoritativeTransform": "element.matrix",
+    "rasterCompensation": "draw PNG at 1 / rasterPixelsPerSourceUnit in symbol-local space"
+  },
+  "hierarchy": {
+    "model": "timeline-instance nesting",
+    "note": "A symbol instance is parented by the timeline that owns it. No anatomical bone parent is inferred from layer names or proximity."
+  },
+  "raster": {
+    "targetPpi": 150,
+    "basePpi": 72,
+    "scaleFactor": 2.083333,
+    "margin": 2
+  },
+  "stats": {
+    "exported": 2,
+    "skipped": 4,
+    "errors": 0,
+    "errorDetails": []
+  },
+  "symbols": [
+    {
+      "libraryName": "Symbol 2",
+      "itemType": "graphic",
+      "linkageName": "",
+      "timelineId": "library:Symbol 2"
+    },
+    {
+      "libraryName": "Symbol 4",
+      "itemType": "movie clip",
+      "linkageName": "",
+      "timelineId": "library:Symbol 4"
+    },
+    {
+      "libraryName": "Symbol 6",
+      "itemType": "movie clip",
+      "linkageName": "",
+      "timelineId": "library:Symbol 6"
+    },
+    {
+      "libraryName": "Symbol 7",
+      "itemType": "graphic",
+      "linkageName": "",
+      "timelineId": "library:Symbol 7"
+    },
+    {
+      "libraryName": "Symbol 8",
+      "itemType": "movie clip",
+      "linkageName": "hair",
+      "timelineId": "library:Symbol 8"
+    },
+    {
+      "libraryName": "Symbol 9",
+      "itemType": "movie clip",
+      "linkageName": "icon",
+      "timelineId": "library:Symbol 9"
+    }
+  ],
+  "parts": [
+    {
+      "partName": "hair",
+      "png": "hair.png",
+      "symbolName": "Symbol 8",
+      "linkageName": "hair",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 100,
+      "exportHeight": 116,
+      "rasterPixelsPerSourceUnit": 2.083333,
+      "registrationSource": {
+        "x": 0,
+        "y": 0
+      },
+      "registrationPx": {
+        "x": 5.7,
+        "y": 1.3
+      },
+      "pivot": {
+        "x": 5.7,
+        "y": 1.3,
+        "normalizedX": 0.057,
+        "normalizedYTop": 0.011207,
+        "normalizedYUp": 0.988793
+      },
+      "boundsBeforeScale": {
+        "left": -22.9,
+        "top": -26.7,
+        "right": 23,
+        "bottom": 26.8,
+        "width": 45.9,
+        "height": 53.5
+      },
+      "boundsAfterScale": {
+        "left": -47.7,
+        "top": -55.5,
+        "right": 47.9,
+        "bottom": 55.95,
+        "width": 95.6,
+        "height": 111.45
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 2.05,
+        "right": 97.55,
+        "bottom": 113.5,
+        "width": 95.6,
+        "height": 111.45
+      }
+    },
+    {
+      "partName": "icon",
+      "png": "icon.png",
+      "symbolName": "Symbol 9",
+      "linkageName": "icon",
+      "scaleFactor": 2.083333,
+      "margin": 2,
+      "exportWidth": 213,
+      "exportHeight": 213,
+      "rasterPixelsPerSourceUnit": 2.083333,
+      "registrationSource": {
+        "x": 0,
+        "y": 0
+      },
+      "registrationPx": {
+        "x": 106.1,
+        "y": 210.3
+      },
+      "pivot": {
+        "x": 106.1,
+        "y": 210.3,
+        "normalizedX": 0.498122,
+        "normalizedYTop": 0.987324,
+        "normalizedYUp": 0.012676
+      },
+      "boundsBeforeScale": {
+        "left": -49.95,
+        "top": -49.95,
+        "right": 50.05,
+        "bottom": 50.05,
+        "width": 100,
+        "height": 100
+      },
+      "boundsAfterScale": {
+        "left": -104.15,
+        "top": -104.15,
+        "right": 104.15,
+        "bottom": 104.2,
+        "width": 208.3,
+        "height": 208.35
+      },
+      "boundsFinal": {
+        "left": 1.95,
+        "top": 2,
+        "right": 210.25,
+        "bottom": 210.3,
+        "width": 208.3,
+        "height": 208.3
+      }
+    }
+  ],
+  "timeline": {
+    "id": "scene:0",
+    "name": "Scene 1",
+    "ownerType": "document",
+    "ownerName": "Scene 1",
+    "frameRate": 24,
+    "frameCount": 1,
+    "currentFrame": 0,
+    "layerOrder": {
+      "arrayIndex0": "front",
+      "canvasRenderOrder": "descendingLayerIndex"
+    },
+    "layers": [
+      {
+        "index": 0,
+        "name": "Layer 1",
+        "layerType": "normal",
+        "parentLayerIndex": null,
+        "visible": true,
+        "locked": false,
+        "outline": false,
+        "frames": [
+          {
+            "index": 0,
+            "duration": 1,
+            "name": "",
+            "labelType": "none",
+            "tweenType": "none",
+            "tweenEasing": 0,
+            "actionScript": "",
+            "elements": [
+              {
+                "id": "scene:0/layer:0/frame:0/element:0",
+                "index": 0,
+                "elementType": "instance",
+                "name": "",
+                "libraryItemName": "Symbol 8",
+                "linkageName": "hair",
+                "matrixSpace": "ownerTimeline",
+                "matrix": {
+                  "a": 1,
+                  "b": 0,
+                  "c": 0,
+                  "d": 1,
+                  "tx": 8.85,
+                  "ty": 34
+                },
+                "x": 8.85,
+                "y": 34,
+                "width": 45.9,
+                "height": 53.5,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1,
+                "skewX": 0,
+                "skewY": 0,
+                "symbolType": "movie clip",
+                "loop": "",
+                "firstFrame": 0,
+                "blendMode": "normal",
+                "visible": true,
+                "colorAlphaPercent": 100,
+                "transformationPoint": {
+                  "x": 8.85,
+                  "y": 34,
+                  "space": "ownerTimeline"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

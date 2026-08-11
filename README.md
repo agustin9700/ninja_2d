@@ -1,104 +1,76 @@
-# Ninja 2D Runtime
+# Ninja Runner
 
-Prototipo de animación 2D que exporta piezas desde Adobe Animate y reproduce sus matrices por fotograma en Canvas 2D.
+Juego 2D competitivo para navegador con dos sendas, personalización de personajes y partidas en tiempo real. Dos jugadores se emparejan por WebSocket; si no aparece un rival en cuatro segundos, la carrera comienza contra un bot.
 
-## Estado actual
+Cada jugador elige su nombre, ropa, cabello, arma y accesorio de espalda. Durante la carrera debe saltar o agacharse para esquivar kunais y puede destruirlos con un espadazo. Los proyectiles del rival se distinguen por color y también pueden ocultarse.
 
-El personaje incluye siete estados funcionales:
+## Inicio rápido
 
-- `idle`: reposo en bucle
-- `crouch`: agacharse
-- `run`: correr
-- `jump`: saltar
-- `attack`: espadazo
-- `hit`: recibir un golpe
-- `death`: morir y conservar la pose final
+Requisitos: Node.js 22 o superior.
 
-También están integrados `weapon_180`, `back_item_261`, `hair_91` y `face_01_0`. `face_01_1` queda disponible como rostro alternativo. La animación continúa usando el linkage histórico `head`, que el manifiesto resuelve a la pieza `face`; el cabello se dibuja encima siguiendo el mismo pivote. La pieza pendiente del conjunto actual es `skirt`.
+```powershell
+npm install
+npm start
+```
 
-## Estructura
+Abrí `http://127.0.0.1:8080`. Para probar el modo multijugador local, abrí la dirección en dos ventanas o navegadores.
+
+Comprobaciones:
+
+```powershell
+npm test
+```
+
+Variables opcionales:
+
+- `PORT`: puerto HTTP y WebSocket; por defecto `8080`.
+- `HOST`: interfaz de red; por defecto `0.0.0.0`.
+- `MATCH_WAIT_MS`: espera antes de activar el bot; por defecto `4000`.
+
+## Estructura del repositorio
 
 ```text
-prototype/                         Aplicación web ejecutable
-  assets/                          PNG y manifiestos consumidos por el runtime
-  src/                             Código Canvas 2D
-source/
-  animations/                      Fuentes XFL de cada animación
-  assets/
-    character_sets/                Conjuntos de ropa
-    equipment/                     Armas, cabello y accesorios traseros
-    faces/                         Rostros/cabezas separados
-
-tools/                             Generadores, exportador y validadores
-docs/                              Documentación técnica
-artifacts/                         Capturas locales ignoradas por Git
-backups/                           Copias locales ignoradas por Git
+ninja_runner/              Juego desplegable: cliente, servidor y pruebas
+source/                    Fuentes XFL y piezas exportadas de personajes
+tools/                     Exportadores, integradores y validadores
+prototype/                 Runtime Canvas anterior, conservado como referencia
+docs/                      Documentación técnica del pipeline de assets
+.github/workflows/ci.yml   Pruebas automáticas para GitHub
+Dockerfile                 Despliegue portable
+render.yaml                Despliegue directo en Render
 ```
 
-La convención completa está en [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md).
+`ninja_runner_prototype/`, capturas, respaldos y cachés locales están ignorados. No son necesarios para ejecutar ni desplegar el juego.
 
-## Ejecutar el prototipo
+## Controles
 
-Requisitos: Python 3 para el servidor local y un navegador moderno.
+- `W` o `↑`: saltar.
+- `S` o `↓`: agacharse.
+- `J` o `Espacio`: espadazo.
 
-```powershell
-cd prototype
-python -m http.server 8080
-```
+También hay controles táctiles.
 
-Abre `http://localhost:8080`. No uses `file://`, porque el navegador puede bloquear la carga de los manifiestos.
+## Publicar en GitHub
 
-Controles:
-
-- `A` / `D`: correr
-- `S`: agacharse
-- `W`: saltar
-- `J`: atacar
-- `G`: recibir golpe
-- `M`: morir
-
-## Regenerar animaciones
-
-Desde la raíz:
+Revisá primero los archivos nuevos con `git status`. Luego:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-IdleAnimation.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-CrouchAnimation.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-RunAnimation.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-JumpAnimation.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-AttackAnimation.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-HitAnimation.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-DeathAnimation.ps1
-node tools/test_runtime_data.js
-```
-
-## Exportar e integrar piezas
-
-La exportación requiere Adobe Animate con archivos `.jsfl` asociados a Animate.
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Export-CharacterAssets.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Integrate-CharacterAssets.ps1
-node tools/test_runtime_data.js
-```
-
-Para activar el rostro alternativo:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Integrate-CharacterAssets.ps1 -FaceAssetId face_01_1
-```
-
-`Export-CharacterAssets.ps1` calcula las rutas desde la ubicación del repositorio, por lo que el proyecto puede clonarse en otra carpeta. Por seguridad no cierra Animate al finalizar; usa `-QuitAnimate` solo cuando no haya documentos sin guardar.
-
-## Preparar el primer commit
-
-Los archivos de respaldo, capturas, cachés de Animate y salidas temporales ya están excluidos. No se requiere Git LFS con el tamaño actual de los archivos fuente.
-
-```powershell
-git init
 git add .
-git status
-git commit -m "Initial Ninja 2D runtime prototype"
+git commit -m "Build multiplayer Ninja Runner"
+git branch -M main
+git remote add origin https://github.com/TU_USUARIO/ninja-runner.git
+git push -u origin main
 ```
 
-Antes de publicar, revisa [docs/REPOSITORY.md](docs/REPOSITORY.md) y elige una licencia si el repositorio será público.
+El workflow de GitHub ejecuta las pruebas del juego y del pipeline de assets en cada push y pull request. Antes de hacer público el repositorio, elegí una licencia; por ahora no se agregó ninguna para no asumir cómo querés distribuir el proyecto.
+
+## Despliegue
+
+- Railway: recomendación para partidas públicas estables. Conectá el repositorio, dejá que detecte el `Dockerfile`, generá un dominio público y mantené **Serverless** desactivado para evitar esperas al buscar rival.
+- Render: alternativa simple para una demo gratuita. El archivo `render.yaml` ya describe el servicio; desde el panel elegí **New > Blueprint** y conectá el repositorio. El plan gratuito puede tardar cerca de un minuto en despertar después de quedar inactivo.
+
+El matchmaking vive en memoria. Usá una sola instancia del servidor; para escalar horizontalmente habrá que mover salas y presencia a Redis u otro almacenamiento compartido.
+
+## Pipeline de personajes
+
+El runtime histórico y las fuentes de Adobe Animate siguen disponibles. Las instrucciones de estructura y exportación están en [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) y [docs/REPOSITORY.md](docs/REPOSITORY.md).

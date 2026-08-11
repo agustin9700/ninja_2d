@@ -1,13 +1,17 @@
 {
-  "name": "ninja-2d-runtime-poc",
-  "version": "0.1.0",
+  "name": "ninja-runner",
+  "version": "1.0.0",
   "private": true,
-  "description": "Canvas 2D runtime for Adobe Animate XFL character animations",
+  "description": "Runner 2D competitivo con matchmaking WebSocket y fallback a bot.",
   "scripts": {
-    "test": "node tools/test_runtime_data.js",
-    "serve": "python -m http.server 8080 --directory prototype"
+    "start": "node ninja_runner/server.js",
+    "dev": "node ninja_runner/server.js",
+    "test": "npm run test:game && npm run test:assets",
+    "test:game": "npm --prefix ninja_runner test",
+    "test:assets": "node tools/test_runtime_data.js",
+    "serve:prototype": "python -m http.server 8081 --directory prototype"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   }
 }

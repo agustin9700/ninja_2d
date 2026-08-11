@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ninja-runner
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: MATCH_WAIT_MS
+        value: "4000"

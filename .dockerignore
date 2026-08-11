@@ -1,0 +1,14 @@
+.git
+.github
+.agents
+.codex
+artifacts
+backups
+docs
+ninja_runner_prototype
+prototype
+source
+tools
+node_modules
+coverage
+*.log

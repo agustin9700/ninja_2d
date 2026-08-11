@@ -5,6 +5,13 @@
 # Dependencies and test output
 node_modules/
 coverage/
+.npm/
+.env
+.env.*
+!.env.example
+
+# Referencia visual local; el juego recreado vive en /ninja_runner
+/ninja_runner_prototype/
 
 # Adobe Animate generated caches and publish output
 **/bin/

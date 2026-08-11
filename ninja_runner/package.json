@@ -1,0 +1,14 @@
+{
+  "name": "ninja-runner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runner 2D en Canvas con animaciones exportadas de Adobe Animate.",
+  "scripts": {
+    "start": "node server.js",
+    "serve": "node server.js",
+    "test": "node --check server.js && node --check src/network.js && node --check src/runtime.js && node --check src/game.js && node tests/smoke.mjs && node tests/server.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
