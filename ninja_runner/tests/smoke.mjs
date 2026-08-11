@@ -38,9 +38,16 @@ for (const part of manifest.parts) {
 }
 
 const html = read('index.html');
-for (const id of ['background', 'stage', 'fx', 'startBtn', 'retryBtn', 'status', 'reset', 'raceHud', 'playerNameInput', 'enemyKunaiToggle']) {
+for (const id of ['gameViewport', 'background', 'stage', 'fx', 'startBtn', 'retryBtn', 'status', 'reset', 'raceHud', 'playerNameInput', 'enemyKunaiToggle', 'touchControls']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `Falta #${id}`);
 }
+assert.match(html, /mobile-controls-note/, 'Falta la guía de controles para móvil');
+assert.match(html, /id=["']enemyKunaiToggle["'][^>]*hidden/, 'El control rival debe ocultarse fuera de la carrera');
+
+const styles = read('src/styles.css');
+assert.match(styles, /@media \(max-width: 600px\)/, 'Falta el layout vertical para móvil');
+assert.match(styles, /@media \(max-height: 500px\) and \(orientation: landscape\)/, 'Falta el layout horizontal para móvil');
+assert.match(styles, /safe-area-inset-bottom/, 'Los controles deben respetar el área segura del teléfono');
 
 const game = read('src/game.js');
 const runtime = read('src/runtime.js');
@@ -60,6 +67,7 @@ assert.match(game, /applyRemoteState/, 'Falta sincronizar el estado del rival on
 assert.match(game, /fallBackToBot/, 'Falta continuar contra el bot al perder conexión');
 assert.match(game, /const phase = Number.isFinite/, 'El kunai remoto necesita una fase visual válida');
 assert.match(game, /setEnemyKunaisVisible/, 'Falta el control para mostrar u ocultar kunais rivales');
+assert.match(game, /enemyKunaiToggle\.hidden = false/, 'El ojo debe aparecer al comenzar la carrera');
 assert.match(game, /enemy_kunais_visible_v2/, 'La visibilidad rival debe iniciar activa en la versión actual');
 assert.match(game, /setPlayerName/, 'Falta configurar el nombre del jugador');
 assert.match(network, /type: 'state'/, 'Falta enviar el estado por WebSocket');

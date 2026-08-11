@@ -966,6 +966,7 @@
     }
     elements.finalScore.textContent = formatScore(game.score);
     elements.bestScore.textContent = `Mejor puntaje: ${formatScore(getBest())}`;
+    elements.enemyKunaiToggle.hidden = true;
     elements.gameOverScreen.classList.remove('hidden');
   }
 
@@ -1046,6 +1047,7 @@
     setLobbyLocked(false);
     elements.startScreen.classList.add('hidden');
     elements.gameOverScreen.classList.add('hidden');
+    elements.enemyKunaiToggle.hidden = false;
     renderHud();
     game.running = true;
     setRunnerAutoRun(true);
