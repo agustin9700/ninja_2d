@@ -11,11 +11,11 @@ Antes de largar se puede alternar entre dos opciones para cada slot:
 - Arma: `classic` / `weapon_182`.
 - Espalda: `classic` / `back_item_351`.
 
-Al pulsar “Buscar rival”, el servidor empareja a dos personas y sincroniza progreso, animaciones, vestimenta, vidas, kunais y explosiones. Si en cuatro segundos no aparece otra persona, la partida arranca contra el bot completo. Si el rival se desconecta durante la carrera, el bot toma su lugar sin reiniciar el mapa. La carrera termina al alcanzar los 800 metros o al perder las tres vidas.
+Al pulsar “Buscar rival”, el servidor empareja a dos personas y sincroniza progreso, animaciones, vestimenta, vidas, kunais y explosiones. Los dos clientes reciben la misma hora de salida y muestran una cuenta regresiva 3–2–1–¡YA!; los controles se habilitan exactamente al comenzar. Si en cuatro segundos no aparece otra persona, la partida arranca contra el bot completo, también con cuenta regresiva. Si el rival se desconecta durante la carrera, el bot toma su lugar sin reiniciar el mapa. La carrera termina al alcanzar los 800 metros o al perder las tres vidas.
 
 Los kunais que está enfrentando el rival se muestran en violeta para diferenciarlos de los propios. Un botón flotante con forma de ojo permite ocultarlos o mostrarlos durante la carrera y recuerda la elección en el navegador.
 
-Durante partidas online, el HUD muestra el ping medido contra el servidor. Las poses del rival usan un búfer corto para mantener el orden visual cuando la latencia fluctúa. Al terminar, “Volver al lobby” permite cambiar nombre y equipo antes de buscar otra carrera.
+Durante partidas online, el HUD muestra el ping medido contra el servidor. Las poses del rival usan un búfer corto para mantener el orden visual cuando la latencia fluctúa. Al terminar se comparan puntaje, distancia, esquivas, cortes, impactos, precisión, mejor racha y tiempo. Ambos jugadores pueden aceptar una revancha dentro de la misma sala o volver al lobby; la invitación expira después de 45 segundos.
 
 ## Ejecutar
 

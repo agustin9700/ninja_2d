@@ -52,6 +52,20 @@ function sanitizeKunai(value) {
   };
 }
 
+function sanitizeStats(value) {
+  const stats = value && typeof value === 'object' ? value : {};
+  return {
+    score: Math.round(clamp(finite(stats.score), 0, 99999999)),
+    meters: clamp(finite(stats.meters), 0, 800),
+    dodges: Math.round(clamp(finite(stats.dodges), 0, 99999)),
+    cuts: Math.round(clamp(finite(stats.cuts), 0, 99999)),
+    attacks: Math.round(clamp(finite(stats.attacks), 0, 99999)),
+    hitsReceived: Math.round(clamp(finite(stats.hitsReceived), 0, 99999)),
+    maxCombo: Math.round(clamp(finite(stats.maxCombo), 0, 99999)),
+    durationMs: Math.round(clamp(finite(stats.durationMs), 0, 60 * 60 * 1000))
+  };
+}
+
 function sanitizeState(value) {
   const source = value && typeof value === 'object' ? value : {};
   const allowedModes = new Set(['run', 'jump', 'duck', 'attack', 'hit', 'dead']);
@@ -63,6 +77,7 @@ function sanitizeState(value) {
     lives: Math.round(clamp(finite(source.lives, 3), 0, 3)),
     score: Math.round(clamp(finite(source.score), 0, 99999999)),
     speed: clamp(finite(source.speed, 375), 0, 900),
+    stats: sanitizeStats(source.stats),
     loadout: sanitizeLoadout(source.loadout),
     kunais: Array.isArray(source.kunais) ? source.kunais.slice(0, 12).map(sanitizeKunai) : [],
     explosions: Array.isArray(source.explosions) ? source.explosions.slice(0, 6).map(explosion => ({
@@ -103,6 +118,7 @@ function createNinjaServer(options = {}) {
     client.matchId = null;
     client.state = 'idle';
     if (!room) return;
+    clearTimeout(room.cleanupTimer);
     rooms.delete(room.id);
     const peer = room.players.find(player => player !== client);
     if (peer) {
@@ -112,20 +128,18 @@ function createNinjaServer(options = {}) {
     }
   };
 
-  const startMatch = (first, second) => {
-    removeFromQueue(first);
-    removeFromQueue(second);
-    const room = {
-      id: crypto.randomUUID(),
-      players: [first, second],
-      finished: false
-    };
-    rooms.set(room.id, room);
-    const startAt = Date.now() + 1600;
+  const startRoom = (room, rematch = false) => {
+    clearTimeout(room.cleanupTimer);
+    room.cleanupTimer = null;
+    room.finished = false;
+    room.rematchReady = new Set();
+    const startAt = Date.now() + 3200;
     for (const [index, client] of room.players.entries()) {
       const opponent = room.players[index === 0 ? 1 : 0];
       client.state = 'playing';
       client.matchId = room.id;
+      client.lastState = null;
+      client.lastStats = null;
       send(client, {
         type: 'match-found',
         matchId: room.id,
@@ -135,13 +149,28 @@ function createNinjaServer(options = {}) {
         opponentName: opponent.profile.name,
         opponentLoadout: opponent.profile.loadout,
         startAt,
-        serverTime: Date.now()
+        serverTime: Date.now(),
+        rematch
       });
     }
   };
 
+  const startMatch = (first, second) => {
+    removeFromQueue(first);
+    removeFromQueue(second);
+    const room = {
+      id: crypto.randomUUID(),
+      players: [first, second],
+      finished: false,
+      rematchReady: new Set(),
+      cleanupTimer: null
+    };
+    rooms.set(room.id, room);
+    startRoom(room);
+  };
+
   const queueClient = (client, profile) => {
-    if (client.state === 'playing') releaseRoom(client);
+    if (client.matchId) releaseRoom(client);
     removeFromQueue(client);
     client.profile = {
       name: sanitizeName(profile?.name),
@@ -168,23 +197,52 @@ function createNinjaServer(options = {}) {
     }, matchWaitMs);
   };
 
-  const finishMatch = (client, reason) => {
+  const finishMatch = (client, reason, stats) => {
     const room = rooms.get(client.matchId);
     if (!room || room.finished) return;
     room.finished = true;
+    room.rematchReady.clear();
+    client.lastStats = sanitizeStats(stats || client.lastState?.stats);
     const opponent = room.players.find(player => player !== client);
     const winner = reason === 'knockout' ? opponent : client;
     for (const player of room.players) {
+      const rival = room.players.find(candidate => candidate !== player);
+      const playerStats = player.lastStats || sanitizeStats(player.lastState?.stats);
+      const opponentStats = rival.lastStats || sanitizeStats(rival.lastState?.stats);
       send(player, {
         type: 'match-finished',
         matchId: room.id,
         winnerId: winner?.id || client.id,
-        reason: reason === 'knockout' ? 'knockout' : 'finish'
+        reason: reason === 'knockout' ? 'knockout' : 'finish',
+        playerStats,
+        opponentStats
       });
-      player.matchId = null;
-      player.state = 'idle';
+      player.state = 'finished';
     }
-    rooms.delete(room.id);
+    room.cleanupTimer = setTimeout(() => {
+      if (rooms.get(room.id) !== room) return;
+      rooms.delete(room.id);
+      for (const player of room.players) {
+        player.matchId = null;
+        player.state = 'idle';
+        send(player, { type: 'rematch-expired', matchId: room.id });
+      }
+    }, 45000);
+    room.cleanupTimer.unref();
+  };
+
+  const requestRematch = client => {
+    const room = rooms.get(client.matchId);
+    if (!room?.finished || client.state !== 'finished') return;
+    room.rematchReady.add(client.id);
+    for (const player of room.players) {
+      send(player, {
+        type: 'rematch-status',
+        readyCount: room.rematchReady.size,
+        requestedBy: client.id
+      });
+    }
+    if (room.rematchReady.size === room.players.length) startRoom(room, true);
   };
 
   const server = http.createServer((request, response) => {
@@ -271,13 +329,16 @@ function createNinjaServer(options = {}) {
       } else if (message.type === 'state' && client.state === 'playing') {
         const room = rooms.get(client.matchId);
         const opponent = room?.players.find(player => player !== client);
-        send(opponent, { type: 'opponent-state', state: sanitizeState(message.state) });
+        client.lastState = sanitizeState(message.state);
+        send(opponent, { type: 'opponent-state', state: client.lastState });
       } else if (message.type === 'kunai-spawn' && client.state === 'playing') {
         const room = rooms.get(client.matchId);
         const opponent = room?.players.find(player => player !== client);
         send(opponent, { type: 'opponent-kunai-spawn', kunai: sanitizeKunai(message.kunai) });
       } else if (message.type === 'finish' && client.state === 'playing') {
-        finishMatch(client, message.reason);
+        finishMatch(client, message.reason, message.stats);
+      } else if (message.type === 'rematch') {
+        requestRematch(client);
       }
     });
 

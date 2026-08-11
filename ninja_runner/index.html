@@ -27,6 +27,10 @@
       <div class="hud-card score-card"><span class="hud-label">PUNTAJE</span><strong id="score">000000</strong><span id="combo"></span></div>
     </header>
     <div id="toast" role="status" aria-live="polite"></div>
+    <div id="raceCountdown" class="race-countdown" role="status" aria-live="assertive" hidden>
+      <span id="countdownCaption">PREPARATE</span>
+      <strong id="countdownValue">3</strong>
+    </div>
     <button id="enemyKunaiToggle" class="enemy-kunai-toggle" type="button" aria-pressed="true" hidden>
       <span class="enemy-kunai-eye" aria-hidden="true">
         <svg viewBox="0 0 24 24" role="img">
@@ -91,7 +95,16 @@
         <span class="result-label">PUNTAJE FINAL</span>
         <div class="big-score" id="finalScore">000000</div>
         <div class="best" id="bestScoreLabel">Mejor puntaje: 000000</div>
-        <button class="primary" id="retryBtn" type="button">VOLVER AL LOBBY <span>↻</span></button>
+        <div class="result-competitors" aria-label="Comparación de resultados">
+          <strong id="resultPlayerName">VOS</strong>
+          <span>VS</span>
+          <strong id="resultRivalName">RIVAL</strong>
+        </div>
+        <div id="resultStats" class="result-stats"></div>
+        <div class="result-actions">
+          <button class="primary" id="retryBtn" type="button">PEDIR REVANCHA <span>↻</span></button>
+          <button class="secondary" id="lobbyBtn" type="button">VOLVER AL LOBBY</button>
+        </div>
       </div>
     </section>
 

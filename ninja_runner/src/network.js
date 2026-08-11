@@ -59,7 +59,7 @@
     try { message = JSON.parse(event.data); } catch (_) { return; }
     if (!message || typeof message.type !== 'string') return;
 
-    if (message.serverTime && message.type !== 'pong') {
+    if (message.serverTime && message.type !== 'pong' && network.rtt === null) {
       network.serverOffset = message.serverTime - Date.now();
     }
 
@@ -91,7 +91,8 @@
         localStartAt: Number(message.startAt) - network.serverOffset,
         playerName: message.playerName || 'Ninja',
         opponentName: message.opponentName || 'Rival',
-        opponentLoadout: message.opponentLoadout || {}
+        opponentLoadout: message.opponentLoadout || {},
+        rematch: Boolean(message.rematch)
       });
     } else if (message.type === 'bot-fallback') {
       network.status = 'online';
@@ -105,14 +106,24 @@
       emit('opponent-kunai-spawn', { kunai: message.kunai || {} });
     } else if (message.type === 'match-finished') {
       const winnerId = message.winnerId;
-      network.status = 'online';
-      network.matchId = null;
-      network.opponentId = null;
+      network.status = 'finished';
       emit('match-finished', {
         winnerId,
         won: winnerId === network.clientId,
-        reason: message.reason
+        reason: message.reason,
+        playerStats: message.playerStats || {},
+        opponentStats: message.opponentStats || {}
       });
+    } else if (message.type === 'rematch-status') {
+      emit('rematch-status', {
+        readyCount: Number(message.readyCount) || 0,
+        requestedBy: message.requestedBy || ''
+      });
+    } else if (message.type === 'rematch-expired') {
+      network.status = 'online';
+      network.matchId = null;
+      network.opponentId = null;
+      emit('rematch-expired');
     } else if (message.type === 'opponent-left') {
       network.status = 'online';
       network.matchId = null;
@@ -199,9 +210,18 @@
     return send({ type: 'kunai-spawn', kunai });
   }
 
-  function finish(reason = 'finish') {
+  function finish(reason = 'finish', stats = {}) {
     if (network.status !== 'playing' || !network.matchId) return false;
-    return send({ type: 'finish', reason: reason === 'knockout' ? 'knockout' : 'finish' });
+    return send({
+      type: 'finish',
+      reason: reason === 'knockout' ? 'knockout' : 'finish',
+      stats
+    });
+  }
+
+  function rematch() {
+    if (network.status !== 'finished' || !network.matchId) return false;
+    return send({ type: 'rematch' });
   }
 
   function snapshot() {
@@ -212,7 +232,8 @@
       matchId: network.matchId,
       opponentId: network.opponentId,
       matchWaitMs: network.matchWaitMs,
-      rtt: network.rtt === null ? null : Math.round(network.rtt)
+      rtt: network.rtt === null ? null : Math.round(network.rtt),
+      canRematch: network.status === 'finished' && Boolean(network.matchId)
     };
   }
 
@@ -223,6 +244,7 @@
     sendState,
     sendKunaiSpawn,
     finish,
+    rematch,
     snapshot
   });
 

@@ -86,6 +86,8 @@ try {
     second.waitFor('match-found')
   ]);
   assert.equal(firstMatch.matchId, secondMatch.matchId);
+  assert.equal(firstMatch.startAt, secondMatch.startAt);
+  assert.ok(firstMatch.startAt >= Date.now() + 2500);
   assert.equal(firstMatch.opponentId, secondHello.clientId);
   assert.equal(secondMatch.opponentId, firstHello.clientId);
   assert.equal(firstMatch.playerName, 'Akira');
@@ -127,13 +129,70 @@ try {
   assert.equal(relayed.state.kunais[0].x, 777);
   assert.equal(relayed.state.kunais[0].phase, 1.75);
 
-  first.send({ type: 'finish', reason: 'finish' });
+  second.send({
+    type: 'state',
+    state: {
+      name: 'Yuki',
+      meters: 735,
+      score: 2200,
+      stats: {
+        score: 2200,
+        meters: 735,
+        dodges: 8,
+        cuts: 5,
+        attacks: 7,
+        hitsReceived: 1,
+        maxCombo: 6,
+        durationMs: 41800
+      }
+    }
+  });
+  await first.waitFor('opponent-state');
+
+  first.send({
+    type: 'finish',
+    reason: 'finish',
+    stats: {
+      score: 3100,
+      meters: 800,
+      dodges: 11,
+      cuts: 7,
+      attacks: 9,
+      hitsReceived: 1,
+      maxCombo: 9,
+      durationMs: 40500
+    }
+  });
   const [firstFinished, secondFinished] = await Promise.all([
     first.waitFor('match-finished'),
     second.waitFor('match-finished')
   ]);
   assert.equal(firstFinished.winnerId, firstHello.clientId);
   assert.equal(secondFinished.winnerId, firstHello.clientId);
+  assert.equal(firstFinished.playerStats.cuts, 7);
+  assert.equal(firstFinished.opponentStats.dodges, 8);
+  assert.equal(secondFinished.opponentStats.score, 3100);
+
+  first.send({ type: 'rematch' });
+  const [firstReady, secondReady] = await Promise.all([
+    first.waitFor('rematch-status'),
+    second.waitFor('rematch-status')
+  ]);
+  assert.equal(firstReady.readyCount, 1);
+  assert.equal(secondReady.readyCount, 1);
+  second.send({ type: 'rematch' });
+  const [firstRematch, secondRematch] = await Promise.all([
+    first.waitFor('match-found'),
+    second.waitFor('match-found')
+  ]);
+  assert.equal(firstRematch.matchId, firstMatch.matchId);
+  assert.equal(secondRematch.matchId, firstMatch.matchId);
+  assert.equal(firstRematch.startAt, secondRematch.startAt);
+  assert.equal(firstRematch.rematch, true);
+  assert.ok(firstRematch.startAt >= Date.now() + 2500);
+
+  first.send({ type: 'leave' });
+  await second.waitFor('opponent-left');
   first.close();
   second.close();
 
@@ -149,7 +208,7 @@ try {
   const health = await fetch(origin + '/health').then(response => response.json());
   assert.equal(health.matches, 0);
   assert.equal(health.waiting, 0);
-  console.log('OK: matchmaking, relay en tiempo real, resultado y fallback a bot.');
+  console.log('OK: matchmaking, salida sincronizada, resultados, revancha y fallback a bot.');
 } finally {
   await app.close();
 }

@@ -42,6 +42,9 @@
     score: document.getElementById('score'),
     combo: document.getElementById('combo'),
     toast: document.getElementById('toast'),
+    raceCountdown: document.getElementById('raceCountdown'),
+    countdownCaption: document.getElementById('countdownCaption'),
+    countdownValue: document.getElementById('countdownValue'),
     startScreen: document.getElementById('startScreen'),
     gameOverScreen: document.getElementById('gameOverScreen'),
     startBtn: document.getElementById('startBtn'),
@@ -56,10 +59,14 @@
     playerNameInput: document.getElementById('playerNameInput'),
     playerNameHud: document.getElementById('playerNameHud'),
     retryBtn: document.getElementById('retryBtn'),
+    lobbyBtn: document.getElementById('lobbyBtn'),
     finalScore: document.getElementById('finalScore'),
     bestScore: document.getElementById('bestScoreLabel'),
     resultEyebrow: document.getElementById('resultEyebrow'),
     gameOverTitle: document.getElementById('gameOverTitle'),
+    resultPlayerName: document.getElementById('resultPlayerName'),
+    resultRivalName: document.getElementById('resultRivalName'),
+    resultStats: document.getElementById('resultStats'),
     playerProgress: document.getElementById('playerProgress'),
     rivalProgress: document.getElementById('rivalProgress'),
     playerMeters: document.getElementById('playerMeters'),
@@ -98,6 +105,7 @@
     rivalPlayerName: 'Rival',
     matchMode: 'bot',
     matchmaking: false,
+    countingDown: false,
     rivalTargetMeters: 0,
     remoteKunais: [],
     remoteExplosions: [],
@@ -110,6 +118,10 @@
     networkFinishedSent: false,
     matchStartTimer: 0,
     countdownTimer: 0,
+    countdownHideTimer: 0,
+    stats: { dodges: 0, cuts: 0, attacks: 0, hitsReceived: 0, maxCombo: 0 },
+    rivalStats: { score: 0, meters: 0, dodges: 0, cuts: 0, attacks: 0, hitsReceived: 0, maxCombo: 0, durationMs: 0 },
+    finalOpponentStats: null,
     outfitRegistry: null,
     loadout: { clothing: 'classic', hair: 'classic', weapon: 'classic', back: 'classic' },
     rivalLoadout: { clothing: 'set_186_0', hair: 'hair_83_0', weapon: 'weapon_182', back: 'back_item_351' },
@@ -273,6 +285,7 @@
 
   function award(base, label) {
     game.combo += 1;
+    game.stats.maxCombo = Math.max(game.stats.maxCombo, game.combo);
     const multiplier = Math.min(5, 1 + Math.floor((game.combo - 1) / 3));
     game.score += base * multiplier;
     game.playerMeters = Math.min(CONFIG.raceLength, game.playerMeters + base / 28);
@@ -307,6 +320,7 @@
     if (game.player.duckHeld) duckEnd();
     press('j');
     setPlayerMode('attack', CONFIG.attackMs);
+    game.stats.attacks += 1;
     return true;
   }
 
@@ -351,6 +365,7 @@
     const combatX = CONFIG.combatX + rivalLeadOffset();
     const distance = target.x - combatX;
     if (game.rival.plannedAction === 'attack' && distance < 220) {
+      game.rivalStats.attacks += 1;
       setRivalMode('attack', CONFIG.attackMs, now);
     } else if (game.rival.plannedAction === 'jump' && distance < 145) {
       setRivalMode('jump', CONFIG.jumpMs, now);
@@ -409,6 +424,10 @@
       kunai.dead = true;
       kunai.resolved = true;
       game.rivalMeters = Math.min(CONFIG.raceLength, game.rivalMeters + 5.5);
+      game.rivalStats.cuts += 1;
+      game.rivalStats.score += 150;
+      game.rivalStats.currentCombo += 1;
+      game.rivalStats.maxCombo = Math.max(game.rivalStats.maxCombo, game.rivalStats.currentCombo);
       spawnExplosion(clamp(kunai.x - 5, attackMinX, attackMaxX), kunai.y, 'rival');
       return;
     }
@@ -421,9 +440,15 @@
     if (dodged) {
       kunai.resolved = true;
       game.rivalMeters = Math.min(CONFIG.raceLength, game.rivalMeters + 3.2);
+      game.rivalStats.dodges += 1;
+      game.rivalStats.score += 100;
+      game.rivalStats.currentCombo += 1;
+      game.rivalStats.maxCombo = Math.max(game.rivalStats.maxCombo, game.rivalStats.currentCombo);
     } else if (now >= game.rival.invulnerableUntil) {
       kunai.dead = true;
       game.rival.hits += 1;
+      game.rivalStats.hitsReceived += 1;
+      game.rivalStats.currentCombo = 0;
       game.rivalMeters = Math.max(0, game.rivalMeters - 14);
       game.rival.invulnerableUntil = now + CONFIG.hitMs + 520;
       setRivalMode('hit', CONFIG.hitMs, now);
@@ -438,6 +463,7 @@
     press('g');
     game.combo = 0;
     game.lives -= 1;
+    game.stats.hitsReceived += 1;
     game.playerMeters = Math.max(0, game.playerMeters - 18);
     game.player.invulnerableUntil = now + CONFIG.hitMs + 620;
     setPlayerMode('hit', CONFIG.hitMs, now);
@@ -447,7 +473,7 @@
     if (game.lives <= 0) {
       if (isOnlineRace() && !game.networkFinishedSent) {
         game.networkFinishedSent = true;
-        window.NinjaNetwork?.finish('knockout');
+        window.NinjaNetwork?.finish('knockout', currentStats());
       }
       game.over = true;
       game.running = false;
@@ -474,6 +500,7 @@
         kunai.resolved = true;
         const contactX = Math.max(CONFIG.attackMinX, Math.min(CONFIG.attackMaxX, kunai.x - 5));
         spawnExplosion(contactX, kunai.y, 'player');
+        game.stats.cuts += 1;
         award(150, 'CORTE PERFECTO');
         continue;
       }
@@ -486,6 +513,7 @@
 
       if (dodged) {
         kunai.resolved = true;
+        game.stats.dodges += 1;
         award(100, 'ESQUIVA');
       } else if (takeHit(now)) {
         kunai.dead = true;
@@ -561,6 +589,8 @@
     } else {
       game.rivalMeters = Math.min(CONFIG.raceLength,
         game.rivalMeters + (11.75 + Math.sin(game.elapsed * .72) * .7) * dt);
+      game.rivalStats.meters = game.rivalMeters;
+      game.rivalStats.durationMs = game.elapsed * 1000;
     }
     game.speed = Math.min(CONFIG.maxSpeed, CONFIG.startSpeed + game.elapsed * 7.2);
     game.spawnDelay = Math.max(CONFIG.minSpawnDelay, CONFIG.startSpawnDelay - game.elapsed * .0085);
@@ -581,7 +611,9 @@
     if (isOnlineRace() && !game.over && game.playerMeters >= CONFIG.raceLength &&
         !game.networkFinishedSent) {
       game.networkFinishedSent = true;
-      if (!window.NinjaNetwork?.finish('finish')) fallBackToBot('CONEXIÓN PERDIDA · CONTINÚA EL BOT');
+      if (!window.NinjaNetwork?.finish('finish', currentStats())) {
+        fallBackToBot('CONEXIÓN PERDIDA · CONTINÚA EL BOT');
+      }
     } else if (!isOnlineRace() && !game.over &&
         (game.playerMeters >= CONFIG.raceLength || game.rivalMeters >= CONFIG.raceLength)) {
       game.outcome = game.playerMeters >= game.rivalMeters ? 'victory' : 'race-loss';
@@ -870,6 +902,7 @@
       lives: game.lives,
       score: game.score,
       speed: game.speed,
+      stats: currentStats(),
       loadout: { ...game.loadout },
       kunais: game.kunais
         .filter(kunai => kunai.lane === 'player' && !kunai.dead)
@@ -916,6 +949,10 @@
     game.rivalTargetMeters = clamp(Number(state.meters) || 0, 0, CONFIG.raceLength);
     game.remoteLives = clamp(Math.round(Number(state.lives) || 0), 0, 3);
     game.remoteSpeed = clamp(Number(state.speed) || CONFIG.startSpeed, 0, CONFIG.maxSpeed);
+    game.rivalStats = normalizeStats(state.stats, {
+      score: Number(state.score) || 0,
+      meters: Number(state.meters) || 0
+    });
     game.remoteReceivedAt = now;
     game.remoteKunais = Array.isArray(state.kunais) ? state.kunais.map(kunai => ({
       id: String(kunai.id),
@@ -987,6 +1024,72 @@
     } catch (_) { /* Storage can be unavailable in privacy mode. */ }
   }
 
+  function normalizeStats(value, fallback = {}) {
+    const source = value && typeof value === 'object' ? value : {};
+    const number = (key, defaultValue = 0) => Math.max(0,
+      Number.isFinite(Number(source[key])) ? Number(source[key]) : Number(fallback[key]) || defaultValue);
+    return {
+      score: Math.round(number('score')),
+      meters: Math.min(CONFIG.raceLength, number('meters')),
+      dodges: Math.round(number('dodges')),
+      cuts: Math.round(number('cuts')),
+      attacks: Math.round(number('attacks')),
+      hitsReceived: Math.round(number('hitsReceived')),
+      maxCombo: Math.round(number('maxCombo')),
+      durationMs: Math.round(number('durationMs')),
+      currentCombo: Math.round(number('currentCombo'))
+    };
+  }
+
+  function currentStats() {
+    return normalizeStats({
+      ...game.stats,
+      score: game.score,
+      meters: game.playerMeters,
+      durationMs: game.elapsed * 1000
+    });
+  }
+
+  function formatDuration(milliseconds) {
+    const totalSeconds = Math.max(0, Math.round(Number(milliseconds) / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+    return minutes + ':' + seconds;
+  }
+
+  function renderResultStats() {
+    const player = currentStats();
+    const rival = normalizeStats(game.finalOpponentStats || game.rivalStats, {
+      meters: game.rivalMeters,
+      hitsReceived: game.rival.hits,
+      durationMs: game.elapsed * 1000
+    });
+    const precision = stats => stats.attacks > 0 ? Math.round(stats.cuts / stats.attacks * 100) + '%' : '—';
+    const metrics = [
+      ['PUNTAJE', formatScore(player.score), rival.score ? formatScore(rival.score) : '—'],
+      ['DISTANCIA', Math.round(player.meters) + ' m', Math.round(rival.meters) + ' m'],
+      ['ESQUIVAS', player.dodges, rival.dodges],
+      ['CORTES', player.cuts, rival.cuts],
+      ['IMPACTOS', player.hitsReceived, rival.hitsReceived],
+      ['PRECISIÓN', precision(player), precision(rival)],
+      ['MEJOR RACHA', '×' + player.maxCombo, '×' + rival.maxCombo],
+      ['TIEMPO', formatDuration(player.durationMs), formatDuration(rival.durationMs)]
+    ];
+    elements.resultPlayerName.textContent = game.playerName.toUpperCase();
+    elements.resultRivalName.textContent = game.rivalPlayerName.toUpperCase();
+    elements.resultStats.replaceChildren();
+    for (const [label, playerValue, rivalValue] of metrics) {
+      const row = document.createElement('div');
+      row.className = 'result-stat-row';
+      for (const value of [playerValue, label, rivalValue]) {
+        const cell = document.createElement('span');
+        cell.textContent = String(value);
+        row.appendChild(cell);
+      }
+      elements.resultStats.appendChild(row);
+    }
+  }
+
   function showGameOver() {
     saveBest(game.score);
     if (game.outcome === 'victory') {
@@ -1001,6 +1104,12 @@
     }
     elements.finalScore.textContent = formatScore(game.score);
     elements.bestScore.textContent = `Mejor puntaje: ${formatScore(getBest())}`;
+    renderResultStats();
+    const canRematch = isOnlineRace() && window.NinjaNetwork?.snapshot().canRematch;
+    elements.retryBtn.disabled = false;
+    elements.retryBtn.firstChild.textContent = canRematch ? 'PEDIR REVANCHA ' : (isOnlineRace()
+      ? 'BUSCAR OTRO RIVAL '
+      : 'CORRER DE NUEVO ');
     elements.enemyKunaiToggle.hidden = true;
     elements.latencyHud.hidden = true;
     elements.gameOverScreen.classList.remove('hidden');
@@ -1009,8 +1118,13 @@
   function resetState() {
     clearTimeout(game.matchStartTimer);
     clearInterval(game.countdownTimer);
+    clearTimeout(game.countdownHideTimer);
     game.matchStartTimer = 0;
     game.countdownTimer = 0;
+    game.countdownHideTimer = 0;
+    game.countingDown = false;
+    elements.raceCountdown.hidden = true;
+    elements.raceCountdown.classList.remove('go');
     game.running = false;
     game.over = false;
     game.matchmaking = false;
@@ -1040,6 +1154,9 @@
     game.remotePoseQueue = [];
     game.networkSendClock = 0;
     game.networkFinishedSent = false;
+    game.stats = { dodges: 0, cuts: 0, attacks: 0, hitsReceived: 0, maxCombo: 0 };
+    game.rivalStats = normalizeStats({});
+    game.finalOpponentStats = null;
     game.player.duckHeld = false;
     game.player.invulnerableUntil = 0;
     game.rival.mode = 'run';
@@ -1064,8 +1181,8 @@
     for (const card of document.querySelectorAll('.loadout-card[data-slot]')) card.disabled = locked;
   }
 
-  function launchGame(mode = 'bot') {
-    if (!game.ready || game.running) return;
+  function prepareGame(mode = 'bot') {
+    if (!game.ready || game.running || game.countingDown) return false;
     const previousMode = game.matchMode;
     if (mode === 'bot' && previousMode === 'matchmaking') window.NinjaNetwork?.leave();
     setRunnerAutoRun(false);
@@ -1081,20 +1198,61 @@
     setNetworkStatus(isOnlineRace() ? 'matched' : 'online',
       isOnlineRace() ? 'RIVAL CONECTADO · TIEMPO REAL' : 'SIN RIVAL · JUGÁS CONTRA EL BOT');
     elements.startLabel.textContent = 'BUSCAR RIVAL';
-    setLobbyLocked(false);
+    setLobbyLocked(true);
     elements.startScreen.classList.add('hidden');
     elements.gameOverScreen.classList.add('hidden');
-    elements.enemyKunaiToggle.hidden = false;
+    elements.enemyKunaiToggle.hidden = true;
     renderHud();
-    game.running = true;
-    setRunnerAutoRun(true);
     renderLatency();
     drawFrame();
+    return true;
+  }
+
+  function startPreparedRace() {
+    if (!game.countingDown) return;
+    clearInterval(game.countdownTimer);
+    game.countdownTimer = 0;
+    game.matchStartTimer = 0;
+    game.countingDown = false;
+    game.running = true;
+    game.lastTime = 0;
+    elements.countdownCaption.textContent = 'CORRÉ';
+    elements.countdownValue.textContent = '¡YA!';
+    elements.raceCountdown.classList.add('go');
+    elements.enemyKunaiToggle.hidden = false;
+    setLobbyLocked(false);
+    setRunnerAutoRun(true);
+    renderLatency();
     requestAnimationFrame(loop);
+    game.countdownHideTimer = setTimeout(() => {
+      elements.raceCountdown.hidden = true;
+      elements.raceCountdown.classList.remove('go');
+      game.countdownHideTimer = 0;
+    }, 560);
+  }
+
+  function scheduleRaceCountdown(mode = 'bot', startAt = Date.now() + 3200) {
+    if (!prepareGame(mode)) return false;
+    game.countingDown = true;
+    elements.raceCountdown.hidden = false;
+    elements.raceCountdown.classList.remove('go');
+    elements.countdownCaption.textContent = isOnlineRace() ? 'SALIDA SINCRONIZADA' : 'PREPARATE';
+    const updateCountdown = () => {
+      const remaining = Math.max(0, startAt - Date.now());
+      elements.countdownValue.textContent = String(Math.min(3, Math.max(1, Math.ceil(remaining / 1000))));
+    };
+    updateCountdown();
+    game.countdownTimer = setInterval(updateCountdown, 80);
+    game.matchStartTimer = setTimeout(startPreparedRace, Math.max(0, startAt - Date.now()));
+    return true;
+  }
+
+  function launchGame(mode = 'bot') {
+    return scheduleRaceCountdown(mode);
   }
 
   function requestRace() {
-    if (!game.ready || game.running || game.matchmaking) return;
+    if (!game.ready || game.running || game.matchmaking || game.countingDown) return;
     setPlayerName(elements.playerNameInput.value);
     elements.gameOverScreen.classList.add('hidden');
     elements.startScreen.classList.remove('hidden');
@@ -1107,6 +1265,29 @@
     if (!queued) launchGame('bot');
   }
 
+  function retryRace() {
+    if (game.countingDown || game.running) return;
+    const network = window.NinjaNetwork?.snapshot();
+    if (isOnlineRace() && network?.canRematch) {
+      game.matchmaking = true;
+      elements.retryBtn.disabled = true;
+      elements.retryBtn.firstChild.textContent = 'ESPERANDO AL RIVAL ';
+      setNetworkStatus('matched', 'REVANCHA SOLICITADA · ESPERANDO AL RIVAL');
+      if (!window.NinjaNetwork?.rematch()) {
+        game.matchmaking = false;
+        elements.retryBtn.disabled = false;
+        elements.retryBtn.firstChild.textContent = 'BUSCAR OTRO RIVAL ';
+      }
+      return;
+    }
+    if (isOnlineRace()) {
+      returnToLobby();
+      requestRace();
+      return;
+    }
+    launchGame('bot');
+  }
+
   function returnToLobby() {
     window.NinjaNetwork?.leave();
     resetState();
@@ -1116,6 +1297,7 @@
     elements.startScreen.classList.remove('hidden');
     elements.enemyKunaiToggle.hidden = true;
     elements.latencyHud.hidden = true;
+    elements.raceCountdown.hidden = true;
     elements.startLabel.textContent = 'BUSCAR RIVAL';
     const network = window.NinjaNetwork?.snapshot();
     setNetworkStatus(network?.connected ? 'online' : 'offline', network?.connected
@@ -1141,23 +1323,19 @@
     setLobbyLocked(true);
     setNetworkStatus('matched', 'RIVAL ENCONTRADO · PREPARATE');
 
-    const startAt = Number(detail.localStartAt) || Date.now() + 1200;
-    const updateCountdown = () => {
-      const remaining = Math.max(0, startAt - Date.now());
-      elements.startLabel.textContent = remaining > 0
-        ? 'LARGAMOS EN ' + Math.max(1, Math.ceil(remaining / 1000))
-        : '¡YA!';
-    };
-    updateCountdown();
-    game.countdownTimer = setInterval(updateCountdown, 150);
-    game.matchStartTimer = setTimeout(() => {
-      clearInterval(game.countdownTimer);
-      game.countdownTimer = 0;
-      launchGame('online');
-    }, Math.max(0, startAt - Date.now()));
+    const startAt = Number(detail.localStartAt) || Date.now() + 3200;
+    scheduleRaceCountdown('online', startAt);
   }
 
   function fallBackToBot(message = 'EL RIVAL SE FUE · CONTINÚA EL BOT') {
+    if (game.countingDown) {
+      clearTimeout(game.matchStartTimer);
+      clearInterval(game.countdownTimer);
+      game.matchStartTimer = 0;
+      game.countdownTimer = 0;
+      game.countingDown = false;
+      elements.raceCountdown.hidden = true;
+    }
     if (game.matchMode === 'matchmaking' || (isOnlineRace() && !game.running)) {
       game.matchmaking = false;
       launchGame('bot');
@@ -1183,13 +1361,14 @@
 
   function finishOnlineRace(detail) {
     if (!isOnlineRace()) return;
+    game.finalOpponentStats = normalizeStats(detail.opponentStats || game.rivalStats);
     game.outcome = detail.won ? 'victory' : (detail.reason === 'knockout' ? 'knockout' : 'race-loss');
     game.over = true;
     game.running = false;
     setRunnerAutoRun(false);
     release('s');
     setNetworkStatus('online', detail.won ? 'VICTORIA ONLINE' : 'DERROTA ONLINE');
-    setTimeout(showGameOver, 220);
+    setTimeout(showGameOver, game.player.mode === 'dead' ? CONFIG.deathMs : 220);
   }
 
   function renderLoadout() {
@@ -1243,10 +1422,33 @@
       renderLatency();
     } else if (detail.type === 'match-finished') {
       finishOnlineRace(detail);
-    } else if (detail.type === 'opponent-left') {
-      fallBackToBot('EL RIVAL SE DESCONECTÓ · ENTRA EL BOT');
+    } else if (detail.type === 'rematch-status') {
+      if (!game.over) return;
+      const ownId = window.NinjaNetwork?.snapshot().clientId;
+      if (detail.requestedBy !== ownId && !game.matchmaking) {
+        elements.retryBtn.disabled = false;
+        elements.retryBtn.firstChild.textContent = 'ACEPTAR REVANCHA ';
+        setNetworkStatus('matched', 'EL RIVAL QUIERE REVANCHA');
+      }
+    } else if (detail.type === 'opponent-left' || detail.type === 'rematch-expired') {
+      if (game.over) {
+        game.matchmaking = false;
+        elements.retryBtn.disabled = false;
+        elements.retryBtn.firstChild.textContent = 'BUSCAR OTRO RIVAL ';
+        setNetworkStatus('online', detail.type === 'rematch-expired'
+          ? 'LA SALA DE REVANCHA EXPIRÓ'
+          : 'EL RIVAL VOLVIÓ AL LOBBY');
+        showToast(detail.type === 'rematch-expired' ? 'BUSCÁ UN NUEVO RIVAL' : 'EL RIVAL SALIÓ DE LA SALA');
+      } else {
+        fallBackToBot('EL RIVAL SE DESCONECTÓ · ENTRA EL BOT');
+      }
     } else if (detail.type === 'disconnected') {
-      if (game.matchMode === 'matchmaking' || isOnlineRace()) {
+      if (game.over && isOnlineRace()) {
+        game.matchmaking = false;
+        elements.retryBtn.disabled = false;
+        elements.retryBtn.firstChild.textContent = 'BUSCAR OTRO RIVAL ';
+        setNetworkStatus('offline', 'SIN CONEXIÓN · REVANCHA NO DISPONIBLE');
+      } else if (game.matchMode === 'matchmaking' || isOnlineRace()) {
         fallBackToBot('SIN CONEXIÓN · ENTRA EL BOT');
       } else if (!game.running) {
         setNetworkStatus('offline', 'SERVIDOR SIN CONEXIÓN · MODO BOT DISPONIBLE');
@@ -1281,7 +1483,8 @@
 
   function bindInputs() {
     elements.startBtn.addEventListener('click', requestRace);
-    elements.retryBtn.addEventListener('click', returnToLobby);
+    elements.retryBtn.addEventListener('click', retryRace);
+    elements.lobbyBtn.addEventListener('click', returnToLobby);
     elements.enemyKunaiToggle.addEventListener('click', () => {
       setEnemyKunaisVisible(!game.enemyKunaisVisible);
     });
@@ -1368,6 +1571,7 @@
       ready: game.ready,
       running: game.running,
       over: game.over,
+      countingDown: game.countingDown,
       matchMode: game.matchMode,
       matchmaking: game.matchmaking,
       playerName: game.playerName,
@@ -1381,6 +1585,8 @@
       rivalMeters: game.rivalMeters,
       rivalMode: game.rival.mode,
       rivalHits: game.rival.hits,
+      stats: currentStats(),
+      rivalStats: { ...game.rivalStats },
       rivalPlan: game.rival.plannedAction,
       rivalDecisions: game.rival.decisions,
       outcome: game.outcome,

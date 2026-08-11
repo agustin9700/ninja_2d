@@ -70,6 +70,12 @@ assert.match(game, /const phase = Number.isFinite/, 'El kunai remoto necesita un
 assert.match(game, /setEnemyKunaisVisible/, 'Falta el control para mostrar u ocultar kunais rivales');
 assert.match(game, /enemyKunaiToggle\.hidden = false/, 'El ojo debe aparecer al comenzar la carrera');
 assert.match(game, /function returnToLobby\(\)/, 'La revancha debe volver al lobby antes de buscar rival');
+assert.match(html, /id=["']raceCountdown["']/, 'Falta la cuenta regresiva visible');
+assert.match(html, /id=["']resultStats["']/, 'Falta la comparación de resultados');
+assert.match(game, /function scheduleRaceCountdown\(/, 'Falta programar la salida común');
+assert.match(game, /function retryRace\(/, 'Falta solicitar una revancha');
+assert.match(network, /function rematch\(/, 'Falta el mensaje de revancha online');
+assert.match(server, /rematch-status/, 'El servidor debe conservar la sala para la revancha');
 assert.match(game, /function tickRemotePose\(now\)/, 'Falta el búfer de poses del rival remoto');
 assert.match(game, /detail\.type === 'latency'/, 'Falta mostrar la latencia online');
 assert.match(game, /enemy_kunais_visible_v2/, 'La visibilidad rival debe iniciar activa en la versión actual');
