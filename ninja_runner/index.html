@@ -11,9 +11,11 @@
 <body data-mode="runner">
 <main id="gameShell">
   <section id="stageBox" aria-label="Ninja Runner">
-    <canvas id="background" width="1000" height="700" aria-hidden="true"></canvas>
-    <canvas id="stage" width="1000" height="700" aria-label="Área de juego"></canvas>
-    <canvas id="fx" width="1000" height="700" aria-hidden="true"></canvas>
+    <div id="gameViewport">
+      <canvas id="background" width="1000" height="700" aria-hidden="true"></canvas>
+      <canvas id="stage" width="1000" height="700" aria-label="Área de juego"></canvas>
+      <canvas id="fx" width="1000" height="700" aria-hidden="true"></canvas>
+    </div>
 
     <header id="hud" aria-live="polite">
       <div class="hud-card lives-card"><span class="hud-label">VIDAS</span><div id="lives"></div></div>
@@ -71,6 +73,10 @@
           <div class="control-card"><div class="key-row"><kbd>W</kbd><kbd>↑</kbd></div><strong>Saltar</strong><small>Kunai bajo</small></div>
           <div class="control-card"><div class="key-row"><kbd>S</kbd><kbd>↓</kbd></div><strong>Agacharse</strong><small>Kunai alto</small></div>
           <div class="control-card featured"><div class="key-row"><kbd>J</kbd><kbd>ESPACIO</kbd></div><strong>Espadazo</strong><small>Destruir kunai</small></div>
+        </div>
+        <div class="mobile-controls-note" aria-hidden="true">
+          <span>CONTROLES TÁCTILES</span>
+          <strong>Saltá, agachate y atacá con los botones en pantalla.</strong>
         </div>
         <button class="primary" id="startBtn" type="button" disabled><span id="startLabel">Cargando assets…</span><span>→</span></button>
         <p class="load-status" id="loadStatus">Preparando las animaciones del ninja</p>
