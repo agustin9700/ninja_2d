@@ -8,6 +8,7 @@
     matchId: null,
     opponentId: null,
     serverOffset: 0,
+    rtt: null,
     matchWaitMs: 4000,
     pendingProfile: null,
     reconnectTimer: 0,
@@ -58,12 +59,24 @@
     try { message = JSON.parse(event.data); } catch (_) { return; }
     if (!message || typeof message.type !== 'string') return;
 
-    if (message.serverTime) network.serverOffset = message.serverTime - Date.now();
+    if (message.serverTime && message.type !== 'pong') {
+      network.serverOffset = message.serverTime - Date.now();
+    }
 
     if (message.type === 'hello') {
       network.clientId = message.clientId;
       network.matchWaitMs = Number(message.matchWaitMs) || network.matchWaitMs;
       emit('ready', { matchWaitMs: network.matchWaitMs });
+    } else if (message.type === 'pong') {
+      const now = Date.now();
+      const sentAt = Number(message.sentAt);
+      if (!Number.isFinite(sentAt)) return;
+      const sample = Math.max(0, Math.min(30000, now - sentAt));
+      network.rtt = network.rtt === null ? sample : network.rtt * .7 + sample * .3;
+      if (Number.isFinite(Number(message.serverTime))) {
+        network.serverOffset = Number(message.serverTime) - (sentAt + now) / 2;
+      }
+      emit('latency', { rtt: Math.round(network.rtt) });
     } else if (message.type === 'searching') {
       network.status = 'searching';
       network.matchWaitMs = Number(message.timeoutMs) || network.matchWaitMs;
@@ -130,6 +143,7 @@
       network.status = 'online';
       network.reconnectAttempt = 0;
       emit('connected');
+      send({ type: 'ping', sentAt: Date.now() });
       sendPendingQueue();
     });
     socket.addEventListener('message', handleMessage);
@@ -197,7 +211,8 @@
       clientId: network.clientId,
       matchId: network.matchId,
       opponentId: network.opponentId,
-      matchWaitMs: network.matchWaitMs
+      matchWaitMs: network.matchWaitMs,
+      rtt: network.rtt === null ? null : Math.round(network.rtt)
     };
   }
 
@@ -210,6 +225,12 @@
     finish,
     snapshot
   });
+
+  setInterval(() => {
+    if (network.socket?.readyState === WebSocket.OPEN) {
+      send({ type: 'ping', sentAt: Date.now() });
+    }
+  }, 5000);
 
   connect();
 })();

@@ -72,6 +72,12 @@ try {
     second.waitFor('hello')
   ]);
 
+  const pingSentAt = Date.now();
+  first.send({ type: 'ping', sentAt: pingSentAt });
+  const pong = await first.waitFor('pong');
+  assert.equal(pong.sentAt, pingSentAt);
+  assert.ok(Number.isFinite(pong.serverTime));
+
   first.send({ type: 'queue', profile: { name: 'Akira', loadout: { hair: 'classic' } } });
   await first.waitFor('searching');
   second.send({ type: 'queue', profile: { name: 'Yuki', loadout: { hair: 'hair_83_0' } } });

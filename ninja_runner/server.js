@@ -257,7 +257,13 @@ function createNinjaServer(options = {}) {
       try { message = JSON.parse(raw.toString()); } catch (_) { return; }
       if (!message || typeof message.type !== 'string') return;
 
-      if (message.type === 'queue') {
+      if (message.type === 'ping') {
+        send(client, {
+          type: 'pong',
+          sentAt: finite(message.sentAt),
+          serverTime: Date.now()
+        });
+      } else if (message.type === 'queue') {
         queueClient(client, message.profile);
       } else if (message.type === 'leave') {
         removeFromQueue(client);

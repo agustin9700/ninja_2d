@@ -71,8 +71,7 @@
       {
         "id": "classic",
         "label": "Estandarte",
-        "icon": "assets/outfits/icons/back_classic.png",
-        "suppressParts": ["back"]
+        "icon": "assets/outfits/icons/back_classic.png"
       },
       {
         "id": "back_item_351",

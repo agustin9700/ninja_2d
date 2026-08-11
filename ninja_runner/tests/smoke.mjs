@@ -22,9 +22,10 @@ for (const [slot, options] of Object.entries(outfits.slots)) {
     for (const partName of option.parts) assert.ok(available.has(partName), `${option.id}: falta ${partName}`);
   }
 }
-for (const option of outfits.slots.back) {
-  assert.ok(option.suppressParts?.includes('back'), option.id + ': debe ocultar el accesorio base back');
-}
+const classicBack = outfits.slots.back.find(option => option.id === 'classic');
+const replacementBack = outfits.slots.back.find(option => option.id === 'back_item_351');
+assert.ok(!classicBack.suppressParts?.includes('back'), 'El estandarte clásico debe conservar la pieza base back');
+assert.ok(replacementBack.suppressParts?.includes('back'), 'El accesorio alternativo debe ocultar la pieza base back');
 
 const timelines = ['idle', 'crouch', 'run', 'jump', 'attack', 'hit', 'death'];
 for (const name of timelines) {
@@ -38,7 +39,7 @@ for (const part of manifest.parts) {
 }
 
 const html = read('index.html');
-for (const id of ['gameViewport', 'background', 'stage', 'fx', 'startBtn', 'retryBtn', 'status', 'reset', 'raceHud', 'playerNameInput', 'enemyKunaiToggle', 'touchControls']) {
+for (const id of ['gameViewport', 'background', 'stage', 'fx', 'startBtn', 'retryBtn', 'status', 'reset', 'raceHud', 'latencyHud', 'playerNameInput', 'enemyKunaiToggle', 'touchControls']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `Falta #${id}`);
 }
 assert.match(html, /mobile-controls-note/, 'Falta la guía de controles para móvil');
@@ -68,9 +69,14 @@ assert.match(game, /fallBackToBot/, 'Falta continuar contra el bot al perder con
 assert.match(game, /const phase = Number.isFinite/, 'El kunai remoto necesita una fase visual válida');
 assert.match(game, /setEnemyKunaisVisible/, 'Falta el control para mostrar u ocultar kunais rivales');
 assert.match(game, /enemyKunaiToggle\.hidden = false/, 'El ojo debe aparecer al comenzar la carrera');
+assert.match(game, /function returnToLobby\(\)/, 'La revancha debe volver al lobby antes de buscar rival');
+assert.match(game, /function tickRemotePose\(now\)/, 'Falta el búfer de poses del rival remoto');
+assert.match(game, /detail\.type === 'latency'/, 'Falta mostrar la latencia online');
 assert.match(game, /enemy_kunais_visible_v2/, 'La visibilidad rival debe iniciar activa en la versión actual');
 assert.match(game, /setPlayerName/, 'Falta configurar el nombre del jugador');
 assert.match(network, /type: 'state'/, 'Falta enviar el estado por WebSocket');
+assert.match(network, /type: 'ping'/, 'Falta medir la latencia WebSocket');
+assert.match(server, /type: 'pong'/, 'El servidor debe responder las mediciones de latencia');
 assert.match(network, /kunai-spawn/, 'El nacimiento del kunai debe viajar aunque el render quede en segundo plano');
 assert.match(server, /type: 'match-found'/, 'Falta el matchmaking del servidor');
 assert.match(game, /loadout-card/, 'Falta el selector de vestimenta');

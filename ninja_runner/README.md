@@ -6,14 +6,16 @@ Cada jugador puede elegir un nombre de hasta 18 caracteres. El nombre y la vesti
 
 Antes de largar se puede alternar entre dos opciones para cada slot:
 
-- Ropa: `set_579_0` / `set_186_0`.
-- Cabello: `hair_91` / `hair_83_0`.
-- Arma: `weapon_180` / `weapon_182`.
-- Espalda: `back_item_261` / `back_item_351`.
+- Ropa: `classic` / `set_186_0`.
+- Cabello: `classic` / `hair_83_0`.
+- Arma: `classic` / `weapon_182`.
+- Espalda: `classic` / `back_item_351`.
 
 Al pulsar “Buscar rival”, el servidor empareja a dos personas y sincroniza progreso, animaciones, vestimenta, vidas, kunais y explosiones. Si en cuatro segundos no aparece otra persona, la partida arranca contra el bot completo. Si el rival se desconecta durante la carrera, el bot toma su lugar sin reiniciar el mapa. La carrera termina al alcanzar los 800 metros o al perder las tres vidas.
 
 Los kunais que está enfrentando el rival se muestran en violeta para diferenciarlos de los propios. Un botón flotante con forma de ojo permite ocultarlos o mostrarlos durante la carrera y recuerda la elección en el navegador.
+
+Durante partidas online, el HUD muestra el ping medido contra el servidor. Las poses del rival usan un búfer corto para mantener el orden visual cuando la latencia fluctúa. Al terminar, “Volver al lobby” permite cambiar nombre y equipo antes de buscar otra carrera.
 
 ## Ejecutar
 

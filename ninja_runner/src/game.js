@@ -33,6 +33,7 @@
     deathMs: 650,
     strikeStartMs: 135,
     strikeEndMs: 455,
+    remotePoseDelayMs: 90,
     raceLength: 800
   });
 
@@ -48,6 +49,8 @@
     loadStatus: document.getElementById('loadStatus'),
     networkStatus: document.getElementById('networkStatus'),
     networkLabel: document.getElementById('networkLabel'),
+    latencyHud: document.getElementById('latencyHud'),
+    latencyLabel: document.getElementById('latencyLabel'),
     enemyKunaiToggle: document.getElementById('enemyKunaiToggle'),
     enemyKunaiLabel: document.getElementById('enemyKunaiLabel'),
     playerNameInput: document.getElementById('playerNameInput'),
@@ -101,6 +104,8 @@
     remoteReceivedAt: 0,
     remoteSpeed: CONFIG.startSpeed,
     remoteLives: 3,
+    remotePoseQueue: [],
+    networkRtt: null,
     networkSendClock: 0,
     networkFinishedSent: false,
     matchStartTimer: 0,
@@ -214,6 +219,17 @@
     elements.rivalProgress.style.width = `${rivalRatio * 100}%`;
     elements.playerMeters.textContent = `${Math.floor(game.playerMeters)}m`;
     elements.rivalMeters.textContent = `${Math.floor(game.rivalMeters)}m`;
+    renderLatency();
+  }
+
+  function renderLatency() {
+    const visible = isOnlineRace() && game.running && Number.isFinite(game.networkRtt);
+    elements.latencyHud.hidden = !visible;
+    if (!visible) return;
+    const rtt = Math.max(0, Math.round(game.networkRtt));
+    elements.latencyLabel.textContent = `${rtt} MS`;
+    elements.latencyHud.dataset.quality = rtt < 90 ? 'good' : (rtt < 180 ? 'fair' : 'poor');
+    elements.latencyHud.setAttribute('aria-label', `Latencia ${rtt} milisegundos`);
   }
 
   function showToast(message) {
@@ -884,10 +900,18 @@
     const now = performance.now();
     const allowedModes = new Set(['run', 'jump', 'duck', 'attack', 'hit', 'dead']);
     const nextMode = allowedModes.has(state.mode) ? state.mode : 'run';
-    if (game.rival.mode !== nextMode) {
-      game.rival.mode = nextMode;
-      game.rival.actionStarted = now - clamp(Number(state.actionAge) || 0, 0, 3000);
-      game.rival.until = 0;
+    const actionStarted = now - clamp(Number(state.actionAge) || 0, 0, 3000);
+    const pendingPose = game.remotePoseQueue.at(-1);
+    const lastMode = pendingPose?.mode || game.rival.mode;
+    if (lastMode !== nextMode) {
+      game.remotePoseQueue.push({
+        mode: nextMode,
+        actionStarted,
+        applyAt: now + CONFIG.remotePoseDelayMs
+      });
+      if (game.remotePoseQueue.length > 5) game.remotePoseQueue.shift();
+    } else if (pendingPose?.mode === nextMode) {
+      pendingPose.actionStarted = actionStarted;
     }
     game.rivalTargetMeters = clamp(Number(state.meters) || 0, 0, CONFIG.raceLength);
     game.remoteLives = clamp(Math.round(Number(state.lives) || 0), 0, 3);
@@ -914,6 +938,16 @@
     renderHud();
   }
 
+  function tickRemotePose(now) {
+    if (!isOnlineRace()) return;
+    while (game.remotePoseQueue[0]?.applyAt <= now) {
+      const pose = game.remotePoseQueue.shift();
+      game.rival.mode = pose.mode;
+      game.rival.actionStarted = pose.actionStarted;
+      game.rival.until = 0;
+    }
+  }
+
   function drawFrame(now = performance.now()) {
     drawWorld();
     ctx.clearRect(0, 0, W, H);
@@ -932,6 +966,7 @@
     game.lastTime = now;
     tickPlayer(now);
     tickRival(now);
+    tickRemotePose(now);
     updateDifficulty(dt);
     updateKunais(dt, now);
     updateEffects(dt);
@@ -967,6 +1002,7 @@
     elements.finalScore.textContent = formatScore(game.score);
     elements.bestScore.textContent = `Mejor puntaje: ${formatScore(getBest())}`;
     elements.enemyKunaiToggle.hidden = true;
+    elements.latencyHud.hidden = true;
     elements.gameOverScreen.classList.remove('hidden');
   }
 
@@ -1001,6 +1037,7 @@
     game.remoteReceivedAt = 0;
     game.remoteSpeed = CONFIG.startSpeed;
     game.remoteLives = 3;
+    game.remotePoseQueue = [];
     game.networkSendClock = 0;
     game.networkFinishedSent = false;
     game.player.duckHeld = false;
@@ -1051,6 +1088,7 @@
     renderHud();
     game.running = true;
     setRunnerAutoRun(true);
+    renderLatency();
     drawFrame();
     requestAnimationFrame(loop);
   }
@@ -1067,6 +1105,24 @@
     setNetworkStatus('searching', 'BUSCANDO OTRA PERSONA · SI NO, ENTRA EL BOT');
     const queued = window.NinjaNetwork?.queue({ name: game.playerName, loadout: game.loadout });
     if (!queued) launchGame('bot');
+  }
+
+  function returnToLobby() {
+    window.NinjaNetwork?.leave();
+    resetState();
+    setRunnerAutoRun(false);
+    setLobbyLocked(false);
+    elements.gameOverScreen.classList.add('hidden');
+    elements.startScreen.classList.remove('hidden');
+    elements.enemyKunaiToggle.hidden = true;
+    elements.latencyHud.hidden = true;
+    elements.startLabel.textContent = 'BUSCAR RIVAL';
+    const network = window.NinjaNetwork?.snapshot();
+    setNetworkStatus(network?.connected ? 'online' : 'offline', network?.connected
+      ? 'SERVIDOR ONLINE · MATCHMAKING DISPONIBLE'
+      : 'SERVIDOR SIN CONEXIÓN · MODO BOT DISPONIBLE');
+    renderHud();
+    drawFrame();
   }
 
   function beginOnlineCountdown(detail) {
@@ -1112,6 +1168,7 @@
     game.networkFinishedSent = false;
     game.remoteKunais = [];
     game.remoteExplosions = [];
+    game.remotePoseQueue = [];
     game.rivalTargetMeters = game.rivalMeters;
     game.rivalSpawnClock = .55;
     game.rival.targetKunaiId = null;
@@ -1120,6 +1177,7 @@
     game.rivalPlayerName = 'BOT';
     elements.rivalName.textContent = game.rivalPlayerName;
     setNetworkStatus('online', 'MODO BOT · CARRERA CONTINÚA');
+    renderLatency();
     showToast(message);
   }
 
@@ -1180,6 +1238,9 @@
       applyRemoteState(detail.state);
     } else if (detail.type === 'opponent-kunai-spawn') {
       applyRemoteKunaiSpawn(detail.kunai);
+    } else if (detail.type === 'latency') {
+      game.networkRtt = Number.isFinite(Number(detail.rtt)) ? Number(detail.rtt) : null;
+      renderLatency();
     } else if (detail.type === 'match-finished') {
       finishOnlineRace(detail);
     } else if (detail.type === 'opponent-left') {
@@ -1220,11 +1281,7 @@
 
   function bindInputs() {
     elements.startBtn.addEventListener('click', requestRace);
-    elements.retryBtn.addEventListener('click', () => {
-      elements.gameOverScreen.classList.add('hidden');
-      elements.startScreen.classList.remove('hidden');
-      requestRace();
-    });
+    elements.retryBtn.addEventListener('click', returnToLobby);
     elements.enemyKunaiToggle.addEventListener('click', () => {
       setEnemyKunaisVisible(!game.enemyKunaisVisible);
     });
