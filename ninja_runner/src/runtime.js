@@ -1,5 +1,5 @@
 const canvas = document.getElementById('stage');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
 
 const state = {
   manifest: null,
@@ -34,6 +34,11 @@ const state = {
     layers: false
   }
 };
+
+const appearanceCache = new Map();
+const suppressionCache = new Map();
+const runnerCommandCache = new WeakMap();
+const timelineMetricsCache = new WeakMap();
 
 // ----- Animación de agacharse -----
 const anim = {
@@ -126,16 +131,36 @@ function translationMatrix(tx, ty) {
 }
 
 function timelineFrameCount(timeline) {
+  const cacheable = timeline && (typeof timeline === 'object' || typeof timeline === 'function');
+  const cached = cacheable ? timelineMetricsCache.get(timeline)?.frameCount : undefined;
+  if (Number.isFinite(cached)) return cached;
   const computed = (timeline?.layers || []).reduce((maximum, layer) => {
     return (layer.frames || []).reduce((layerMaximum, frame) => {
       return Math.max(layerMaximum, finite(frame.index) + Math.max(1, finite(frame.duration, 1)));
     }, maximum);
   }, 1);
-  return Math.max(1, finite(timeline?.frameCount, 0), computed);
+  const frameCount = Math.max(1, finite(timeline?.frameCount, 0), computed);
+  if (cacheable) {
+    timelineMetricsCache.set(timeline, {
+      ...timelineMetricsCache.get(timeline),
+      frameCount
+    });
+  }
+  return frameCount;
 }
 
 function timelineFrameRate(timeline) {
-  return Math.max(1, finite(timeline?.frameRate, 30));
+  const cacheable = timeline && (typeof timeline === 'object' || typeof timeline === 'function');
+  const cached = cacheable ? timelineMetricsCache.get(timeline)?.frameRate : undefined;
+  if (Number.isFinite(cached)) return cached;
+  const frameRate = Math.max(1, finite(timeline?.frameRate, 30));
+  if (cacheable) {
+    timelineMetricsCache.set(timeline, {
+      ...timelineMetricsCache.get(timeline),
+      frameRate
+    });
+  }
+  return frameRate;
 }
 
 function transformPoint(matrix, x, y) {
@@ -172,13 +197,20 @@ function normalizeParts(parts) {
   return Object.values(parts || {});
 }
 
-function loadImage(path) {
-  return new Promise((resolve, reject) => {
+async function loadImage(path) {
+  const image = await new Promise((resolve, reject) => {
     const image = new Image();
+    image.decoding = 'async';
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error(`No se pudo cargar ${path}`));
     image.src = path;
   });
+  if (typeof createImageBitmap !== 'function') return image;
+  try {
+    return await createImageBitmap(image, { premultiplyAlpha: 'premultiply' });
+  } catch (_) {
+    return image;
+  }
 }
 
 function clonePart(part) {
@@ -206,9 +238,11 @@ function correctPartRegistration(part) {
 async function loadOutfitPacks() {
   state.outfitRegistry = null;
   state.outfitPacks.clear();
+  appearanceCache.clear();
+  suppressionCache.clear();
   if (document.body?.dataset.mode !== 'runner') return;
 
-  const response = await fetch('assets/outfits.json', { cache: 'no-store' });
+  const response = await fetch('assets/outfits.json');
   if (!response.ok) throw new Error('No se encontró assets/outfits.json');
   const registry = await response.json();
   const jobs = [];
@@ -217,7 +251,7 @@ async function loadOutfitPacks() {
     for (const option of options || []) {
       if (!option.manifest) continue;
       jobs.push((async () => {
-        const manifestResponse = await fetch(option.manifest, { cache: 'no-store' });
+        const manifestResponse = await fetch(option.manifest);
         if (!manifestResponse.ok) throw new Error(`No se encontró ${option.manifest}`);
         const manifest = await manifestResponse.json();
         const allowed = new Set(option.parts || []);
@@ -242,29 +276,52 @@ async function loadOutfitPacks() {
 
   await Promise.all(jobs);
   state.outfitRegistry = registry;
+  appearanceCache.clear();
+  suppressionCache.clear();
+}
+
+function loadoutCacheKey(loadout) {
+  if (!loadout) return 'base';
+  return `${loadout.clothing || 'classic'}|${loadout.hair || 'classic'}|` +
+    `${loadout.weapon || 'classic'}|${loadout.back || 'classic'}`;
 }
 
 function appearanceFor(partName, loadout) {
+  const cacheKey = `${loadoutCacheKey(loadout)}:${partName}`;
+  if (appearanceCache.has(cacheKey)) return appearanceCache.get(cacheKey);
+  let appearance = null;
   if (loadout) {
     for (const slot of ['clothing', 'hair', 'weapon', 'back']) {
       const optionId = loadout[slot];
       if (!optionId || optionId === 'classic') continue;
       const record = state.outfitPacks.get(`${slot}:${optionId}`)?.get(partName);
-      if (record) return record;
+      if (record) {
+        appearance = record;
+        break;
+      }
     }
   }
-  return { part: state.parts.get(partName), image: state.images.get(partName) };
+  appearance ||= { part: state.parts.get(partName), image: state.images.get(partName) };
+  appearanceCache.set(cacheKey, appearance);
+  return appearance;
 }
 
 function isPartSuppressedByLoadout(partName, loadout) {
   if (!partName || !loadout || !state.outfitRegistry) return false;
+  const cacheKey = `${loadoutCacheKey(loadout)}:${partName}`;
+  if (suppressionCache.has(cacheKey)) return suppressionCache.get(cacheKey);
+  let suppressed = false;
   for (const [slot, options] of Object.entries(state.outfitRegistry.slots || {})) {
     const optionId = loadout[slot];
     if (!optionId) continue;
     const option = (options || []).find(candidate => candidate.id === optionId);
-    if (option?.suppressParts?.includes(partName)) return true;
+    if (option?.suppressParts?.includes(partName)) {
+      suppressed = true;
+      break;
+    }
   }
-  return false;
+  suppressionCache.set(cacheKey, suppressed);
+  return suppressed;
 }
 
 function resolvePartName(linkageName) {
@@ -401,6 +458,22 @@ function withEquipmentCommands(commands, timeline, frameNumber) {
   return result;
 }
 
+function cachedRunnerCommands(timeline, frameNumber, facing) {
+  if (!timeline) return [];
+  let timelineCache = runnerCommandCache.get(timeline);
+  if (!timelineCache) {
+    timelineCache = new Map();
+    runnerCommandCache.set(timeline, timelineCache);
+  }
+  const frame = Math.max(0, Math.floor(finite(frameNumber)));
+  const key = `${facing}:${frame}`;
+  if (!timelineCache.has(key)) {
+    timelineCache.set(key, withEquipmentCommands(
+      commandsForTimeline(timeline, frame, { facing }), timeline, frame));
+  }
+  return timelineCache.get(key);
+}
+
 function buildCommands() {
   const timeline = activeTimeline();
   // The exported artwork faces left. Keep every action facing the direction
@@ -409,7 +482,7 @@ function buildCommands() {
   // timeline and A/left maps to the source orientation.
   const facing = lastRunDirection === 1 ? -1 : 1;
   const frameNumber = activeFrameNumber();
-  const commands = withEquipmentCommands(commandsForTimeline(timeline, frameNumber, { facing }), timeline, frameNumber);
+  const commands = cachedRunnerCommands(timeline, frameNumber, facing);
   state.commands = commands;
   if (state.selectedId && !commands.some(command => command.id === state.selectedId)) {
     state.selectedId = null;
@@ -902,7 +975,7 @@ function render(now = 0) {
   const runnerScene = document.body?.dataset.mode === 'runner' ? window.NinjaRunnerScene : null;
   const views = runnerScene?.getViews?.(now);
   if (Array.isArray(views) && views.length) {
-    for (const view of [...views].sort((a, b) => finite(a.y) - finite(b.y))) {
+    for (const view of views.sort((a, b) => finite(a.y) - finite(b.y))) {
       let commands = state.commands;
       if (view.role === 'rival') commands = commandsForRunnerView(view, now);
       for (const command of commands) drawPart(command, view);
@@ -948,16 +1021,12 @@ function commandsForRunnerView(view, now) {
   const loops = mode === 'run' || mode === 'idle';
   const frame = loops ? elapsedFrames % frameCount : Math.min(frameCount - 1, elapsedFrames);
 
-  return withEquipmentCommands(
-    commandsForTimeline(timeline, frame, { facing: -1 }),
-    timeline,
-    frame
-  );
+  return cachedRunnerCommands(timeline, frame, -1);
 }
 
 async function loadOptionalTimeline(path, label) {
   try {
-    const response = await fetch(path, { cache: 'no-store' });
+    const response = await fetch(path);
     if (!response.ok) throw new Error(`${path} no encontrado`);
     const timeline = await response.json();
     console.log(`${label} cargada: ${timelineFrameCount(timeline)} frames, ${timeline.layers?.length || 0} capas`);
@@ -1016,7 +1085,7 @@ async function loadManifest() {
     state.loaded = false;
     state.loadWarnings = [];
     setStatus('Cargando manifest y PNG…');
-    const response = await fetch('assets/asset_manifest.json', { cache: 'no-store' });
+    const response = await fetch('assets/asset_manifest.json');
     if (!response.ok) throw new Error('No se encontró assets/asset_manifest.json');
     const manifest = await response.json();
     const timeline = resolveTimeline(manifest);
@@ -1057,13 +1126,10 @@ async function loadManifest() {
     for (const binding of equipmentBindings()) requestedPartNames.add(binding.partName);
     const requiredNames = [...requestedPartNames].filter(name => state.parts.has(name));
 
-    await Promise.all(requiredNames.map(name => new Promise((resolve, reject) => {
+    await Promise.all(requiredNames.map(async name => {
       const part = state.parts.get(name);
-      const image = new Image();
-      image.onload = () => { state.images.set(name, image); resolve(); };
-      image.onerror = () => reject(new Error(`No se pudo cargar ${part.png}`));
-      image.src = `assets/${part.png}`;
-    })));
+      state.images.set(name, await loadImage(`assets/${part.png}`));
+    }));
     await loadOutfitPacks();
 
     state.frame = 0;

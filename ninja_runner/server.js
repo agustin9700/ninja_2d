@@ -4,6 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
+const zlib = require('node:zlib');
 const { WebSocket, WebSocketServer } = require('./server/websocket-server');
 
 const ROOT = __dirname;
@@ -132,6 +133,27 @@ function createNinjaServer(options = {}) {
   const clients = new Map();
   const rooms = new Map();
   const waiting = [];
+  const encodedAssetCache = new Map();
+
+  const compressAsset = (filePath, stats, encoding) => {
+    const cacheKey = `${filePath}:${stats.size}:${Math.floor(stats.mtimeMs)}:${encoding}`;
+    if (encodedAssetCache.has(cacheKey)) return encodedAssetCache.get(cacheKey);
+    const pending = fs.promises.readFile(filePath).then(source => new Promise((resolve, reject) => {
+      const callback = (error, result) => error ? reject(error) : resolve(result);
+      if (encoding === 'br') {
+        zlib.brotliCompress(source, {
+          params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5 }
+        }, callback);
+      } else {
+        zlib.gzip(source, { level: 6 }, callback);
+      }
+    })).catch(error => {
+      encodedAssetCache.delete(cacheKey);
+      throw error;
+    });
+    encodedAssetCache.set(cacheKey, pending);
+    return pending;
+  };
 
   const send = (client, message) => {
     if (client?.ws.readyState === WebSocket.OPEN) client.ws.send(JSON.stringify(message));
@@ -322,18 +344,53 @@ function createNinjaServer(options = {}) {
       response.writeHead(403).end('Forbidden');
       return;
     }
-    fs.stat(filePath, (statError, stats) => {
+    fs.stat(filePath, async (statError, stats) => {
       if (statError || !stats.isFile()) {
         response.writeHead(404).end('Not found');
         return;
       }
       const extension = path.extname(filePath).toLowerCase();
       const isLiveCode = ['.html', '.js', '.css'].includes(extension);
-      response.writeHead(200, {
+      const quote = String.fromCharCode(34);
+      const etag = 'W/' + quote + stats.size.toString(16) + '-' +
+        Math.floor(stats.mtimeMs).toString(16) + quote;
+      const baseHeaders = {
         'content-type': MIME_TYPES[extension] || 'application/octet-stream',
-        'cache-control': isLiveCode ? 'no-cache' : 'public, max-age=3600'
-      });
-      fs.createReadStream(filePath).pipe(response);
+        'cache-control': isLiveCode ? 'no-cache' : 'public, max-age=3600, must-revalidate',
+        'etag': etag,
+        'last-modified': stats.mtime.toUTCString(),
+        'x-content-type-options': 'nosniff',
+        'vary': 'Accept-Encoding'
+      };
+      if (request.headers['if-none-match'] === etag) {
+        response.writeHead(304, baseHeaders).end();
+        return;
+      }
+      const compressible = stats.size >= 1024 &&
+        ['.html', '.js', '.css', '.json', '.svg'].includes(extension);
+      const accepted = String(request.headers['accept-encoding'] || '');
+      const encoding = compressible && /(?:^|,)\s*br\s*(?:,|$)/i.test(accepted)
+        ? 'br'
+        : (compressible && /(?:^|,)\s*gzip\s*(?:,|$)/i.test(accepted) ? 'gzip' : '');
+      if (!encoding) {
+        response.writeHead(200, { ...baseHeaders, 'content-length': stats.size });
+        if (request.method === 'HEAD') response.end();
+        else fs.createReadStream(filePath).pipe(response);
+        return;
+      }
+      try {
+        const payload = await compressAsset(filePath, stats, encoding);
+        response.writeHead(200, {
+          ...baseHeaders,
+          'content-encoding': encoding,
+          'content-length': payload.length
+        });
+        response.end(request.method === 'HEAD' ? undefined : payload);
+      } catch (_) {
+        response.writeHead(200, { ...baseHeaders, 'content-length': stats.size });
+        if (request.method === 'HEAD') response.end();
+        else fs.createReadStream(filePath).pipe(response);
+      }
     });
   });
 

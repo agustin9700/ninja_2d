@@ -146,6 +146,24 @@ try {
         rect.right <= layout.innerWidth && rect.bottom <= layout.innerHeight,
       `${testCase.name}: #${button.id} queda fuera de pantalla`);
     }
+    if (testCase.mobile && testCase.width > testCase.height &&
+        ['flow', 'duo'].includes(testCase.mode)) {
+      const byId = Object.fromEntries(layout.buttons.map(button => [button.id, button.rect]));
+      const centerX = rect => rect.left + rect.width / 2;
+      const centerY = rect => rect.top + rect.height / 2;
+      assert.ok(Math.abs(centerX(byId.btnJump) - centerX(byId.btnDuck)) <= 2,
+        `${testCase.name}: Subir y Bajar no forman el eje vertical de la cruceta`);
+      assert.ok(Math.abs(centerY(byId.btnBack) - centerY(byId.btnForward)) <= 2,
+        `${testCase.name}: Atras y Adelante no forman el eje horizontal de la cruceta`);
+      assert.ok(centerY(byId.btnJump) < centerY(byId.btnBack) &&
+        centerY(byId.btnDuck) > centerY(byId.btnBack),
+      `${testCase.name}: el orden vertical de la cruceta es incorrecto`);
+      assert.ok(centerX(byId.btnBack) < centerX(byId.btnJump) &&
+        centerX(byId.btnForward) > centerX(byId.btnJump),
+      `${testCase.name}: el orden horizontal de la cruceta es incorrecto`);
+      assert.ok(byId.btnAttack.left > byId.btnForward.right,
+        `${testCase.name}: Ataque debe quedar separado de la cruceta`);
+    }
     results.push({
       name: testCase.name,
       controls: layout.buttons.length,

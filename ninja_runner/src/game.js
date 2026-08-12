@@ -2,12 +2,13 @@
   'use strict';
 
   const background = document.getElementById('background');
-  const bg = background.getContext('2d');
+  const bg = background.getContext('2d', { alpha: false, desynchronized: true });
   const fx = document.getElementById('fx');
-  const ctx = fx.getContext('2d');
+  const ctx = fx.getContext('2d', { alpha: true, desynchronized: true });
   const W = fx.width;
   const H = fx.height;
   const prefersReducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+  const mobileVisualBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
   const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
 
   const CONFIG = Object.freeze({
@@ -63,6 +64,29 @@
     raceLength: 800
   });
 
+  function linearPaint(y0, y1, stops) {
+    const gradient = bg.createLinearGradient(0, y0, 0, y1);
+    for (const [offset, color] of stops) gradient.addColorStop(offset, color);
+    return gradient;
+  }
+
+  const raceGlowPaint = bg.createRadialGradient(785, 106, 5, 785, 106, 145);
+  raceGlowPaint.addColorStop(0, 'rgba(235,239,255,.15)');
+  raceGlowPaint.addColorStop(1, 'rgba(235,239,255,0)');
+  const WORLD_PAINTS = Object.freeze({
+    flowSky: linearPaint(0, 190, [[0, '#101b24'], [1, '#2c3c38']]),
+    flowWall: linearPaint(78, 182, [[0, '#6d715e'], [1, '#373b33']]),
+    flowEarth: linearPaint(145, 640, [[0, '#77715b'], [.45, '#5c5848'], [1, '#32332e']]),
+    raceSky: linearPaint(0, H, [[0, '#111a2c'], [.5, '#0d1220'], [1, '#07090e']]),
+    raceGlow: raceGlowPaint,
+    rivalLane: linearPaint(145, CONFIG.rivalGroundY + 18, [
+      [0, 'rgba(18,20,34,.78)'], [1, 'rgba(10,12,22,.94)']
+    ]),
+    playerLane: linearPaint(CONFIG.laneDividerY, CONFIG.playerGroundY + 18, [
+      [0, 'rgba(12,16,25,.84)'], [1, 'rgba(8,11,18,.97)']
+    ])
+  });
+
   const elements = {
     lives: document.getElementById('lives'),
     score: document.getElementById('score'),
@@ -115,6 +139,7 @@
     btnJump: document.getElementById('btnJump'),
     btnDuck: document.getElementById('btnDuck'),
     btnAttack: document.getElementById('btnAttack'),
+    btnAttackLabel: document.querySelector('#btnAttack strong'),
     btnBack: document.getElementById('btnBack'),
     btnForward: document.getElementById('btnForward'),
     btnLane: document.getElementById('btnLane'),
@@ -207,6 +232,7 @@
     remotePoseQueue: [],
     networkRtt: null,
     networkSendClock: 0,
+    hudRenderClock: 0,
     networkFinishedSent: false,
     matchStartTimer: 0,
     countdownTimer: 0,
@@ -260,6 +286,34 @@
   const isDuoMode = () => game.gameType === 'duo';
   const isFlowMode = () => game.gameType === 'flow';
   const isCoopMode = () => isDuoMode() || isFlowMode();
+
+  const lifeNodes = Array.from({ length: 3 }, () => {
+    const life = document.createElement('span');
+    life.className = 'life';
+    life.setAttribute('aria-hidden', 'true');
+    return life;
+  });
+  elements.lives.replaceChildren(...lifeNodes);
+
+  function setTextIfChanged(element, value) {
+    if (!element) return;
+    const next = String(value);
+    if (element.textContent !== next) element.textContent = next;
+  }
+
+  function setAttributeIfChanged(element, name, value) {
+    if (!element) return;
+    const next = String(value);
+    if (element.getAttribute(name) !== next) element.setAttribute(name, next);
+  }
+
+  function setHiddenIfChanged(element, hidden) {
+    if (element && element.hidden !== Boolean(hidden)) element.hidden = Boolean(hidden);
+  }
+
+  function setWidthIfChanged(element, width) {
+    if (element && element.style.width !== width) element.style.width = width;
+  }
 
   function laneGroundY(lane) {
     return lane === 'rival' ? CONFIG.rivalGroundY : CONFIG.playerGroundY;
@@ -434,25 +488,22 @@
   }
 
   function renderHud() {
-    elements.playerNameHud.textContent = game.playerName;
-    elements.rivalName.textContent = game.rivalPlayerName;
-    elements.lives.replaceChildren();
-    for (let index = 0; index < 3; index += 1) {
-      const life = document.createElement('span');
-      life.className = index < game.lives ? 'life' : 'life lost';
-      life.setAttribute('aria-hidden', 'true');
-      elements.lives.appendChild(life);
+    setTextIfChanged(elements.playerNameHud, game.playerName);
+    setTextIfChanged(elements.rivalName, game.rivalPlayerName);
+    for (let index = 0; index < lifeNodes.length; index += 1) {
+      lifeNodes[index].classList.toggle('lost', index >= game.lives);
     }
-    elements.lives.setAttribute('aria-label', `${game.lives} ${game.lives === 1 ? 'vida' : 'vidas'}`);
-    elements.score.textContent = formatScore(displayedScore());
-    elements.combo.textContent = game.combo >= 2 ? `COMBO ×${game.combo}` : '';
+    setAttributeIfChanged(elements.lives, 'aria-label',
+      `${game.lives} ${game.lives === 1 ? 'vida' : 'vidas'}`);
+    setTextIfChanged(elements.score, formatScore(displayedScore()));
+    setTextIfChanged(elements.combo, game.combo >= 2 ? `COMBO ×${game.combo}` : '');
     const playerRatio = Math.min(1, game.playerMeters / (isFlowMode() ? CONFIG.flowLength : CONFIG.raceLength));
     const rivalRatio = Math.min(1, game.rivalMeters /
       (isFlowMode() ? CONFIG.flowLength : CONFIG.raceLength));
-    elements.playerProgress.style.width = `${playerRatio * 100}%`;
-    elements.rivalProgress.style.width = `${rivalRatio * 100}%`;
-    elements.playerMeters.textContent = `${Math.floor(game.playerMeters)}m`;
-    elements.rivalMeters.textContent = `${Math.floor(game.rivalMeters)}m`;
+    setWidthIfChanged(elements.playerProgress, `${(playerRatio * 100).toFixed(1)}%`);
+    setWidthIfChanged(elements.rivalProgress, `${(rivalRatio * 100).toFixed(1)}%`);
+    setTextIfChanged(elements.playerMeters, `${Math.floor(game.playerMeters)}m`);
+    setTextIfChanged(elements.rivalMeters, `${Math.floor(game.rivalMeters)}m`);
     renderDuoHud();
     renderFlowHud();
     renderLatency();
@@ -460,11 +511,11 @@
 
   function renderDuoHud() {
     const visible = isDuoMode() && (game.running || game.countingDown);
-    elements.duoHud.hidden = !visible;
+    setHiddenIfChanged(elements.duoHud, !visible);
     if (!visible) return;
     const value = Math.round(clamp(game.syncMeter, 0, 100));
-    elements.syncProgress.style.width = `${value}%`;
-    elements.syncValue.textContent = `${value}%`;
+    setWidthIfChanged(elements.syncProgress, `${value}%`);
+    setTextIfChanged(elements.syncValue, `${value}%`);
     elements.duoHud.classList.toggle('ready', value >= 100);
     elements.duoHud.classList.toggle('rescue-ready', value >= CONFIG.teamRescueCost);
     const cueActive = game.duoCue && performance.now() < game.duoCueUntil;
@@ -481,40 +532,40 @@
     } else if (game.player.shield) {
       prompt = `GUARD ACTIVO ${shieldSeconds(game.player)}s`;
     }
-    elements.duoPrompt.textContent = prompt;
+    setTextIfChanged(elements.duoPrompt, prompt);
   }
 
   function renderFlowHud() {
     const visible = isFlowMode() && (game.running || game.countingDown);
-    elements.flowHud.hidden = !visible;
-    elements.flowSwordCounter.hidden = !visible;
+    setHiddenIfChanged(elements.flowHud, !visible);
+    setHiddenIfChanged(elements.flowSwordCounter, !visible);
     const charges = clamp(game.flowSwordCharges, 0, CONFIG.flowSwordMax);
-    elements.flowSwordCount.textContent = String(charges);
-    elements.flowRivalSwordCount.textContent = `COMP ${game.rivalSwordCharges}`;
-    elements.flowSwordCounter.dataset.empty = String(charges <= 0);
-    elements.flowSwordCounter.setAttribute('aria-label',
+    setTextIfChanged(elements.flowSwordCount, charges);
+    setTextIfChanged(elements.flowRivalSwordCount, `COMP ${game.rivalSwordCharges}`);
+    setAttributeIfChanged(elements.flowSwordCounter, 'data-empty', charges <= 0);
+    setAttributeIfChanged(elements.flowSwordCounter, 'aria-label',
       `${charges} espadazos disponibles; companero ${game.rivalSwordCharges}`);
-    const attackLabel = elements.btnAttack?.querySelector('strong');
-    if (attackLabel) attackLabel.textContent = isFlowMode() ? `Espada ${charges}` : 'Espadazo';
-    elements.btnAttack?.setAttribute('data-empty', String(isFlowMode() && charges <= 0));
+    setTextIfChanged(elements.btnAttackLabel, isFlowMode() ? `Espada ${charges}` : 'Espadazo');
+    setAttributeIfChanged(elements.btnAttack, 'data-empty', isFlowMode() && charges <= 0);
     if (!visible) return;
     const active = [];
     const now = performance.now();
     if (game.player.shield) active.push(`GUARD VOS ${shieldSeconds(game.player, now)}s`);
     if (game.rival.shield) active.push(`GUARD COMP ${shieldSeconds(game.rival, now)}s`);
     const buffs = active.length ? active.join(' + ') : 'SIN GUARD';
-    elements.flowBuffs.textContent =
-      `VIDAS ${game.lives}+${game.remoteLives} · ESPADAS V${charges}/C${game.rivalSwordCharges} · ${buffs}`;
+    setTextIfChanged(elements.flowBuffs,
+      `VIDAS ${game.lives}+${game.remoteLives} · ESPADAS V${charges}/C${game.rivalSwordCharges} · ${buffs}`);
   }
 
   function renderLatency() {
     const visible = isOnlineRace() && game.running && Number.isFinite(game.networkRtt);
-    elements.latencyHud.hidden = !visible;
+    setHiddenIfChanged(elements.latencyHud, !visible);
     if (!visible) return;
     const rtt = Math.max(0, Math.round(game.networkRtt));
-    elements.latencyLabel.textContent = `${rtt} MS`;
-    elements.latencyHud.dataset.quality = rtt < 90 ? 'good' : (rtt < 180 ? 'fair' : 'poor');
-    elements.latencyHud.setAttribute('aria-label', `Latencia ${rtt} milisegundos`);
+    setTextIfChanged(elements.latencyLabel, `${rtt} MS`);
+    setAttributeIfChanged(elements.latencyHud, 'data-quality',
+      rtt < 90 ? 'good' : (rtt < 180 ? 'fair' : 'poor'));
+    setAttributeIfChanged(elements.latencyHud, 'aria-label', `Latencia ${rtt} milisegundos`);
   }
 
   function showToast(message) {
@@ -1804,7 +1855,7 @@
     const colors = lane === 'rival'
       ? ['#ffffff', '#dcc5ff', '#a675ff', '#6943c7']
       : ['#fff8d6', '#ffd45f', '#ff923d', '#ff3f4f'];
-    const burstCount = prefersReducedMotion ? 8 : 26;
+    const burstCount = prefersReducedMotion ? 8 : (mobileVisualBudget ? 18 : 26);
     for (let index = 0; index < burstCount; index += 1) {
       const angle = (Math.PI * 2 * index / burstCount) + (Math.random() - .5) * .24;
       const speed = 110 + Math.random() * 360;
@@ -1820,7 +1871,7 @@
         color: colors[index % colors.length]
       });
     }
-    for (let index = 0; index < (prefersReducedMotion ? 1 : 5); index += 1) {
+    for (let index = 0; index < (prefersReducedMotion ? 1 : (mobileVisualBudget ? 3 : 5)); index += 1) {
       game.particles.push({
         x,
         y,
@@ -1847,6 +1898,13 @@
     game.explosions = game.explosions.filter(explosion => explosion.age < explosion.duration);
   }
 
+  function updateRunHud(dt) {
+    game.hudRenderClock -= dt;
+    if (game.hudRenderClock > 0) return;
+    game.hudRenderClock = .1;
+    renderHud();
+  }
+
   function updateDifficulty(dt) {
     game.elapsed += dt;
     game.distance += game.speed * dt;
@@ -1869,7 +1927,7 @@
         const progress = clamp(game.playerMeters / CONFIG.flowLength, 0, 1);
         game.flowPatternClock = CONFIG.flowPatternDelay - progress * .38;
       }
-      renderHud();
+      updateRunHud(dt);
       if (isOnlineRace() && !game.over && game.playerMeters >= CONFIG.flowLength &&
           !game.networkFinishedSent) {
         game.networkFinishedSent = true;
@@ -1919,7 +1977,7 @@
         }
       }
     }
-    renderHud();
+    updateRunHud(dt);
 
     if (isOnlineRace() && !game.over && game.playerMeters >= CONFIG.raceLength &&
         !game.networkFinishedSent) {
@@ -1943,10 +2001,7 @@
   function drawFlowWorld() {
     bg.clearRect(0, 0, W, H);
     const motionDistance = prefersReducedMotion ? 0 : game.distance;
-    const sky = bg.createLinearGradient(0, 0, 0, 190);
-    sky.addColorStop(0, '#101b24');
-    sky.addColorStop(1, '#2c3c38');
-    bg.fillStyle = sky;
+    bg.fillStyle = WORLD_PAINTS.flowSky;
     bg.fillRect(0, 0, W, H);
 
     const forestOffset = -((motionDistance * .02) % 170);
@@ -1961,10 +2016,7 @@
       bg.fillRect(x + 13, crownY + 28, 14, 95);
     }
 
-    const wall = bg.createLinearGradient(0, 78, 0, 182);
-    wall.addColorStop(0, '#6d715e');
-    wall.addColorStop(1, '#373b33');
-    bg.fillStyle = wall;
+    bg.fillStyle = WORLD_PAINTS.flowWall;
     bg.fillRect(0, 78, W, 108);
     bg.fillStyle = '#211c17';
     bg.fillRect(0, 82, W, 9);
@@ -1982,11 +2034,7 @@
       bg.stroke();
     }
 
-    const earth = bg.createLinearGradient(0, 145, 0, 640);
-    earth.addColorStop(0, '#77715b');
-    earth.addColorStop(.45, '#5c5848');
-    earth.addColorStop(1, '#32332e');
-    bg.fillStyle = earth;
+    bg.fillStyle = WORLD_PAINTS.flowEarth;
     bg.fillRect(0, 145, W, 495);
 
     bg.save();
@@ -2086,17 +2134,10 @@
       return;
     }
     bg.clearRect(0, 0, W, H);
-    const sky = bg.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, '#111a2c');
-    sky.addColorStop(.5, '#0d1220');
-    sky.addColorStop(1, '#07090e');
-    bg.fillStyle = sky;
+    bg.fillStyle = WORLD_PAINTS.raceSky;
     bg.fillRect(0, 0, W, H);
 
-    const glow = bg.createRadialGradient(785, 106, 5, 785, 106, 145);
-    glow.addColorStop(0, 'rgba(235,239,255,.15)');
-    glow.addColorStop(1, 'rgba(235,239,255,0)');
-    bg.fillStyle = glow;
+    bg.fillStyle = WORLD_PAINTS.raceGlow;
     bg.fillRect(620, 0, 330, 270);
     bg.fillStyle = 'rgba(221,228,248,.1)';
     bg.beginPath();
@@ -2115,10 +2156,7 @@
     }
 
     const drawLane = (top, groundY, accent, label, distance, laneIndex) => {
-      const laneGradient = bg.createLinearGradient(0, top, 0, groundY + 18);
-      laneGradient.addColorStop(0, laneIndex ? 'rgba(12,16,25,.84)' : 'rgba(18,20,34,.78)');
-      laneGradient.addColorStop(1, laneIndex ? 'rgba(8,11,18,.97)' : 'rgba(10,12,22,.94)');
-      bg.fillStyle = laneGradient;
+      bg.fillStyle = laneIndex ? WORLD_PAINTS.playerLane : WORLD_PAINTS.rivalLane;
       bg.fillRect(0, top, W, groundY - top + 19);
 
       const buildingOffset = -((distance * .12) % 168);
@@ -3318,6 +3356,7 @@
     game.remoteLives = isFlowMode() ? 2 : 3;
     game.remotePoseQueue = [];
     game.networkSendClock = 0;
+    game.hudRenderClock = 0;
     game.networkFinishedSent = false;
     game.duoHost = false;
     game.duoPatternClock = 2.2;

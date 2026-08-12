@@ -114,8 +114,12 @@ assert.match(game, /flowSwordStart:\s*2/,
   'Cada ninja del nuevo Duo debe iniciar con dos espadazos');
 assert.match(html, /id="flowSwordCounter"/,
   'Flujo debe mostrar un contador permanente de espadazos');
-assert.match(game, /flowSwordCount\.textContent = String\(charges\)/,
+assert.match(game, /setTextIfChanged\(elements\.flowSwordCount, charges\)/,
   'El contador visible debe actualizar las cargas del jugador');
+assert.match(game, /elements\.lives\.replaceChildren\(\.\.\.lifeNodes\)/,
+  'El HUD debe crear los iconos de vida una sola vez');
+assert.doesNotMatch(game, /function renderHud\(\)[\s\S]{0,500}elements\.lives\.replaceChildren/,
+  'El HUD no debe reconstruir las vidas en cada fotograma');
 assert.match(game, /flowSwordPickup:\s*1/,
   'El buff de Filos debe recargar un espadazo');
 assert.match(game, /game\.lives = isFlowMode\(\) \? 2 : 3/,
@@ -154,6 +158,16 @@ assert.match(game, /game\.flowBlastUntil = now \+ 720/,
   'Explosion Total necesita una confirmacion visual inmediata');
 assert.match(runtime, /dataset\.gameType === 'flow'/,
   'Flujo debe bloquear las animaciones de salto y agachado');
+assert.match(runtime, /const runnerCommandCache = new WeakMap\(\)/,
+  'El runtime debe reutilizar las matrices de un mismo fotograma');
+assert.match(runtime, /function cachedRunnerCommands\(/,
+  'El runtime debe cachear los comandos visuales sin alterar la animacion');
+assert.match(runtime, /const appearanceCache = new Map\(\)/,
+  'El runtime debe reutilizar la apariencia de cada pieza PNG');
+assert.match(runtime, /const timelineMetricsCache = new WeakMap\(\)/,
+  'El runtime debe reutilizar la duracion y cantidad de frames de cada timeline');
+assert.doesNotMatch(runtime, /\[\.\.\.views\]\.sort/,
+  'El runtime no debe copiar la lista de personajes en cada fotograma');
 assert.match(game, /flowActorViewX\('player'\)/,
   'El render de Flujo debe seguir la posicion horizontal del jugador');
 assert.match(game, /crossings\.sort\(\(a, b\) => b\.x - a\.x\)/,
@@ -226,6 +240,18 @@ assert.match(game, /game\.duoHost && game\.ultimateArmedByRemote/,
 assert.match(game, /game\.remoteLives = Math\.max\(0, game\.remoteLives - 1\)/,
   'El companero bot debe perder vidas en Duo');
 assert.match(game, /prefersReducedMotion/, 'Canvas debe respetar la preferencia de movimiento reducido');
+assert.match(game, /function updateRunHud\(dt\)/,
+  'El HUD debe limitar sus escrituras sin reducir los FPS del Canvas');
+assert.match(game, /game\.hudRenderClock = \.1/,
+  'El HUD de carrera debe actualizarse como maximo diez veces por segundo');
+assert.match(game, /mobileVisualBudget \? 18 : 26/,
+  'Movil debe reducir solo las particulas decorativas');
+assert.match(game, /const WORLD_PAINTS = Object\.freeze/,
+  'El fondo debe reutilizar gradientes en lugar de crearlos por fotograma');
+assert.match(runtime, /createImageBitmap\(image, \{ premultiplyAlpha: 'premultiply' \}\)/,
+  'Los PNG deben decodificarse como bitmaps listos para Canvas');
+assert.doesNotMatch(runtime, /cache: 'no-store'/,
+  'Los assets estaticos no deben descargarse nuevamente en cada visita');
 assert.match(game, /function tickRemotePose\(now\)/, 'Falta el búfer de poses del rival remoto');
 assert.match(game, /detail\.type === 'latency'/, 'Falta mostrar la latencia online');
 assert.match(game, /enemy_kunais_visible_v2/, 'La visibilidad rival debe iniciar activa en la versión actual');

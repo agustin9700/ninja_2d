@@ -64,6 +64,23 @@ try {
   assert.equal(pageResponse.status, 200);
   assert.match(await pageResponse.text(), /id="networkStatus"/);
 
+  const timelineResponse = await fetch(origin + '/assets/jump_animation.json', {
+    headers: { 'accept-encoding': 'br' }
+  });
+  assert.equal(timelineResponse.status, 200);
+  assert.equal(timelineResponse.headers.get('content-encoding'), 'br',
+    'Los timelines grandes deben viajar comprimidos con Brotli');
+  assert.match(timelineResponse.headers.get('cache-control') || '', /max-age=3600/,
+    'Los assets deben poder reutilizarse desde la cache del navegador');
+  const timelineEtag = timelineResponse.headers.get('etag');
+  assert.ok(timelineEtag, 'Los assets deben incluir ETag');
+  await timelineResponse.arrayBuffer();
+  const cachedTimelineResponse = await fetch(origin + '/assets/jump_animation.json', {
+    headers: { 'if-none-match': timelineEtag, 'accept-encoding': 'br' }
+  });
+  assert.equal(cachedTimelineResponse.status, 304,
+    'El servidor debe evitar reenviar assets que no cambiaron');
+
   const first = new TestClient(websocketUrl);
   const second = new TestClient(websocketUrl);
   await Promise.all([first.opened, second.opened]);

@@ -1024,6 +1024,12 @@ html, body { overscroll-behavior: none; }
   z-index: 0;
   overflow: hidden;
   background: #0a0e19;
+  contain: layout paint style;
+}
+
+#gameViewport canvas {
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .mobile-controls-note { display: none; }
@@ -1039,6 +1045,7 @@ html, body { overscroll-behavior: none; }
 
 @media (pointer: coarse), (max-width: 600px), (max-height: 500px) and (orientation: landscape) {
   #touchControls { display: flex; }
+  #touchControls button { backdrop-filter: none; }
 }
 
 @media (max-width: 600px) {
@@ -1180,6 +1187,7 @@ html, body { overscroll-behavior: none; }
     background: rgba(13, 17, 27, .9);
     box-shadow: 0 9px 25px rgba(0, 0, 0, .34);
     font-size: 10px;
+    backdrop-filter: none;
   }
   #touchControls button span { font-size: 22px; line-height: 1; }
   #touchControls .attack-button { background: rgba(126, 16, 31, .92); }
@@ -1282,6 +1290,10 @@ html, body { overscroll-behavior: none; }
     width: auto;
     transform: none;
     pointer-events: none;
+    --dpad-size: clamp(54px, 9vw, 68px);
+    --dpad-gap: 5px;
+    --dpad-left: max(8px, env(safe-area-inset-left));
+    --dpad-bottom: max(7px, env(safe-area-inset-bottom));
   }
   #touchControls button {
     position: absolute;
@@ -1293,6 +1305,7 @@ html, body { overscroll-behavior: none; }
     background: rgba(13, 17, 27, .9);
     box-shadow: 0 8px 22px rgba(0, 0, 0, .38);
     font-size: 8px;
+    backdrop-filter: none;
   }
   #touchControls button span { font-size: 18px; }
   #btnJump { left: max(9px, env(safe-area-inset-left)); bottom: calc(max(9px, env(safe-area-inset-bottom)) + 66px); }
@@ -1308,6 +1321,29 @@ html, body { overscroll-behavior: none; }
   #btnForward {
     left: calc(max(9px, env(safe-area-inset-left)) + clamp(84px, 13vw, 112px));
     bottom: calc(max(9px, env(safe-area-inset-bottom)) + 66px);
+  }
+  body[data-game-type=flow] #touchControls button:not(.attack-button) {
+    width: var(--dpad-size);
+    min-height: var(--dpad-size);
+    height: var(--dpad-size);
+    padding: 3px 2px;
+    border-radius: 14px;
+  }
+  body[data-game-type=flow] #btnJump {
+    left: calc(var(--dpad-left) + var(--dpad-size) + var(--dpad-gap));
+    bottom: calc(var(--dpad-bottom) + var(--dpad-size) + var(--dpad-gap) + var(--dpad-size) + var(--dpad-gap));
+  }
+  body[data-game-type=flow] #btnDuck {
+    left: calc(var(--dpad-left) + var(--dpad-size) + var(--dpad-gap));
+    bottom: var(--dpad-bottom);
+  }
+  body[data-game-type=flow] #btnBack {
+    left: var(--dpad-left);
+    bottom: calc(var(--dpad-bottom) + var(--dpad-size) + var(--dpad-gap));
+  }
+  body[data-game-type=flow] #btnForward {
+    left: calc(var(--dpad-left) + var(--dpad-size) + var(--dpad-gap) + var(--dpad-size) + var(--dpad-gap));
+    bottom: calc(var(--dpad-bottom) + var(--dpad-size) + var(--dpad-gap));
   }
   #btnAttack {
     right: max(9px, env(safe-area-inset-right));
