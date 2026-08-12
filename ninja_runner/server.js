@@ -45,10 +45,37 @@ function sanitizeKunai(value) {
   const kunai = value && typeof value === 'object' ? value : {};
   return {
     id: safeText(kunai.id, 32),
-    x: clamp(finite(kunai.x), -120, 1200),
+    x: clamp(finite(kunai.x), -120, 1900),
     height: kunai.height === 'high' ? 'high' : 'low',
+    lane: kunai.lane === 'rival' ? 'rival' : 'player',
+    linkId: safeText(kunai.linkId, 40),
     phase: clamp(finite(kunai.phase), 0, Math.PI * 2),
     resolved: Boolean(kunai.resolved)
+  };
+}
+
+function sanitizeDuoEvent(value) {
+  const event = value && typeof value === 'object' ? value : {};
+  const allowedKinds = new Set([
+    'pickup-spawn', 'pickup-collected', 'core-spawn', 'core-resolved',
+    'sync', 'ultimate-ready', 'ultimate', 'heal', 'pattern-cue', 'team-rescue',
+    'flow-projectile', 'flow-pickup', 'flow-resolved', 'flow-pickup-collected'
+  ]);
+  return {
+    kind: allowedKinds.has(event.kind) ? event.kind : '',
+    id: safeText(event.id, 40),
+    pickupKind: ['shield', 'medkit', 'blade', 'blast', 'life'].includes(event.pickupKind)
+      ? event.pickupKind : 'sync',
+    projectileKind: event.projectileKind === 'violet' ? 'violet' : 'white',
+    lane: event.lane === 'rival' ? 'rival' : 'player',
+    targetLane: event.targetLane === 'rival' ? 'rival' : 'player',
+    cue: safeText(event.cue, 48),
+    plan: safeText(event.plan, 72),
+    x: clamp(finite(event.x), -120, 1900),
+    y: clamp(finite(event.y), 150, 570),
+    vy: clamp(finite(event.vy), -120, 120),
+    phase: clamp(finite(event.phase), 0, Math.PI * 2),
+    amount: clamp(finite(event.amount), 0, 30)
   };
 }
 
@@ -56,7 +83,7 @@ function sanitizeStats(value) {
   const stats = value && typeof value === 'object' ? value : {};
   return {
     score: Math.round(clamp(finite(stats.score), 0, 99999999)),
-    meters: clamp(finite(stats.meters), 0, 800),
+    meters: clamp(finite(stats.meters), 0, 1200),
     dodges: Math.round(clamp(finite(stats.dodges), 0, 99999)),
     cuts: Math.round(clamp(finite(stats.cuts), 0, 99999)),
     attacks: Math.round(clamp(finite(stats.attacks), 0, 99999)),
@@ -71,8 +98,14 @@ function sanitizeState(value) {
   const allowedModes = new Set(['run', 'jump', 'duck', 'attack', 'hit', 'dead']);
   return {
     name: sanitizeName(source.name),
-    meters: clamp(finite(source.meters), 0, 800),
+    meters: clamp(finite(source.meters), 0, 1200),
+    flowY: clamp(finite(source.flowY, 520), 260, 610),
+    flowX: clamp(finite(source.flowX, 520), 350, 700),
+    flowSwordCharges: Math.round(clamp(finite(source.flowSwordCharges, 2), 0, 8)),
     mode: allowedModes.has(source.mode) ? source.mode : 'run',
+    lane: source.lane === 'rival' ? 'rival' : 'player',
+    shield: Boolean(source.shield),
+    shieldMs: clamp(finite(source.shieldMs), 0, 10000),
     actionAge: clamp(finite(source.actionAge), 0, 3000),
     lives: Math.round(clamp(finite(source.lives, 3), 0, 3)),
     score: Math.round(clamp(finite(source.score), 0, 99999999)),
@@ -140,6 +173,7 @@ function createNinjaServer(options = {}) {
       client.matchId = room.id;
       client.lastState = null;
       client.lastStats = null;
+      client.finishedRun = false;
       send(client, {
         type: 'match-found',
         matchId: room.id,
@@ -148,6 +182,8 @@ function createNinjaServer(options = {}) {
         playerName: client.profile.name,
         opponentName: opponent.profile.name,
         opponentLoadout: opponent.profile.loadout,
+        gameType: room.gameType,
+        duoHost: (room.gameType === 'duo' || room.gameType === 'flow') && index === 0,
         startAt,
         serverTime: Date.now(),
         rematch
@@ -161,6 +197,7 @@ function createNinjaServer(options = {}) {
     const room = {
       id: crypto.randomUUID(),
       players: [first, second],
+      gameType: first.profile.gameType,
       finished: false,
       rematchReady: new Set(),
       cleanupTimer: null
@@ -174,13 +211,15 @@ function createNinjaServer(options = {}) {
     removeFromQueue(client);
     client.profile = {
       name: sanitizeName(profile?.name),
-      loadout: sanitizeLoadout(profile?.loadout)
+      loadout: sanitizeLoadout(profile?.loadout),
+      gameType: ['duo', 'flow'].includes(profile?.gameType) ? 'flow' : 'competitive'
     };
 
     const opponent = waiting.find(candidate =>
       candidate !== client &&
       candidate.ws.readyState === WebSocket.OPEN &&
-      candidate.state === 'waiting'
+      candidate.state === 'waiting' &&
+      candidate.profile.gameType === client.profile.gameType
     );
     if (opponent) {
       startMatch(opponent, client);
@@ -200,11 +239,17 @@ function createNinjaServer(options = {}) {
   const finishMatch = (client, reason, stats) => {
     const room = rooms.get(client.matchId);
     if (!room || room.finished) return;
+    client.lastStats = sanitizeStats(stats || client.lastState?.stats);
+    const cooperative = room.gameType === 'duo' || room.gameType === 'flow';
+    if (cooperative && reason !== 'knockout') {
+      client.finishedRun = true;
+      if (!room.players.every(player => player.finishedRun)) return;
+    }
     room.finished = true;
     room.rematchReady.clear();
-    client.lastStats = sanitizeStats(stats || client.lastState?.stats);
     const opponent = room.players.find(player => player !== client);
-    const winner = reason === 'knockout' ? opponent : client;
+    const success = cooperative && reason !== 'knockout';
+    const winner = cooperative ? null : (reason === 'knockout' ? opponent : client);
     for (const player of room.players) {
       const rival = room.players.find(candidate => candidate !== player);
       const playerStats = player.lastStats || sanitizeStats(player.lastState?.stats);
@@ -212,7 +257,8 @@ function createNinjaServer(options = {}) {
       send(player, {
         type: 'match-finished',
         matchId: room.id,
-        winnerId: winner?.id || client.id,
+        winnerId: winner?.id || null,
+        success,
         reason: reason === 'knockout' ? 'knockout' : 'finish',
         playerStats,
         opponentStats
@@ -233,7 +279,13 @@ function createNinjaServer(options = {}) {
 
   const requestRematch = client => {
     const room = rooms.get(client.matchId);
-    if (!room?.finished || client.state !== 'finished') return;
+    if (!room) {
+      send(client, { type: 'rematch-expired', matchId: client.matchId || null });
+      client.matchId = null;
+      client.state = 'idle';
+      return;
+    }
+    if (!room.finished || client.state !== 'finished') return;
     room.rematchReady.add(client.id);
     for (const player of room.players) {
       send(player, {
@@ -335,6 +387,12 @@ function createNinjaServer(options = {}) {
         const room = rooms.get(client.matchId);
         const opponent = room?.players.find(player => player !== client);
         send(opponent, { type: 'opponent-kunai-spawn', kunai: sanitizeKunai(message.kunai) });
+      } else if (message.type === 'duo-event' && client.state === 'playing') {
+        const room = rooms.get(client.matchId);
+        if (!['duo', 'flow'].includes(room?.gameType)) return;
+        const opponent = room.players.find(player => player !== client);
+        const duoEvent = sanitizeDuoEvent(message.event);
+        if (duoEvent.kind) send(opponent, { type: 'opponent-duo-event', event: duoEvent });
       } else if (message.type === 'finish' && client.state === 'playing') {
         finishMatch(client, message.reason, message.stats);
       } else if (message.type === 'rematch') {
@@ -394,4 +452,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createNinjaServer, sanitizeKunai, sanitizeName, sanitizeState };
+module.exports = { createNinjaServer, sanitizeDuoEvent, sanitizeKunai, sanitizeName, sanitizeState };

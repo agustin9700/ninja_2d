@@ -92,6 +92,8 @@
         playerName: message.playerName || 'Ninja',
         opponentName: message.opponentName || 'Rival',
         opponentLoadout: message.opponentLoadout || {},
+        gameType: ['duo', 'flow'].includes(message.gameType) ? 'flow' : 'competitive',
+        duoHost: Boolean(message.duoHost),
         rematch: Boolean(message.rematch)
       });
     } else if (message.type === 'bot-fallback') {
@@ -104,12 +106,15 @@
       emit('opponent-state', { state: message.state || {} });
     } else if (message.type === 'opponent-kunai-spawn') {
       emit('opponent-kunai-spawn', { kunai: message.kunai || {} });
+    } else if (message.type === 'opponent-duo-event') {
+      emit('opponent-duo-event', { event: message.event || {} });
     } else if (message.type === 'match-finished') {
       const winnerId = message.winnerId;
       network.status = 'finished';
       emit('match-finished', {
         winnerId,
         won: winnerId === network.clientId,
+        success: Boolean(message.success),
         reason: message.reason,
         playerStats: message.playerStats || {},
         opponentStats: message.opponentStats || {}
@@ -180,7 +185,8 @@
   function queue(profile = {}) {
     network.pendingProfile = {
       name: String(profile.name || ''),
-      loadout: { ...(profile.loadout || {}) }
+      loadout: { ...(profile.loadout || {}) },
+      gameType: ['duo', 'flow'].includes(profile.gameType) ? 'flow' : 'competitive'
     };
     if (!connect()) return false;
     if (network.socket?.readyState === WebSocket.OPEN) sendPendingQueue();
@@ -208,6 +214,11 @@
   function sendKunaiSpawn(kunai) {
     if (network.status !== 'playing' || !network.matchId) return false;
     return send({ type: 'kunai-spawn', kunai });
+  }
+
+  function sendDuoEvent(event) {
+    if (network.status !== 'playing' || !network.matchId) return false;
+    return send({ type: 'duo-event', event });
   }
 
   function finish(reason = 'finish', stats = {}) {
@@ -243,6 +254,7 @@
     leave,
     sendState,
     sendKunaiSpawn,
+    sendDuoEvent,
     finish,
     rematch,
     snapshot

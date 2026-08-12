@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "serve": "node server.js",
-    "test": "node --check server.js && node --check src/network.js && node --check src/runtime.js && node --check src/game.js && node tests/smoke.mjs && node tests/server.mjs"
+    "test": "node --check server.js && node --check src/network.js && node --check src/runtime.js && node --check src/game.js && node tests/smoke.mjs && node tests/server.mjs",
+    "qa:flow": "node tests/flow-browser-qa.mjs",
+    "qa:responsive": "node tests/responsive-browser-qa.mjs"
   },
   "engines": {
     "node": ">=22"

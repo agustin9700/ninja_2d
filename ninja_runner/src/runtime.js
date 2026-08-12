@@ -929,6 +929,7 @@ function commandsForRunnerView(view, now) {
   const animation = view.animation || {};
   const mode = animation.mode || 'run';
   const timelineByMode = {
+    idle: state.idleTimeline,
     run: state.runTimeline,
     jump: state.jumpTimeline,
     duck: state.crouchTimeline,
@@ -944,7 +945,8 @@ function commandsForRunnerView(view, now) {
   const elapsed = Math.max(0, now - finite(animation.startedAt, now));
   const elapsedFrames = Math.floor(elapsed / frameDuration) +
     (mode === 'run' ? finite(view.frameOffset) : 0);
-  const frame = mode === 'run' ? elapsedFrames % frameCount : Math.min(frameCount - 1, elapsedFrames);
+  const loops = mode === 'run' || mode === 'idle';
+  const frame = loops ? elapsedFrames % frameCount : Math.min(frameCount - 1, elapsedFrames);
 
   return withEquipmentCommands(
     commandsForTimeline(timeline, frame, { facing: -1 }),
@@ -1258,6 +1260,8 @@ document.addEventListener('keydown', event => {
   if (!['a', 'd', 's', 'w', 'j', 'g', 'm'].includes(key)) return;
   event.preventDefault();
   if (runnerMode && (key === 'a' || key === 'd')) return;
+  if (runnerMode && document.body?.dataset.gameType === 'flow' &&
+      (key === 'w' || key === 's')) return;
   if (key === 'm') {
     if (event.repeat || deathAnim.active || !state.deathTimeline || !state.loaded) return;
     pressedKeys.clear();
@@ -1311,6 +1315,8 @@ document.addEventListener('keyup', event => {
   if (!['a', 'd', 's', 'w', 'j', 'g', 'm'].includes(key)) return;
   event.preventDefault();
   if (runnerMode && (key === 'a' || key === 'd')) return;
+  if (runnerMode && document.body?.dataset.gameType === 'flow' &&
+      (key === 'w' || key === 's')) return;
   if (key === 'w' || key === 'j' || key === 'g' || key === 'm') return;
   pressedKeys.delete(key);
   syncAnimationInput();

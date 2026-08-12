@@ -9,6 +9,8 @@
     "test": "npm run test:game && npm run test:assets",
     "test:game": "npm --prefix ninja_runner test",
     "test:assets": "node tools/test_runtime_data.js",
+    "qa:flow": "npm --prefix ninja_runner run qa:flow",
+    "qa:responsive": "npm --prefix ninja_runner run qa:responsive",
     "serve:prototype": "python -m http.server 8081 --directory prototype"
   },
   "engines": {

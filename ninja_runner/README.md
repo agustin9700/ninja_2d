@@ -1,42 +1,62 @@
 # Ninja Runner
 
-Runner 2D competitivo con dos sendas y partidas en tiempo real. Tu ninja corre por el corredor inferior contra otro jugador visible en la senda superior; los kunais vuelan desde la derecha hacia la izquierda y el espadazo genera una explosión en el punto de contacto.
+Runner 2D para navegador con dos modos:
 
-Cada jugador puede elegir un nombre de hasta 18 caracteres. El nombre y la vestimenta se sincronizan con el rival y se conservan localmente para la próxima partida.
+- **Competencia:** carrera original en dos sendas, contra otra persona o un bot.
+- **Duo:** modo cooperativo de movimiento libre antes llamado Flujo Ninja. Los dos ninjas corren simultaneamente, pueden subir, bajar, adelantarse o atrasarse y deben completar juntos 1200 metros.
 
-Antes de largar se puede alternar entre dos opciones para cada slot:
+El antiguo Duo por carriles fue retirado. Los enlaces o clientes que soliciten `mode=duo` se redirigen al nuevo Duo.
 
-- Ropa: `classic` / `set_186_0`.
-- Cabello: `classic` / `hair_83_0`.
-- Arma: `classic` / `weapon_182`.
-- Espalda: `classic` / `back_item_351`.
+## Jugabilidad de Duo
 
-Al pulsar “Buscar rival”, el servidor empareja a dos personas y sincroniza progreso, animaciones, vestimenta, vidas, kunais y explosiones. Los dos clientes reciben la misma hora de salida y muestran una cuenta regresiva 3–2–1–¡YA!; los controles se habilitan exactamente al comenzar. Si en cuatro segundos no aparece otra persona, la partida arranca contra el bot completo, también con cuenta regresiva. Si el rival se desconecta durante la carrera, el bot toma su lugar sin reiniciar el mapa. La carrera termina al alcanzar los 800 metros o al perder las tres vidas.
+Cada ninja comienza con 2 vidas y 2 espadazos. Las recompensas disponibles son:
 
-Los kunais que está enfrentando el rival se muestran en violeta para diferenciarlos de los propios. Un botón flotante con forma de ojo permite ocultarlos o mostrarlos durante la carrera y recuerda la elección en el navegador.
+- `GUARD`: bloquea un impacto y dura como maximo 10 segundos.
+- `EXPLOSION TOTAL`: destruye todos los kunais activos.
+- `VIDA +1`: recupera una vida hasta un maximo de 3.
+- `FILOS +1`: recupera un espadazo hasta un maximo de 8.
 
-Durante partidas online, el HUD muestra el ping medido contra el servidor. Las poses del rival usan un búfer corto para mantener el orden visual cuando la latencia fluctúa. Al terminar se comparan puntaje, distancia, esquivas, cortes, impactos, precisión, mejor racha y tiempo. Ambos jugadores pueden aceptar una revancha dentro de la misma sala o volver al lobby; la invitación expira después de 45 segundos.
+El ninja que se adelanta recibe primero los kunais. Guard se representa con un aura pulsante y un temporizador, sin lineas ni atraccion entre personajes. Sobre cada ninja se muestran sus vidas restantes.
 
-## Ejecutar
-
-Desde esta carpeta:
-
-```powershell
-npm start
-```
-
-Abrí la dirección http://127.0.0.1:8080/ en dos navegadores para probar una partida local. Para jugar desde otro equipo de la misma red, compartí la IP local de la computadora que ejecuta el servidor, usando el mismo puerto 8080.
-
-El servidor escucha conexiones WebSocket en la misma dirección. En producción, el proxy o plataforma de despliegue debe permitir upgrades WebSocket. El tiempo de espera puede cambiarse con la variable MATCH_WAIT_MS.
+Las formaciones incluyen muros con hueco, diagonales, pinzas, serpientes y fuego cruzado. Los patrones evitan repetirse consecutivamente y muestran una pista breve antes de entrar en la zona de reaccion.
 
 ## Controles
 
-- `W` o `↑`: saltar.
-- `S` o `↓`: agacharse (mantener).
-- `J` o `Espacio`: espadazo.
+Competencia:
 
-También incluye controles táctiles. Para ejecutar las comprobaciones estáticas:
+- `W` / flecha arriba: saltar.
+- `S` / flecha abajo: agacharse.
+- `J` / Espacio: atacar.
+
+Duo:
+
+- `W` / flecha arriba: subir.
+- `S` / flecha abajo: bajar.
+- `A` / flecha izquierda: atrasarse.
+- `D` / flecha derecha: adelantarse.
+- `J` / Espacio: gastar un espadazo.
+
+Todos los controles tienen equivalentes tactiles responsive.
+
+## Ejecutar
+
+Requiere Node.js 22 o superior.
+
+```powershell
+npm install
+npm start
+```
+
+Abrir `http://127.0.0.1:8080/`. Para probar multijugador local, abrir la direccion en dos ventanas o navegadores.
+
+El servidor usa HTTP y WebSocket en el mismo puerto. `MATCH_WAIT_MS` controla cuanto espera el matchmaking antes de incorporar un bot.
+
+## Pruebas
 
 ```powershell
 npm test
+npm run qa:flow
+npm run qa:responsive
 ```
+
+`qa:flow` conserva ese nombre tecnico por compatibilidad interna, pero prueba el nuevo modo Duo.

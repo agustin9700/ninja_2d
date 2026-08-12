@@ -18,11 +18,29 @@
     </div>
 
     <header id="hud" aria-live="polite">
-      <div class="hud-card lives-card"><span class="hud-label">VIDAS</span><div id="lives"></div></div>
+      <div class="hud-card lives-card">
+        <span class="hud-label">VIDAS</span>
+        <div id="lives"></div>
+        <div id="flowSwordCounter" class="flow-sword-counter" hidden>
+          <span class="flow-sword-icon" aria-hidden="true">&#9876;</span>
+          <span><small>ESPADAZOS</small><strong id="flowSwordCount">2</strong></span>
+          <em id="flowRivalSwordCount">COMP 2</em>
+        </div>
+      </div>
       <div id="raceHud" aria-label="Progreso de la carrera">
         <div class="race-row rival-row"><span id="rivalName">RIVAL</span><i><b id="rivalProgress"></b></i><strong id="rivalMeters">0m</strong></div>
         <div class="race-row player-row"><span id="playerNameHud">VOS</span><i><b id="playerProgress"></b></i><strong id="playerMeters">0m</strong></div>
         <div id="latencyHud" data-quality="good" hidden><i aria-hidden="true"></i><span id="latencyLabel">-- MS</span></div>
+        <div id="duoHud" hidden>
+          <span>SINCRONIA</span>
+          <i><b id="syncProgress"></b></i>
+          <strong id="syncValue">0%</strong>
+          <em id="duoPrompt">JUGUEN EN EQUIPO</em>
+        </div>
+        <div id="flowHud" hidden>
+          <span>D&#218;O</span>
+          <strong id="flowBuffs">SIN BUFFS</strong>
+        </div>
       </div>
       <div class="hud-card score-card"><span class="hud-label">PUNTAJE</span><strong id="score">000000</strong><span id="combo"></span></div>
     </header>
@@ -47,9 +65,30 @@
 
     <section id="startScreen" class="overlay" aria-labelledby="gameTitle">
       <div class="panel start-panel">
-        <div class="eyebrow">CARRERA DE DOS SENDAS</div>
+        <div class="eyebrow">ELEG&#205; C&#211;MO CORRER</div>
         <h1 id="gameTitle"><span>NINJA</span> RUNNER</h1>
         <p>Competí en tiempo real contra otra persona. Si nadie se conecta, la carrera empieza automáticamente contra el bot.</p>
+        <div class="mode-selector" role="radiogroup" aria-label="Modo de juego">
+          <button class="mode-card selected" data-game-type="competitive" type="button" role="radio" aria-checked="true">
+            <span>VS</span><strong>COMPETENCIA</strong><small>Dos sendas &middot; un ganador</small>
+          </button>
+          <button class="mode-card" data-game-type="flow" type="button" role="radio" aria-checked="false">
+            <span>2P</span><strong>D&#218;O</strong><small>Movimiento libre &middot; coop</small>
+          </button>
+        </div>
+        <details id="flowGuide" class="duo-guide flow-guide" hidden>
+          <summary>
+            <span>GU&#205;A DE BUFFS D&#218;O</span>
+            <small>Abrir antes de correr</small>
+          </summary>
+          <div class="duo-guide-grid">
+            <p class="flow-rules">W/S: subir o bajar &middot; A/D: atrasarse o adelantarse &middot; El ninja que va delante recibe primero los kunais.</p>
+            <article data-kind="shield"><b aria-hidden="true">O</b><span><strong>GUARD</strong><small>Dura 10 segundos o hasta bloquear un impacto. Recoger otro reinicia el tiempo.</small></span></article>
+            <article data-kind="blast"><b aria-hidden="true">X</b><span><strong>EXPLOSI&#211;N TOTAL</strong><small>Destruye inmediatamente todos los kunais visibles.</small></span></article>
+            <article data-kind="life"><b aria-hidden="true">+1</b><span><strong>VIDA</strong><small>Cada ninja empieza con 2. Recupera 1 vida hasta un m&#225;ximo de 3.</small></span></article>
+            <article data-kind="blade"><b aria-hidden="true">+1</b><span><strong>FILOS</strong><small>Recarga 1 espadazo. Cada ninja empieza con 2 y puede guardar hasta 8.</small></span></article>
+          </div>
+        </details>
         <div id="networkStatus" class="network-status" data-state="connecting" role="status" aria-live="polite">
           <i aria-hidden="true"></i>
           <span id="networkLabel">CONECTANDO AL SERVIDOR…</span>
@@ -75,13 +114,15 @@
           </button>
         </div>
         <div class="controls-grid" aria-label="Controles">
-          <div class="control-card"><div class="key-row"><kbd>W</kbd><kbd>↑</kbd></div><strong>Saltar</strong><small>Kunai bajo</small></div>
-          <div class="control-card"><div class="key-row"><kbd>S</kbd><kbd>↓</kbd></div><strong>Agacharse</strong><small>Kunai alto</small></div>
+          <div class="control-card lane-control" hidden><div class="key-row"><kbd>A</kbd><kbd>D</kbd></div><strong>Cambiar carril</strong><small>Solo en D&#250;o</small></div>
+          <div class="control-card flow-horizontal-control" hidden><div class="key-row"><kbd>A</kbd><kbd>D</kbd></div><strong>Atr&#225;s / adelante</strong><small>Cubrir al compa&#241;ero</small></div>
+          <div class="control-card"><div class="key-row"><kbd>W</kbd><kbd>↑</kbd></div><strong id="keyboardUpLabel">Saltar</strong><small id="keyboardUpHint">Kunai bajo</small></div>
+          <div class="control-card"><div class="key-row"><kbd>S</kbd><kbd>↓</kbd></div><strong id="keyboardDownLabel">Agacharse</strong><small id="keyboardDownHint">Kunai alto</small></div>
           <div class="control-card featured"><div class="key-row"><kbd>J</kbd><kbd>ESPACIO</kbd></div><strong>Espadazo</strong><small>Destruir kunai</small></div>
         </div>
         <div class="mobile-controls-note" aria-hidden="true">
           <span>CONTROLES TÁCTILES</span>
-          <strong>Saltá, agachate y atacá con los botones en pantalla.</strong>
+          <strong id="mobileControlsCopy">Saltá, agachate y atacá con los botones en pantalla.</strong>
         </div>
         <button class="primary" id="startBtn" type="button" disabled><span id="startLabel">Cargando assets…</span><span>→</span></button>
         <p class="load-status" id="loadStatus">Preparando las animaciones del ninja</p>
@@ -109,9 +150,12 @@
     </section>
 
     <nav id="touchControls" aria-label="Controles táctiles">
-      <button id="btnDuck" type="button"><span>↓</span>Agacharse</button>
-      <button id="btnJump" type="button"><span>↑</span>Saltar</button>
-      <button id="btnAttack" class="attack-button" type="button"><span>⚔</span>Espadazo</button>
+      <button id="btnLane" class="lane-button" type="button" hidden><span>&#8645;</span><strong id="btnLaneLabel">Ir arriba</strong></button>
+      <button id="btnBack" class="flow-horizontal-button" type="button" hidden><span>&#8592;</span><strong>Atr&#225;s</strong></button>
+      <button id="btnForward" class="flow-horizontal-button" type="button" hidden><span>&#8594;</span><strong>Adelante</strong></button>
+      <button id="btnDuck" type="button"><span>↓</span><strong id="btnDuckLabel">Agacharse</strong></button>
+      <button id="btnJump" type="button"><span>↑</span><strong id="btnJumpLabel">Saltar</strong></button>
+      <button id="btnAttack" class="attack-button" type="button"><span>⚔</span><strong>Espadazo</strong></button>
     </nav>
   </section>
 </main>

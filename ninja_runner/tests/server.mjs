@@ -104,6 +104,8 @@ try {
     id: '6',
     x: 910,
     height: 'high',
+    lane: 'player',
+    linkId: '',
     phase: 2.25,
     resolved: false
   });
@@ -195,6 +197,151 @@ try {
   await second.waitFor('opponent-left');
   first.close();
   second.close();
+
+  const duoFirst = new TestClient(websocketUrl);
+  const duoSecond = new TestClient(websocketUrl);
+  await Promise.all([duoFirst.opened, duoSecond.opened]);
+  await Promise.all([duoFirst.waitFor('hello'), duoSecond.waitFor('hello')]);
+  duoFirst.send({ type: 'queue', profile: { name: 'Sora', gameType: 'duo', loadout: {} } });
+  await duoFirst.waitFor('searching');
+  duoSecond.send({ type: 'queue', profile: { name: 'Ren', gameType: 'duo', loadout: {} } });
+  const [duoFirstMatch, duoSecondMatch] = await Promise.all([
+    duoFirst.waitFor('match-found'),
+    duoSecond.waitFor('match-found')
+  ]);
+  assert.equal(duoFirstMatch.gameType, 'flow',
+    'El servidor debe redirigir el Duo antiguo al nuevo Duo');
+  assert.equal(duoSecondMatch.gameType, 'flow');
+  assert.equal(duoFirstMatch.duoHost, true);
+  assert.equal(duoSecondMatch.duoHost, false);
+
+  duoFirst.send({
+    type: 'kunai-spawn',
+    kunai: { id: 12, x: 930, height: 'low', lane: 'rival', phase: 1.2 }
+  });
+  const duoKunai = await duoSecond.waitFor('opponent-kunai-spawn');
+  assert.equal(duoKunai.kunai.lane, 'rival');
+
+  duoFirst.send({
+    type: 'duo-event',
+    event: { kind: 'pickup-spawn', id: 'pickup-1', pickupKind: 'shield', lane: 'player', x: 1280 }
+  });
+  const duoPickup = await duoSecond.waitFor('opponent-duo-event');
+  assert.equal(duoPickup.event.kind, 'pickup-spawn');
+  assert.equal(duoPickup.event.pickupKind, 'shield');
+  assert.equal(duoPickup.event.x, 1280);
+
+  duoSecond.send({ type: 'duo-event', event: { kind: 'sync', amount: 18 } });
+  const duoSync = await duoFirst.waitFor('opponent-duo-event');
+  assert.equal(duoSync.event.kind, 'sync');
+  assert.equal(duoSync.event.amount, 18);
+
+  duoFirst.send({
+    type: 'duo-event',
+    event: {
+      kind: 'pattern-cue',
+      cue: 'ROMPAN EL CORE',
+      plan: 'UNO ATACA > EL OTRO AVANZA',
+      lane: 'player',
+      targetLane: 'rival'
+    }
+  });
+  const duoCue = await duoSecond.waitFor('opponent-duo-event');
+  assert.equal(duoCue.event.kind, 'pattern-cue');
+  assert.equal(duoCue.event.cue, 'ROMPAN EL CORE');
+  assert.equal(duoCue.event.plan, 'UNO ATACA > EL OTRO AVANZA');
+  assert.equal(duoCue.event.targetLane, 'rival');
+
+  duoSecond.send({ type: 'duo-event', event: { kind: 'team-rescue', lane: 'rival' } });
+  const duoRescue = await duoFirst.waitFor('opponent-duo-event');
+  assert.equal(duoRescue.event.kind, 'team-rescue');
+  assert.equal(duoRescue.event.lane, 'rival');
+
+  duoFirst.send({ type: 'state', state: { meters: 200, lane: 'rival', mode: 'run' } });
+  const duoState = await duoSecond.waitFor('opponent-state');
+  assert.equal(duoState.state.lane, 'rival');
+
+  duoFirst.send({ type: 'finish', reason: 'finish', stats: { meters: 800, score: 1000 } });
+  await new Promise(resolve => setTimeout(resolve, 40));
+  assert.equal(duoFirst.messages.some(message => message.type === 'match-finished'), false,
+    'Duo debe esperar a que ambos lleguen');
+  duoSecond.send({ type: 'finish', reason: 'finish', stats: { meters: 800, score: 900 } });
+  const [duoFirstFinished, duoSecondFinished] = await Promise.all([
+    duoFirst.waitFor('match-finished'),
+    duoSecond.waitFor('match-finished')
+  ]);
+  assert.equal(duoFirstFinished.success, true);
+  assert.equal(duoSecondFinished.success, true);
+  assert.equal(duoFirstFinished.winnerId, null);
+  duoFirst.send({ type: 'leave' });
+  await duoSecond.waitFor('opponent-left');
+  duoSecond.send({ type: 'rematch' });
+  await duoSecond.waitFor('rematch-expired');
+  duoFirst.close();
+  duoSecond.close();
+
+  const flowFirst = new TestClient(websocketUrl);
+  const flowSecond = new TestClient(websocketUrl);
+  await Promise.all([flowFirst.opened, flowSecond.opened]);
+  await Promise.all([flowFirst.waitFor('hello'), flowSecond.waitFor('hello')]);
+  flowFirst.send({ type: 'queue', profile: { name: 'Kaze', gameType: 'flow', loadout: {} } });
+  await flowFirst.waitFor('searching');
+  flowSecond.send({ type: 'queue', profile: { name: 'Mori', gameType: 'flow', loadout: {} } });
+  const [flowFirstMatch, flowSecondMatch] = await Promise.all([
+    flowFirst.waitFor('match-found'),
+    flowSecond.waitFor('match-found')
+  ]);
+  assert.equal(flowFirstMatch.gameType, 'flow');
+  assert.equal(flowSecondMatch.gameType, 'flow');
+  assert.equal(flowFirstMatch.duoHost, true);
+  assert.equal(flowSecondMatch.duoHost, false);
+
+  flowFirst.send({
+    type: 'duo-event',
+    event: {
+      kind: 'flow-projectile',
+      id: 'flow-kunai-1',
+      projectileKind: 'violet',
+      x: 1180,
+      y: 315,
+      vy: -70,
+      phase: 2.4
+    }
+  });
+  const flowProjectile = await flowSecond.waitFor('opponent-duo-event');
+  assert.equal(flowProjectile.event.kind, 'flow-projectile');
+  assert.equal(flowProjectile.event.projectileKind, 'violet');
+  assert.equal(flowProjectile.event.y, 315);
+  assert.equal(flowProjectile.event.vy, -70);
+
+  flowSecond.send({ type: 'state', state: {
+    meters: 640, flowY: 287, flowX: 612, flowSwordCharges: 4,
+    shield: true, shieldMs: 6450, mode: 'attack'
+  } });
+  const flowState = await flowFirst.waitFor('opponent-state');
+  assert.equal(flowState.state.flowY, 287);
+  assert.equal(flowState.state.flowX, 612);
+  assert.equal(flowState.state.flowSwordCharges, 4);
+  assert.equal(flowState.state.shield, true);
+  assert.equal(flowState.state.shieldMs, 6450);
+  assert.equal(flowState.state.meters, 640);
+
+  flowFirst.send({ type: 'finish', reason: 'finish', stats: { meters: 1200, score: 1800 } });
+  await new Promise(resolve => setTimeout(resolve, 40));
+  assert.equal(flowFirst.messages.some(message => message.type === 'match-finished'), false,
+    'Flujo debe esperar a que ambos lleguen');
+  flowSecond.send({ type: 'finish', reason: 'finish', stats: { meters: 1200, score: 1700 } });
+  const [flowFirstFinished, flowSecondFinished] = await Promise.all([
+    flowFirst.waitFor('match-finished'),
+    flowSecond.waitFor('match-finished')
+  ]);
+  assert.equal(flowFirstFinished.success, true);
+  assert.equal(flowSecondFinished.success, true);
+  assert.equal(flowFirstFinished.winnerId, null);
+  flowFirst.send({ type: 'leave' });
+  await flowSecond.waitFor('opponent-left');
+  flowFirst.close();
+  flowSecond.close();
 
   const solo = new TestClient(websocketUrl);
   await solo.opened;
