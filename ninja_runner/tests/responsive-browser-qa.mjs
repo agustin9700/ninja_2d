@@ -17,12 +17,15 @@ const chrome = spawn(chromePath, [
 ], { stdio: 'ignore' });
 
 const cases = [
+  { name: 'desktop-competitive', width: 1200, height: 800, mobile: false, mode: 'competitive', ids: ['btnDuck', 'btnJump', 'btnAttack'] },
+  { name: 'portrait-competitive', width: 390, height: 844, mobile: true, mode: 'competitive', ids: ['btnDuck', 'btnJump', 'btnAttack'] },
+  { name: 'landscape-competitive', width: 844, height: 390, mobile: true, mode: 'competitive', ids: ['btnDuck', 'btnJump', 'btnAttack'] },
   { name: 'desktop-flow', width: 1200, height: 800, mobile: false, mode: 'flow', ids: ['btnBack', 'btnForward', 'btnDuck', 'btnJump', 'btnAttack'] },
-  { name: 'portrait-flow', width: 390, height: 844, mobile: true, mode: 'flow', ids: ['btnBack', 'btnForward', 'btnDuck', 'btnJump', 'btnAttack'] },
-  { name: 'narrow-flow', width: 320, height: 568, mobile: true, mode: 'flow', ids: ['btnBack', 'btnForward', 'btnDuck', 'btnJump', 'btnAttack'] },
-  { name: 'landscape-flow', width: 844, height: 390, mobile: true, mode: 'flow', ids: ['btnBack', 'btnForward', 'btnDuck', 'btnJump', 'btnAttack'] },
-  { name: 'portrait-duo-alias', width: 390, height: 844, mobile: true, mode: 'duo', ids: ['btnBack', 'btnForward', 'btnDuck', 'btnJump', 'btnAttack'] },
-  { name: 'landscape-duo-alias', width: 844, height: 390, mobile: true, mode: 'duo', ids: ['btnBack', 'btnForward', 'btnDuck', 'btnJump', 'btnAttack'] }
+  { name: 'portrait-flow', width: 390, height: 844, mobile: true, mode: 'flow', joystick: true, ids: ['btnAttack'] },
+  { name: 'narrow-flow', width: 320, height: 568, mobile: true, mode: 'flow', joystick: true, ids: ['btnAttack'] },
+  { name: 'landscape-flow', width: 844, height: 390, mobile: true, mode: 'flow', joystick: true, ids: ['btnAttack'] },
+  { name: 'portrait-duo-alias', width: 390, height: 844, mobile: true, mode: 'duo', joystick: true, ids: ['btnAttack'] },
+  { name: 'landscape-duo-alias', width: 844, height: 390, mobile: true, mode: 'duo', joystick: true, ids: ['btnAttack'] }
 ];
 
 try {
@@ -91,7 +94,7 @@ try {
       maxTouchPoints: testCase.mobile ? 5 : 1
     });
     await call('Page.navigate', {
-      url: gameUrl + '?mode=' + testCase.mode + '&responsiveQa=' + testCase.name
+      url: gameUrl + '?mode=' + testCase.mode + '&qa=1&responsiveQa=' + testCase.name
     });
 
     let ready = false;
@@ -108,6 +111,10 @@ try {
       innerWidth,
       innerHeight,
       scrollWidth: document.documentElement.scrollWidth,
+      camera: {
+        viewport: document.getElementById('gameViewport').getBoundingClientRect().toJSON(),
+        canvas: document.getElementById('fx').getBoundingClientRect().toJSON()
+      },
       swordCounter: (() => {
         const element = document.getElementById('flowSwordCounter');
         return {
@@ -116,18 +123,30 @@ try {
           text: element.textContent
         };
       })(),
-      buttons: [...document.querySelectorAll('#touchControls button:not([hidden])')].map(button => ({
-        id: button.id,
-        display: getComputedStyle(button).display,
-        rect: button.getBoundingClientRect().toJSON()
-      }))
+      joystick: (() => {
+        const element = document.getElementById('flowJoystick');
+        const base = document.getElementById('flowJoystickBase');
+        return {
+          hidden: element.hidden,
+          display: getComputedStyle(element).display,
+          rect: element.getBoundingClientRect().toJSON(),
+          baseRect: base.getBoundingClientRect().toJSON()
+        };
+      })(),
+      buttons: [...document.querySelectorAll('#touchControls button:not([hidden])')]
+        .map(button => ({
+          id: button.id,
+          display: getComputedStyle(button).display,
+          rect: button.getBoundingClientRect().toJSON()
+        }))
+        .filter(button => button.display !== 'none')
     })`));
     assert.equal(layout.innerWidth, testCase.width, `${testCase.name}: ancho emulado incorrecto`);
     assert.ok(layout.scrollWidth <= layout.innerWidth,
       `${testCase.name}: existe overflow horizontal (${layout.scrollWidth}px)`);
     assert.deepEqual(layout.buttons.map(button => button.id), testCase.ids,
       `${testCase.name}: controles visibles incorrectos`);
-    if (testCase.mode === 'flow') {
+    if (['flow', 'duo'].includes(testCase.mode)) {
       const rect = layout.swordCounter.rect;
       assert.equal(layout.swordCounter.hidden, false,
         `${testCase.name}: el contador de espadazos esta oculto`);
@@ -136,6 +155,15 @@ try {
       assert.ok(rect.left >= 0 && rect.top >= 0 && rect.right <= layout.innerWidth &&
         rect.bottom <= layout.innerHeight,
       `${testCase.name}: el contador de espadazos queda fuera de pantalla`);
+    } else {
+      const rect = layout.swordCounter.rect;
+      assert.equal(layout.swordCounter.hidden, false,
+        `${testCase.name}: el contador de Competencia esta oculto`);
+      assert.match(layout.swordCounter.text, /ESPADAZOS\s*5\s*RIVAL 5/,
+        `${testCase.name}: Competencia no muestra las cinco cargas iniciales`);
+      assert.ok(rect.left >= 0 && rect.top >= 0 && rect.right <= layout.innerWidth &&
+        rect.bottom <= layout.innerHeight,
+      `${testCase.name}: el contador de Competencia queda fuera de pantalla`);
     }
     for (const button of layout.buttons) {
       const rect = button.rect;
@@ -146,23 +174,56 @@ try {
         rect.right <= layout.innerWidth && rect.bottom <= layout.innerHeight,
       `${testCase.name}: #${button.id} queda fuera de pantalla`);
     }
-    if (testCase.mobile && testCase.width > testCase.height &&
-        ['flow', 'duo'].includes(testCase.mode)) {
+    if (testCase.joystick) {
+      assert.equal(layout.joystick.hidden, false,
+        `${testCase.name}: el joystick esta marcado como oculto`);
+      assert.notEqual(layout.joystick.display, 'none',
+        `${testCase.name}: el joystick no se muestra`);
+      for (const [label, rect] of [['zona', layout.joystick.rect], ['base', layout.joystick.baseRect]]) {
+        assert.ok(rect.width >= 44 && rect.height >= 44,
+          `${testCase.name}: la ${label} del joystick es demasiado pequena`);
+        assert.ok(rect.left >= 0 && rect.top >= 0 &&
+          rect.right <= layout.innerWidth && rect.bottom <= layout.innerHeight,
+        `${testCase.name}: la ${label} del joystick queda fuera de pantalla`);
+      }
       const byId = Object.fromEntries(layout.buttons.map(button => [button.id, button.rect]));
-      const centerX = rect => rect.left + rect.width / 2;
-      const centerY = rect => rect.top + rect.height / 2;
-      assert.ok(Math.abs(centerX(byId.btnJump) - centerX(byId.btnDuck)) <= 2,
-        `${testCase.name}: Subir y Bajar no forman el eje vertical de la cruceta`);
-      assert.ok(Math.abs(centerY(byId.btnBack) - centerY(byId.btnForward)) <= 2,
-        `${testCase.name}: Atras y Adelante no forman el eje horizontal de la cruceta`);
-      assert.ok(centerY(byId.btnJump) < centerY(byId.btnBack) &&
-        centerY(byId.btnDuck) > centerY(byId.btnBack),
-      `${testCase.name}: el orden vertical de la cruceta es incorrecto`);
-      assert.ok(centerX(byId.btnBack) < centerX(byId.btnJump) &&
-        centerX(byId.btnForward) > centerX(byId.btnJump),
-      `${testCase.name}: el orden horizontal de la cruceta es incorrecto`);
-      assert.ok(byId.btnAttack.left > byId.btnForward.right,
-        `${testCase.name}: Ataque debe quedar separado de la cruceta`);
+      assert.ok(byId.btnAttack.left > layout.joystick.rect.left + layout.joystick.rect.width,
+        `${testCase.name}: Ataque debe quedar separado del joystick`);
+    }
+    if (testCase.mobile && testCase.width > testCase.height) {
+      assert.ok(layout.camera.viewport.width >= layout.innerWidth * .8,
+        `${testCase.name}: la camara horizontal todavia desperdicia demasiado ancho`);
+      const canvasRatio = layout.camera.canvas.width / layout.camera.canvas.height;
+      assert.ok(Math.abs(canvasRatio - 10 / 7) < .02,
+        `${testCase.name}: el canvas se deformo al ampliar la camara (${canvasRatio})`);
+      assert.ok(layout.camera.canvas.height > layout.camera.viewport.height,
+        `${testCase.name}: la camara debe ampliar el contenido mediante un recorte vertical moderado`);
+    }
+    if (testCase.name === 'desktop-competitive') {
+      await delay(3300);
+      const accepted = [];
+      for (let attack = 0; attack < 5; attack += 1) {
+        accepted.push(await evaluate('window.__ninjaRunner.attack()'));
+        await delay(720);
+      }
+      const exhausted = JSON.parse(await evaluate(`JSON.stringify({
+        game: window.__ninjaRunner.snapshot(),
+        rejected: window.__ninjaRunner.attack(),
+        label: document.querySelector('#btnAttack strong').textContent,
+        empty: document.getElementById('btnAttack').dataset.empty
+      })`));
+      assert.deepEqual(accepted, [true, true, true, true, true],
+        'Competencia debe permitir exactamente los cinco ataques iniciales');
+      assert.equal(exhausted.game.flowSwordCharges, 0,
+        'Los cinco ataques deben agotar las cargas de Competencia');
+      assert.equal(exhausted.game.stats.attacks, 5,
+        'El intento rechazado no debe aumentar las estadisticas');
+      assert.equal(exhausted.rejected, false,
+        'Competencia debe bloquear un sexto espadazo');
+      assert.equal(exhausted.label, 'Espada 0',
+        'El boton debe mostrar que no quedan espadazos');
+      assert.equal(exhausted.empty, 'true',
+        'El boton agotado debe mostrar su estado visual');
     }
     results.push({
       name: testCase.name,

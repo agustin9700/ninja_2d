@@ -9,6 +9,7 @@
   const H = fx.height;
   const prefersReducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   const mobileVisualBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+  const touchCapable = Boolean(window.matchMedia?.('(pointer: coarse)').matches || navigator.maxTouchPoints > 0);
   const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
 
   const CONFIG = Object.freeze({
@@ -49,8 +50,8 @@
     flowMinY: 260,
     flowMaxY: 610,
     flowMoveSpeed: 350,
-    flowMinX: 350,
-    flowMaxX: 700,
+    flowMinX: 270,
+    flowMaxX: 780,
     flowHorizontalSpeed: 300,
     flowMaxSpeed: 520,
     flowPatternDelay: 3.1,
@@ -58,8 +59,10 @@
     flowHitRadius: 43,
     flowSeparation: 84,
     flowSwordStart: 2,
+    competitiveSwordStart: 5,
     flowSwordMax: 8,
-    flowSwordPickup: 1,
+    flowSwordPickup: 2,
+    fullLifeSwordPickup: 1,
     shieldDurationMs: 10000,
     raceLength: 800
   });
@@ -142,6 +145,9 @@
     btnAttackLabel: document.querySelector('#btnAttack strong'),
     btnBack: document.getElementById('btnBack'),
     btnForward: document.getElementById('btnForward'),
+    flowJoystick: document.getElementById('flowJoystick'),
+    flowJoystickBase: document.getElementById('flowJoystickBase'),
+    flowJoystickKnob: document.getElementById('flowJoystickKnob'),
     btnLane: document.getElementById('btnLane'),
     btnLaneLabel: document.getElementById('btnLaneLabel'),
     btnJumpLabel: document.getElementById('btnJumpLabel'),
@@ -537,16 +543,19 @@
 
   function renderFlowHud() {
     const visible = isFlowMode() && (game.running || game.countingDown);
+    const swordVisible = game.running || game.countingDown;
+    const swordMax = isFlowMode() ? CONFIG.flowSwordMax : CONFIG.competitiveSwordStart;
     setHiddenIfChanged(elements.flowHud, !visible);
-    setHiddenIfChanged(elements.flowSwordCounter, !visible);
-    const charges = clamp(game.flowSwordCharges, 0, CONFIG.flowSwordMax);
+    setHiddenIfChanged(elements.flowSwordCounter, !swordVisible);
+    const charges = clamp(game.flowSwordCharges, 0, swordMax);
     setTextIfChanged(elements.flowSwordCount, charges);
-    setTextIfChanged(elements.flowRivalSwordCount, `COMP ${game.rivalSwordCharges}`);
+    setTextIfChanged(elements.flowRivalSwordCount,
+      `${isFlowMode() ? 'COMP' : 'RIVAL'} ${game.rivalSwordCharges}`);
     setAttributeIfChanged(elements.flowSwordCounter, 'data-empty', charges <= 0);
     setAttributeIfChanged(elements.flowSwordCounter, 'aria-label',
-      `${charges} espadazos disponibles; companero ${game.rivalSwordCharges}`);
-    setTextIfChanged(elements.btnAttackLabel, isFlowMode() ? `Espada ${charges}` : 'Espadazo');
-    setAttributeIfChanged(elements.btnAttack, 'data-empty', isFlowMode() && charges <= 0);
+      `${charges} espadazos disponibles; ${isFlowMode() ? 'companero' : 'rival'} ${game.rivalSwordCharges}`);
+    setTextIfChanged(elements.btnAttackLabel, `Espada ${charges}`);
+    setAttributeIfChanged(elements.btnAttack, 'data-empty', charges <= 0);
     if (!visible) return;
     const active = [];
     const now = performance.now();
@@ -621,6 +630,7 @@
     elements.btnLane.hidden = !duo || (!game.running && !game.countingDown);
     elements.btnBack.hidden = !flow;
     elements.btnForward.hidden = !flow;
+    renderTouchScheme();
     if (elements.btnLaneLabel) {
       elements.btnLaneLabel.textContent = game.player.lane === 'player' ? 'Ir arriba' : 'Ir abajo';
     }
@@ -632,10 +642,10 @@
     elements.keyboardUpHint.textContent = flow ? 'Mantener' : 'Kunai bajo';
     elements.keyboardDownLabel.textContent = flow ? 'Bajar' : 'Agacharse';
     elements.keyboardDownHint.textContent = flow ? 'Mantener' : 'Kunai alto';
-    elements.keyboardAttackHint.textContent = flow ? 'Consume 1 carga; busca FILOS' : 'Destruir kunai';
+    elements.keyboardAttackHint.textContent = flow ? 'Consume 1 carga; busca FILOS' : '5 cargas por carrera';
     elements.mobileControlsCopy.textContent = flow
-      ? 'Usá las cuatro flechas para cubrir posiciones. Cada espadazo consume una carga.'
-      : 'Saltá, agachate y atacá con los botones en pantalla.';
+      ? 'Movete libremente con el joystick y atacá con el botón de espada.'
+      : 'Saltá, agachate y atacá con los botones en pantalla. Tenés 5 espadazos.';
     if (!game.running && !game.countingDown && !game.matchmaking) {
       const connected = Boolean(window.NinjaNetwork?.snapshot().connected);
       setNetworkStatus(connected ? 'online' : 'offline', flow
@@ -770,9 +780,9 @@
 
   function doAttack() {
     if (!game.running || !['run', 'duck'].includes(game.player.mode)) return false;
-    if (isFlowMode() && game.flowSwordCharges <= 0) {
-      showFlowActorNotice('player', 'SIN ESPADAZOS', '#ffcf63');
-      showToast('SIN ESPADAZOS - BUSCA FILOS +1');
+    if (game.flowSwordCharges <= 0) {
+      if (isFlowMode()) showFlowActorNotice('player', 'SIN ESPADAZOS', '#ffcf63');
+      showToast(isFlowMode() ? 'SIN ESPADAZOS - BUSCA FILOS +2' : 'SIN ESPADAZOS');
       renderFlowHud();
       return false;
     }
@@ -780,10 +790,10 @@
     const now = performance.now();
     press('j');
     setPlayerMode('attack', CONFIG.attackMs, now);
-    if (isFlowMode()) game.flowSwordCharges = Math.max(0, game.flowSwordCharges - 1);
+    game.flowSwordCharges = Math.max(0, game.flowSwordCharges - 1);
     game.stats.attacks += 1;
     game.lastAttackAt = now;
-    if (isFlowMode()) renderFlowHud();
+    renderFlowHud();
     if (game.syncMeter >= 100) {
       game.ultimateArmUntil = now + CONFIG.ultimateWindowMs;
       if (isOnlineRace()) {
@@ -973,7 +983,8 @@
         ? 'switch'
         : deliberateMistake
         ? 'miss'
-        : (game.rival.decisions % 3 === 0 ? 'attack' : (target.height === 'low' ? 'jump' : 'duck'));
+        : (game.rivalSwordCharges > 0 && game.rival.decisions % 3 === 0
+          ? 'attack' : (target.height === 'low' ? 'jump' : 'duck'));
     }
 
     if (game.rival.mode !== 'run') return;
@@ -984,8 +995,10 @@
       game.rival.targetKunaiId = null;
       game.rival.plannedAction = null;
     } else if (game.rival.plannedAction === 'attack' && distance < 220) {
+      game.rivalSwordCharges = Math.max(0, game.rivalSwordCharges - 1);
       game.rivalStats.attacks += 1;
       setRivalMode('attack', CONFIG.attackMs, now);
+      renderFlowHud();
     } else if (game.rival.plannedAction === 'jump' && distance < 145) {
       setRivalMode('jump', CONFIG.jumpMs, now);
     } else if (game.rival.plannedAction === 'duck' && distance < 135) {
@@ -1155,6 +1168,113 @@
     if (!isFlowMode() || !game.running) return false;
     game.flowMoveX = clamp(Number(direction) || 0, -1, 1);
     return true;
+  }
+
+  function setFlowVector(x, y) {
+    let nextX = clamp(Number(x) || 0, -1, 1);
+    let nextY = clamp(Number(y) || 0, -1, 1);
+    const magnitude = Math.hypot(nextX, nextY);
+    if (magnitude > 1) {
+      nextX /= magnitude;
+      nextY /= magnitude;
+    }
+    if (!isFlowMode() || !game.running) return false;
+    game.flowMoveX = nextX;
+    game.flowMove = nextY;
+    return true;
+  }
+
+  const flowJoystickState = {
+    pointerId: null,
+    centerX: 0,
+    centerY: 0,
+    travel: 42,
+    active: false
+  };
+
+  function resetFlowJoystick() {
+    flowJoystickState.pointerId = null;
+    flowJoystickState.active = false;
+    game.flowMove = 0;
+    game.flowMoveX = 0;
+    elements.flowJoystick?.classList.remove('is-active');
+    if (elements.flowJoystickBase) {
+      elements.flowJoystickBase.style.removeProperty('left');
+      elements.flowJoystickBase.style.removeProperty('top');
+    }
+    if (elements.flowJoystickKnob) {
+      elements.flowJoystickKnob.style.transform = 'translate3d(0, 0, 0)';
+    }
+  }
+
+  function renderTouchScheme() {
+    const available = isFlowMode() && touchCapable;
+    elements.flowJoystick.hidden = !available;
+    resetFlowJoystick();
+  }
+
+  function updateFlowJoystick(event) {
+    if (event.pointerId !== flowJoystickState.pointerId) return;
+    const dx = event.clientX - flowJoystickState.centerX;
+    const dy = event.clientY - flowJoystickState.centerY;
+    const distance = Math.hypot(dx, dy);
+    const scale = distance > flowJoystickState.travel
+      ? flowJoystickState.travel / distance : 1;
+    const visualX = dx * scale;
+    const visualY = dy * scale;
+    elements.flowJoystickKnob.style.transform =
+      `translate3d(${visualX.toFixed(1)}px, ${visualY.toFixed(1)}px, 0)`;
+
+    const rawMagnitude = Math.min(1, distance / flowJoystickState.travel);
+    const deadzone = .15;
+    if (rawMagnitude <= deadzone || distance === 0) {
+      setFlowVector(0, 0);
+      return;
+    }
+    const response = (rawMagnitude - deadzone) / (1 - deadzone);
+    setFlowVector((dx / distance) * response, (dy / distance) * response);
+  }
+
+  function beginFlowJoystick(event) {
+    if (!isFlowMode() || flowJoystickState.pointerId !== null) return;
+    event.preventDefault();
+    const bounds = elements.flowJoystick.getBoundingClientRect();
+    const diameter = elements.flowJoystickBase.offsetWidth || 132;
+    const edge = diameter * .5;
+    const localX = clamp(event.clientX - bounds.left, edge, Math.max(edge, bounds.width - edge));
+    const localY = clamp(event.clientY - bounds.top, edge, Math.max(edge, bounds.height - edge));
+    flowJoystickState.pointerId = event.pointerId;
+    flowJoystickState.centerX = bounds.left + localX;
+    flowJoystickState.centerY = bounds.top + localY;
+    flowJoystickState.travel = diameter * .32;
+    flowJoystickState.active = true;
+    elements.flowJoystickBase.style.left = `${localX}px`;
+    elements.flowJoystickBase.style.top = `${localY}px`;
+    elements.flowJoystick.classList.add('is-active');
+    const capturedCenterX = flowJoystickState.centerX;
+    const capturedCenterY = flowJoystickState.centerY;
+    try { elements.flowJoystick.setPointerCapture?.(event.pointerId); } catch (_) { /* Synthetic input. */ }
+    flowJoystickState.centerX = capturedCenterX;
+    flowJoystickState.centerY = capturedCenterY;
+    updateFlowJoystick(event);
+  }
+
+  function endFlowJoystick(event) {
+    if (event && event.pointerId !== flowJoystickState.pointerId) return;
+    resetFlowJoystick();
+  }
+
+  function testFlowJoystick(pointerId, startX, startY, endX, endY) {
+    const previousCapture = elements.flowJoystick.setPointerCapture;
+    elements.flowJoystick.setPointerCapture = undefined;
+    try {
+      beginFlowJoystick({ pointerId, clientX: startX, clientY: startY, preventDefault() {} });
+      flowJoystickState.centerX = startX;
+      flowJoystickState.centerY = startY;
+      updateFlowJoystick({ pointerId, clientX: endX, clientY: endY });
+    } finally {
+      elements.flowJoystick.setPointerCapture = previousCapture;
+    }
   }
 
   function flowPlayerCenterY() {
@@ -1332,8 +1452,22 @@
       game[key] = Math.min(3, before + 1);
       const gained = game[key] - before;
       bonus += gained * 90;
-      showFlowActorNotice(role, gained ? '+1 VIDA' : 'VIDAS LLENAS', '#ff7583');
-      showToast(gained ? `${owner} RECUPERO 1 VIDA` : `${owner} YA TIENE 3 VIDAS`);
+      if (gained) {
+        showFlowActorNotice(role, '+1 VIDA', '#ff7583');
+        showToast(`${owner} RECUPERO 1 VIDA`);
+      } else {
+        const swordKey = role === 'player' ? 'flowSwordCharges' : 'rivalSwordCharges';
+        const swordsBefore = game[swordKey];
+        game[swordKey] = Math.min(CONFIG.flowSwordMax,
+          swordsBefore + CONFIG.fullLifeSwordPickup);
+        const swordsGained = game[swordKey] - swordsBefore;
+        bonus += swordsGained * 35;
+        showFlowActorNotice(role, swordsGained ? '+1 ESPADAZO' : 'VIDA Y ESPADAS LLENAS',
+          swordsGained ? '#ffcf63' : '#ff9da8');
+        showToast(swordsGained
+          ? `${owner}: VIDA LLENA - +1 ESPADAZO`
+          : `${owner} YA TIENE VIDA Y ESPADAS LLENAS`);
+      }
     } else if (kind === 'blade') {
       const key = role === 'player' ? 'flowSwordCharges' : 'rivalSwordCharges';
       const before = game[key];
@@ -1630,6 +1764,8 @@
     game.player.invulnerableUntil = now + CONFIG.hitMs + 620;
     setPlayerMode('hit', CONFIG.hitMs, now);
     renderHud();
+    game.rivalSwordCharges = clamp(Math.round(Number(state.flowSwordCharges) || 0),
+      0, isFlowMode() ? CONFIG.flowSwordMax : CONFIG.competitiveSwordStart);
     if (isFlowMode()) {
       showFlowActorNotice('player', '-1 VIDA', '#ff5967');
       showToast('UN KUNAI TE GOLPEO');
@@ -1963,7 +2099,7 @@
         const progress = clamp(Math.max(game.playerMeters, game.rivalMeters) / CONFIG.raceLength, 0, 1);
         game.duoPatternClock = CONFIG.duoPatternDelay - progress * .3;
       }
-    } else {
+    } else if (!qaMode) {
       game.spawnClock -= dt;
       if (game.spawnClock <= 0) {
         spawnKunai(undefined, CONFIG.spawnX, 'player');
@@ -2615,8 +2751,6 @@
         CONFIG.flowMinY, CONFIG.flowMaxY);
       game.rivalFlowTargetX = clamp(Number(state.flowX) ||
         (CONFIG.hitX - CONFIG.flowSeparation), CONFIG.flowMinX, CONFIG.flowMaxX);
-      game.rivalSwordCharges = clamp(Math.round(Number(state.flowSwordCharges) || 0),
-        0, CONFIG.flowSwordMax);
     }
     const remoteShieldMs = clamp(Number(state.shieldMs) || 0, 0, CONFIG.shieldDurationMs);
     game.rival.shield = (isDuoMode() || isFlowMode()) && Boolean(state.shield) && remoteShieldMs > 0;
@@ -2976,7 +3110,7 @@
     const buffStyle = {
       shield: ['#65e9ff', '#123d5e', 'O', 'GUARD'],
       blast: ['#ffd35e', '#7a2714', 'X', 'EXPLOSION'],
-      blade: ['#ffc95f', '#57360f', '+1', 'FILOS'],
+      blade: ['#ffc95f', '#57360f', '+2', 'FILOS'],
       life: ['#ff6575', '#641927', '+1', 'VIDA']
     };
     for (const pickup of game.flowPickups) {
@@ -3373,8 +3507,8 @@
     game.rivalFlowTargetY = 400;
     game.rivalFlowX = CONFIG.hitX - CONFIG.flowSeparation;
     game.rivalFlowTargetX = game.rivalFlowX;
-    game.flowSwordCharges = CONFIG.flowSwordStart;
-    game.rivalSwordCharges = CONFIG.flowSwordStart;
+    game.flowSwordCharges = isFlowMode() ? CONFIG.flowSwordStart : CONFIG.competitiveSwordStart;
+    game.rivalSwordCharges = isFlowMode() ? CONFIG.flowSwordStart : CONFIG.competitiveSwordStart;
     game.rivalFlowDecisionAt = 0;
     game.flowPatternClock = 2.2;
     game.flowPatternLast = '';
@@ -3849,10 +3983,23 @@
 
     window.addEventListener('blur', () => {
       duckEnd();
-      game.flowMove = 0;
-      game.flowMoveX = 0;
+      resetFlowJoystick();
     });
-    document.addEventListener('visibilitychange', () => { game.lastTime = performance.now(); });
+    document.addEventListener('visibilitychange', () => {
+      game.lastTime = performance.now();
+      if (document.hidden) resetFlowJoystick();
+    });
+    window.addEventListener('resize', resetFlowJoystick, { passive: true });
+
+    elements.flowJoystick.addEventListener('pointerdown', beginFlowJoystick);
+    elements.flowJoystick.addEventListener('pointermove', event => {
+      if (event.pointerId !== flowJoystickState.pointerId) return;
+      event.preventDefault();
+      updateFlowJoystick(event);
+    });
+    for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      elements.flowJoystick.addEventListener(eventName, endFlowJoystick);
+    }
 
     elements.btnJump.addEventListener('pointerdown', event => {
       event.preventDefault();
@@ -3925,6 +4072,14 @@
     attack: doAttack,
     setFlowMove,
     setFlowMoveX,
+    setFlowVector,
+    ...(qaMode ? {
+      beginFlowJoystick: testFlowJoystick,
+      updateFlowJoystick: (pointerId, clientX, clientY) => updateFlowJoystick({
+        pointerId, clientX, clientY
+      }),
+      endFlowJoystick: pointerId => endFlowJoystick({ pointerId })
+    } : {}),
     duckStart,
     duckEnd,
     setGameType,
@@ -3960,6 +4115,7 @@
       flowRivalHitX: flowActorHitX('rival'),
       flowMove: game.flowMove,
       flowMoveX: game.flowMoveX,
+      flowJoystickActive: flowJoystickState.active,
       flowTileOffset: -(((prefersReducedMotion ? 0 : game.distance) * .46) % 180),
       flowSwordCharges: game.flowSwordCharges,
       rivalSwordCharges: game.rivalSwordCharges,

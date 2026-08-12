@@ -41,7 +41,7 @@ for (const part of manifest.parts) {
 }
 
 const html = read('index.html');
-for (const id of ['gameViewport', 'background', 'stage', 'fx', 'startBtn', 'retryBtn', 'status', 'reset', 'raceHud', 'latencyHud', 'flowGuide', 'flowHud', 'playerNameInput', 'enemyKunaiToggle', 'touchControls']) {
+for (const id of ['gameViewport', 'background', 'stage', 'fx', 'startBtn', 'retryBtn', 'status', 'reset', 'raceHud', 'latencyHud', 'flowGuide', 'flowHud', 'playerNameInput', 'enemyKunaiToggle', 'touchControls', 'flowJoystick', 'flowJoystickBase', 'flowJoystickKnob']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `Falta #${id}`);
 }
 assert.match(html, /id=.duoHud./, 'Falta la barra cooperativa de Duo');
@@ -52,6 +52,14 @@ const styles = read('src/styles.css');
 assert.match(styles, /@media \(max-width: 600px\)/, 'Falta el layout vertical para móvil');
 assert.match(styles, /@media \(max-height: 500px\) and \(orientation: landscape\)/, 'Falta el layout horizontal para móvil');
 assert.match(styles, /safe-area-inset-bottom/, 'Los controles deben respetar el área segura del teléfono');
+assert.match(styles, /body\[data-game-type=flow\] #flowJoystick:not\(\[hidden\]\)/,
+  'Flujo movil debe ofrecer un joystick tactil');
+assert.match(styles, /width:\s*min\(100%, calc\(100dvh \* 1\.8\)\)/,
+  'La camara horizontal debe aprovechar mas ancho del navegador');
+assert.match(styles, /#gameViewport canvas \{[\s\S]{0,180}height:\s*auto/,
+  'La camara ampliada debe conservar la proporcion del canvas');
+assert.match(styles, /\.flow-joystick-knob[\s\S]*?will-change:\s*transform/,
+  'La perilla del joystick debe moverse en una capa acelerada');
 
 assert.doesNotMatch(styles, /#raceHud\s*\{\s*display:\s*none/,
   'El HUD no debe desaparecer en dispositivos tactiles');
@@ -102,6 +110,17 @@ assert.match(server, /'team-rescue'/, 'El rescate cooperativo debe sincronizarse
 assert.match(game, /function activateDuoUltimate\(/, 'Falta Tormenta Gemela');
 assert.match(game, /function setFlowMove\(/, 'Flujo necesita movimiento vertical continuo');
 assert.match(game, /function setFlowMoveX\(/, 'Flujo necesita movimiento horizontal continuo');
+assert.match(game, /flowMinX:\s*270/,
+  'Flujo debe permitir retroceder mas para anticipar los proyectiles');
+assert.match(game, /flowMaxX:\s*780/,
+  'Flujo debe permitir adelantarse mas para cubrir al companero');
+assert.match(server, /flowX:\s*clamp\(finite\(source\.flowX, 520\), 270, 780\)/,
+  'El servidor debe conservar los nuevos limites horizontales de Flujo');
+assert.match(game, /function setFlowVector\(/, 'El joystick necesita combinar y normalizar ambos ejes');
+assert.match(game, /const deadzone = \.15/,
+  'El joystick necesita una zona muerta contra movimientos accidentales');
+assert.doesNotMatch(html, /btnTouchScheme|USAR CRUZ/,
+  'El selector de cruceta no debe ocupar espacio durante Flujo');
 assert.match(game, /function spawnFlowPattern\(/, 'Flujo necesita patrones de proyectiles legibles');
 assert.match(game, /function updateFlowObjects\(/, 'Flujo necesita resolver impactos, cortes y recoleccion');
 assert.match(game, /function predictFlowProjectileY\(/,
@@ -112,6 +131,8 @@ assert.match(game, /const allowed = \['shield', 'blast', 'blade', 'life'\]/,
   'Flujo debe usar Guard, Explosion Total, Filos y Vida');
 assert.match(game, /flowSwordStart:\s*2/,
   'Cada ninja del nuevo Duo debe iniciar con dos espadazos');
+assert.match(game, /competitiveSwordStart:\s*5/,
+  'Cada corredor de Competencia debe iniciar con cinco espadazos');
 assert.match(html, /id="flowSwordCounter"/,
   'Flujo debe mostrar un contador permanente de espadazos');
 assert.match(game, /setTextIfChanged\(elements\.flowSwordCount, charges\)/,
@@ -120,8 +141,12 @@ assert.match(game, /elements\.lives\.replaceChildren\(\.\.\.lifeNodes\)/,
   'El HUD debe crear los iconos de vida una sola vez');
 assert.doesNotMatch(game, /function renderHud\(\)[\s\S]{0,500}elements\.lives\.replaceChildren/,
   'El HUD no debe reconstruir las vidas en cada fotograma');
-assert.match(game, /flowSwordPickup:\s*1/,
-  'El buff de Filos debe recargar un espadazo');
+assert.match(game, /flowSwordPickup:\s*2/,
+  'El buff de Filos debe recargar dos espadazos');
+assert.match(game, /fullLifeSwordPickup:\s*1/,
+  'Un corazon con la vida llena debe recargar un espadazo');
+assert.match(game, /swordsBefore \+ CONFIG\.fullLifeSwordPickup/,
+  'La conversion del corazon debe respetar las cargas del ninja que lo recoge');
 assert.match(game, /game\.lives = isFlowMode\(\) \? 2 : 3/,
   'Cada ninja debe comenzar Flujo con dos vidas');
 assert.match(game, /game\[key\] = Math\.min\(3, before \+ 1\)/,
@@ -134,10 +159,14 @@ assert.match(game, /shieldRemainingMs\(game\.player, now\)/,
   'El tiempo restante de Guard debe sincronizarse online');
 assert.match(server, /shieldMs:\s*clamp\(finite\(source\.shieldMs\), 0, 10000\)/,
   'El servidor debe validar el tiempo restante de Guard');
-assert.match(game, /isFlowMode\(\) && game\.flowSwordCharges <= 0/,
-  'Flujo debe bloquear el ataque cuando se terminan las cargas');
+assert.match(game, /if \(game\.flowSwordCharges <= 0\)/,
+  'Todos los modos deben bloquear el ataque cuando se terminan las cargas');
 assert.match(game, /game\.flowSwordCharges = Math\.max\(0, game\.flowSwordCharges - 1\)/,
-  'Cada intento de espada debe gastar una carga');
+  'Cada intento de espada debe gastar una carga en todos los modos');
+assert.match(game, /game\.rivalSwordCharges = Math\.max\(0, game\.rivalSwordCharges - 1\)/,
+  'Los ataques del rival bot tambien deben gastar cargas');
+assert.match(game, /else if \(!qaMode\) \{[\s\S]{0,250}game\.spawnClock -= dt/,
+  'El modo QA debe poder probar las cargas sin interferencia de proyectiles');
 assert.match(game, /function showFlowActorNotice\(/,
   'Los eventos de Flujo deben identificar al ninja afectado');
 assert.match(game, /function flowActorHitX\(/,

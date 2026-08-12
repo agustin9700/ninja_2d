@@ -101,7 +101,7 @@ function sanitizeState(value) {
     name: sanitizeName(source.name),
     meters: clamp(finite(source.meters), 0, 1200),
     flowY: clamp(finite(source.flowY, 520), 260, 610),
-    flowX: clamp(finite(source.flowX, 520), 350, 700),
+    flowX: clamp(finite(source.flowX, 520), 270, 780),
     flowSwordCharges: Math.round(clamp(finite(source.flowSwordCharges, 2), 0, 8)),
     mode: allowedModes.has(source.mode) ? source.mode : 'run',
     lane: source.lane === 'rival' ? 'rival' : 'player',

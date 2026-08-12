@@ -78,6 +78,32 @@ try {
     'El jugador debe comenzar Duo con dos espadazos');
   assert.equal(before.rivalSwordCharges, 2,
     'El companero debe comenzar Duo con dos espadazos');
+  const joystickInput = JSON.parse(await evaluate(`JSON.stringify((() => {
+    const pad = document.getElementById('flowJoystick');
+    const wasHidden = pad.hidden;
+    pad.hidden = false;
+    pad.style.cssText = 'display:block;position:fixed;left:0;top:0;width:300px;height:300px';
+    const bounds = pad.getBoundingClientRect();
+    const startX = bounds.left + 90;
+    const startY = bounds.top + 220;
+    window.__ninjaRunner.beginFlowJoystick(3141, startX, startY, startX + 80, startY - 80);
+    const active = window.__ninjaRunner.snapshot();
+    window.__ninjaRunner.endFlowJoystick(3141);
+    const released = window.__ninjaRunner.snapshot();
+    pad.style.cssText = '';
+    pad.hidden = wasHidden;
+    return { active, released };
+  })())`));
+  assert.equal(joystickInput.active.flowJoystickActive, true,
+    'El primer dedo debe tomar el control del joystick');
+  assert.ok(joystickInput.active.flowMoveX > .69 && joystickInput.active.flowMove < -.69,
+    `Arrastrar el joystick en diagonal debe mover ambos ejes: ${JSON.stringify({ x: joystickInput.active.flowMoveX, y: joystickInput.active.flowMove })}`);
+  assert.equal(joystickInput.released.flowJoystickActive, false,
+    'Cancelar el contacto debe liberar el joystick');
+  assert.equal(joystickInput.released.flowMoveX, 0,
+    'Liberar el joystick debe detener el eje horizontal');
+  assert.equal(joystickInput.released.flowMove, 0,
+    'Liberar el joystick debe detener el eje vertical');
   assert.equal(before.rivalLoadout.back, 'classic',
     'El companero bot no debe volver a equipar la mochila verde');
   const backgroundBefore = await evaluate(`(() => {
@@ -126,6 +152,28 @@ try {
     'Mantener Adelante no movio al ninja hacia los kunais');
   assert.equal(afterForward.flowPlayerHitX, afterForward.flowX,
     'La colision debe acompanar el movimiento horizontal');
+  await evaluate('window.__ninjaRunner.setFlowMoveX(-1)');
+  await delay(1750);
+  await evaluate('window.__ninjaRunner.setFlowMoveX(0)');
+  const furthestBack = JSON.parse(await evaluate(
+    'JSON.stringify(window.__ninjaRunner.snapshot())'));
+  assert.ok(furthestBack.flowX >= 270 && furthestBack.flowX <= 272,
+    `El nuevo limite de retroceso debe ser 270: ${furthestBack.flowX}`);
+  await evaluate('window.__ninjaRunner.setFlowMoveX(1)');
+  await delay(1750);
+  await evaluate('window.__ninjaRunner.setFlowMoveX(0)');
+  const furthestForward = JSON.parse(await evaluate(
+    'JSON.stringify(window.__ninjaRunner.snapshot())'));
+  assert.ok(furthestForward.flowX >= 778 && furthestForward.flowX <= 780,
+    `El nuevo limite de avance debe ser 780: ${furthestForward.flowX}`);
+  await evaluate('window.__ninjaRunner.setFlowVector(1, 1)');
+  const diagonalInput = JSON.parse(await evaluate(
+    'JSON.stringify(window.__ninjaRunner.snapshot())'));
+  assert.ok(Math.abs(Math.hypot(diagonalInput.flowMoveX, diagonalInput.flowMove) - 1) < .001,
+    'El joystick debe normalizar la diagonal para no acelerar al ninja');
+  assert.ok(diagonalInput.flowMoveX > .7 && diagonalInput.flowMove > .7,
+    'El joystick debe conservar movimiento simultaneo en ambos ejes');
+  await evaluate('window.__ninjaRunner.setFlowVector(0, 0)');
   let attackReady = false;
   for (let attempt = 0; attempt < 24; attempt += 1) {
     attackReady = await evaluate(`window.__ninjaRunner.snapshot().playerMode === 'run'`);
@@ -181,8 +229,8 @@ try {
     swordCounter: document.getElementById('flowSwordCounter').hidden,
     swordCount: document.getElementById('flowSwordCount').textContent
   })`));
-  assert.equal(bladeFeedback.game.flowSwordCharges, Math.min(8, bladesBeforePickup + 1),
-    'El buff de Filos debe recargar un intento hasta un maximo de ocho');
+  assert.equal(bladeFeedback.game.flowSwordCharges, Math.min(8, bladesBeforePickup + 2),
+    'El buff de Filos debe recargar dos intentos hasta un maximo de ocho');
   assert.match(bladeFeedback.hud, /ESPADAS V\d+\/C\d+/,
     'El HUD debe mostrar las cargas de ambos ninjas');
   assert.equal(bladeFeedback.swordCounter, false,
@@ -190,6 +238,10 @@ try {
   assert.equal(bladeFeedback.swordCount, String(bladeFeedback.game.flowSwordCharges),
     'El contador destacado debe coincidir con las cargas reales');
 
+  const swordsBeforeHealing = JSON.parse(await evaluate(`JSON.stringify({
+    player: window.__ninjaRunner.snapshot().flowSwordCharges,
+    rival: window.__ninjaRunner.snapshot().rivalSwordCharges
+  })`));
   await evaluate(`
     for (let index = 0; index < 2; index += 1) {
       window.__ninjaRunner.spawnFlowPickup('life',
@@ -205,6 +257,10 @@ try {
     'JSON.stringify(window.__ninjaRunner.snapshot())'));
   assert.deepEqual(healedTeam.flowLifeLabels, { player: 3, rival: 3 },
     'Cada ninja debe poder recolectar vidas hasta un maximo de tres');
+  assert.equal(healedTeam.flowSwordCharges, Math.min(8, swordsBeforeHealing.player + 1),
+    'Un corazon recogido con la vida llena debe dar un espadazo al jugador');
+  assert.equal(healedTeam.rivalSwordCharges, Math.min(8, swordsBeforeHealing.rival + 1),
+    'Un corazon recogido con la vida llena debe dar un espadazo al companero');
 
   const alignmentStart = JSON.parse(await evaluate(
     'JSON.stringify(window.__ninjaRunner.snapshot())'));

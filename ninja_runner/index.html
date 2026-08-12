@@ -82,11 +82,11 @@
             <small>Abrir antes de correr</small>
           </summary>
           <div class="duo-guide-grid">
-            <p class="flow-rules">W/S: subir o bajar &middot; A/D: atrasarse o adelantarse &middot; El ninja que va delante recibe primero los kunais.</p>
+            <p class="flow-rules">PC: W/S y A/D &middot; Móvil: joystick &middot; El ninja que va delante recibe primero los kunais.</p>
             <article data-kind="shield"><b aria-hidden="true">O</b><span><strong>GUARD</strong><small>Dura 10 segundos o hasta bloquear un impacto. Recoger otro reinicia el tiempo.</small></span></article>
             <article data-kind="blast"><b aria-hidden="true">X</b><span><strong>EXPLOSI&#211;N TOTAL</strong><small>Destruye inmediatamente todos los kunais visibles.</small></span></article>
-            <article data-kind="life"><b aria-hidden="true">+1</b><span><strong>VIDA</strong><small>Cada ninja empieza con 2. Recupera 1 vida hasta un m&#225;ximo de 3.</small></span></article>
-            <article data-kind="blade"><b aria-hidden="true">+1</b><span><strong>FILOS</strong><small>Recarga 1 espadazo. Cada ninja empieza con 2 y puede guardar hasta 8.</small></span></article>
+            <article data-kind="life"><b aria-hidden="true">+1</b><span><strong>VIDA</strong><small>Recupera 1 vida hasta un m&#225;ximo de 3. Con vida llena, otorga +1 espadazo.</small></span></article>
+            <article data-kind="blade"><b aria-hidden="true">+2</b><span><strong>FILOS</strong><small>Recarga 2 espadazos. Cada ninja empieza con 2 y puede guardar hasta 8.</small></span></article>
           </div>
         </details>
         <div id="networkStatus" class="network-status" data-state="connecting" role="status" aria-live="polite">
@@ -150,6 +150,12 @@
     </section>
 
     <nav id="touchControls" aria-label="Controles táctiles">
+      <div id="flowJoystick" class="flow-joystick" aria-label="Joystick de movimiento" hidden>
+        <div id="flowJoystickBase" class="flow-joystick-base" aria-hidden="true">
+          <span class="flow-joystick-direction">+</span>
+          <i id="flowJoystickKnob" class="flow-joystick-knob"></i>
+        </div>
+      </div>
       <button id="btnLane" class="lane-button" type="button" hidden><span>&#8645;</span><strong id="btnLaneLabel">Ir arriba</strong></button>
       <button id="btnBack" class="flow-horizontal-button" type="button" hidden><span>&#8592;</span><strong>Atr&#225;s</strong></button>
       <button id="btnForward" class="flow-horizontal-button" type="button" hidden><span>&#8594;</span><strong>Adelante</strong></button>

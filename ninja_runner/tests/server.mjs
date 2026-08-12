@@ -343,6 +343,15 @@ try {
   assert.equal(flowState.state.shieldMs, 6450);
   assert.equal(flowState.state.meters, 640);
 
+  flowSecond.send({ type: 'state', state: { flowX: -500 } });
+  const flowBackLimit = await flowFirst.waitFor('opponent-state');
+  assert.equal(flowBackLimit.state.flowX, 270,
+    'El servidor debe permitir el nuevo retroceso y limitar posiciones invalidas');
+  flowSecond.send({ type: 'state', state: { flowX: 1500 } });
+  const flowFrontLimit = await flowFirst.waitFor('opponent-state');
+  assert.equal(flowFrontLimit.state.flowX, 780,
+    'El servidor debe permitir el nuevo avance y limitar posiciones invalidas');
+
   flowFirst.send({ type: 'finish', reason: 'finish', stats: { meters: 1200, score: 1800 } });
   await new Promise(resolve => setTimeout(resolve, 40));
   assert.equal(flowFirst.messages.some(message => message.type === 'match-finished'), false,
