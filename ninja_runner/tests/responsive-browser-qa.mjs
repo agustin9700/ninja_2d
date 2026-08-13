@@ -111,6 +111,7 @@ try {
       innerWidth,
       innerHeight,
       scrollWidth: document.documentElement.scrollWidth,
+      visualProfile: window.__ninjaRunner.snapshot().visualProfile,
       camera: {
         viewport: document.getElementById('gameViewport').getBoundingClientRect().toJSON(),
         canvas: document.getElementById('fx').getBoundingClientRect().toJSON()
@@ -142,6 +143,12 @@ try {
         .filter(button => button.display !== 'none')
     })`));
     assert.equal(layout.innerWidth, testCase.width, `${testCase.name}: ancho emulado incorrecto`);
+    assert.equal(layout.visualProfile.name, testCase.mobile ? 'mobile' : 'desktop',
+      `${testCase.name}: perfil visual incorrecto`);
+    assert.equal(layout.visualProfile.targetFps, testCase.mobile ? 30 : 60,
+      `${testCase.name}: frame pacing incorrecto`);
+    assert.equal(layout.visualProfile.glow, !testCase.mobile,
+      `${testCase.name}: los blurs caros no respetan el presupuesto visual`);
     assert.ok(layout.scrollWidth <= layout.innerWidth,
       `${testCase.name}: existe overflow horizontal (${layout.scrollWidth}px)`);
     assert.deepEqual(layout.buttons.map(button => button.id), testCase.ids,

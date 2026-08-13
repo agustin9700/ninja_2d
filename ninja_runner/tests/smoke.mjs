@@ -273,8 +273,16 @@ assert.match(game, /function updateRunHud\(dt\)/,
   'El HUD debe limitar sus escrituras sin reducir los FPS del Canvas');
 assert.match(game, /game\.hudRenderClock = \.1/,
   'El HUD de carrera debe actualizarse como maximo diez veces por segundo');
-assert.match(game, /mobileVisualBudget \? 18 : 26/,
-  'Movil debe reducir solo las particulas decorativas');
+assert.match(game, /mobileVisualBudget \? 12 : 26/,
+  'Movil debe limitar las particulas decorativas');
+assert.match(game, /targetFps: mobileVisualBudget \? 30 : 60/,
+  'Movil debe usar un frame pacing estable sin ralentizar la logica');
+assert.match(game, /window\.NinjaRuntimeRenderFrame\?\.\(now\)/,
+  'El personaje debe renderizarse desde el mismo frame que el juego');
+assert.match(runtime, /ownsStageRendering/,
+  'El runtime debe ceder el render del personaje durante la partida');
+assert.match(game, /function compactInPlace\(/,
+  'Los efectos deben reciclar sus arrays para evitar pausas de GC');
 assert.match(game, /const WORLD_PAINTS = Object\.freeze/,
   'El fondo debe reutilizar gradientes en lugar de crearlos por fotograma');
 assert.match(runtime, /createImageBitmap\(image, \{ premultiplyAlpha: 'premultiply' \}\)/,

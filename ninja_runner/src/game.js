@@ -8,9 +8,20 @@
   const W = fx.width;
   const H = fx.height;
   const prefersReducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-  const mobileVisualBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+  const mobileVisualBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches ||
+    window.matchMedia?.('(max-width: 600px)').matches);
   const touchCapable = Boolean(window.matchMedia?.('(pointer: coarse)').matches || navigator.maxTouchPoints > 0);
   const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
+  const visualProfile = Object.freeze({
+    name: mobileVisualBudget ? 'mobile' : 'desktop',
+    targetFps: mobileVisualBudget ? 30 : 60,
+    glow: !mobileVisualBudget && !prefersReducedMotion,
+    particleLimit: prefersReducedMotion ? 24 : (mobileVisualBudget ? 64 : 160),
+    explosionLimit: mobileVisualBudget ? 5 : 10,
+    explosionRays: mobileVisualBudget ? 5 : 10
+  });
+  const targetFrameMs = 1000 / visualProfile.targetFps;
+  let lastVisualFrameAt = -Infinity;
 
   const CONFIG = Object.freeze({
     playerX: 420,
@@ -385,6 +396,7 @@
   }
 
   window.NinjaRunnerScene = {
+    ownsStageRendering: () => game.running,
     getViews: () => {
       if (isFlowMode()) {
         return [
@@ -1987,16 +1999,17 @@
   }
 
   function spawnExplosion(x, y, lane = 'player') {
+    if (game.explosions.length >= visualProfile.explosionLimit) game.explosions.shift();
     game.explosions.push({ x, y, lane, age: 0, duration: .42 });
     const colors = lane === 'rival'
       ? ['#ffffff', '#dcc5ff', '#a675ff', '#6943c7']
       : ['#fff8d6', '#ffd45f', '#ff923d', '#ff3f4f'];
-    const burstCount = prefersReducedMotion ? 8 : (mobileVisualBudget ? 18 : 26);
+    const burstCount = prefersReducedMotion ? 8 : (mobileVisualBudget ? 12 : 26);
     for (let index = 0; index < burstCount; index += 1) {
       const angle = (Math.PI * 2 * index / burstCount) + (Math.random() - .5) * .24;
       const speed = 110 + Math.random() * 360;
       const life = .22 + Math.random() * .34;
-      game.particles.push({
+      pushParticle({
         x,
         y,
         vx: Math.cos(angle) * speed,
@@ -2008,7 +2021,7 @@
       });
     }
     for (let index = 0; index < (prefersReducedMotion ? 1 : (mobileVisualBudget ? 3 : 5)); index += 1) {
-      game.particles.push({
+      pushParticle({
         x,
         y,
         vx: 80 + Math.random() * 160,
@@ -2021,6 +2034,21 @@
     }
   }
 
+  function pushParticle(particle) {
+    if (game.particles.length >= visualProfile.particleLimit) return false;
+    game.particles.push(particle);
+    return true;
+  }
+
+  function compactInPlace(items, keep) {
+    let writeIndex = 0;
+    for (let readIndex = 0; readIndex < items.length; readIndex += 1) {
+      const item = items[readIndex];
+      if (keep(item)) items[writeIndex++] = item;
+    }
+    items.length = writeIndex;
+  }
+
   function updateEffects(dt) {
     for (const particle of game.particles) {
       particle.x += particle.vx * dt;
@@ -2029,9 +2057,9 @@
       particle.vy += 260 * dt;
       particle.life -= dt;
     }
-    game.particles = game.particles.filter(particle => particle.life > 0);
+    compactInPlace(game.particles, particle => particle.life > 0);
     for (const explosion of game.explosions) explosion.age += dt;
-    game.explosions = game.explosions.filter(explosion => explosion.age < explosion.duration);
+    compactInPlace(game.explosions, explosion => explosion.age < explosion.duration);
   }
 
   function updateRunHud(dt) {
@@ -2411,10 +2439,14 @@
     ctx.scale(laneScale, laneScale);
     ctx.rotate(-.035 + Math.sin(game.elapsed * 7 + phase) * .018);
 
-    const trail = ctx.createLinearGradient(18, 0, 112, 0);
-    trail.addColorStop(0, rivalKunai ? 'rgba(180,135,255,.68)' : 'rgba(210,221,244,.32)');
-    trail.addColorStop(1, rivalKunai ? 'rgba(132,75,255,0)' : 'rgba(210,221,244,0)');
-    ctx.strokeStyle = trail;
+    if (visualProfile.glow) {
+      const trail = ctx.createLinearGradient(18, 0, 112, 0);
+      trail.addColorStop(0, rivalKunai ? 'rgba(180,135,255,.68)' : 'rgba(210,221,244,.32)');
+      trail.addColorStop(1, rivalKunai ? 'rgba(132,75,255,0)' : 'rgba(210,221,244,0)');
+      ctx.strokeStyle = trail;
+    } else {
+      ctx.strokeStyle = rivalKunai ? 'rgba(180,135,255,.48)' : 'rgba(210,221,244,.25)';
+    }
     ctx.lineWidth = rivalKunai ? 4 : 3;
     ctx.beginPath();
     ctx.moveTo(20, 0);
@@ -2422,7 +2454,7 @@
     ctx.stroke();
 
     ctx.shadowColor = rivalKunai ? 'rgba(166,117,255,.9)' : 'rgba(180,205,255,.35)';
-    ctx.shadowBlur = rivalKunai ? 16 : 9;
+    ctx.shadowBlur = visualProfile.glow ? (rivalKunai ? 16 : 9) : 0;
     ctx.fillStyle = '#dce3ef';
     ctx.beginPath();
     ctx.moveTo(-32, 0);
@@ -2458,7 +2490,7 @@
       ctx.globalAlpha = alpha * .78;
       ctx.lineCap = 'round';
       ctx.shadowColor = primary;
-      ctx.shadowBlur = 22;
+      ctx.shadowBlur = visualProfile.glow ? 22 : 0;
       ctx.strokeStyle = primary;
       ctx.lineWidth = width;
       ctx.beginPath();
@@ -2509,18 +2541,25 @@
       ctx.translate(explosion.x, explosion.y);
       ctx.globalCompositeOperation = 'screen';
 
-      const flash = ctx.createRadialGradient(0, 0, 0, 0, 0, 62 * ease + 5);
-      flash.addColorStop(0, `rgba(255,255,236,${1 - progress})`);
-      if (explosion.lane === 'rival') {
-        flash.addColorStop(.18, `rgba(210,178,255,${.95 - progress * .8})`);
-        flash.addColorStop(.55, `rgba(132,80,255,${.64 - progress * .58})`);
-        flash.addColorStop(1, 'rgba(92,44,190,0)');
+      if (visualProfile.glow) {
+        const flash = ctx.createRadialGradient(0, 0, 0, 0, 0, 62 * ease + 5);
+        flash.addColorStop(0, `rgba(255,255,236,${1 - progress})`);
+        if (explosion.lane === 'rival') {
+          flash.addColorStop(.18, `rgba(210,178,255,${.95 - progress * .8})`);
+          flash.addColorStop(.55, `rgba(132,80,255,${.64 - progress * .58})`);
+          flash.addColorStop(1, 'rgba(92,44,190,0)');
+        } else {
+          flash.addColorStop(.18, `rgba(255,210,73,${.95 - progress * .8})`);
+          flash.addColorStop(.55, `rgba(255,69,50,${.64 - progress * .58})`);
+          flash.addColorStop(1, 'rgba(255,49,34,0)');
+        }
+        ctx.fillStyle = flash;
       } else {
-        flash.addColorStop(.18, `rgba(255,210,73,${.95 - progress * .8})`);
-        flash.addColorStop(.55, `rgba(255,69,50,${.64 - progress * .58})`);
-        flash.addColorStop(1, 'rgba(255,49,34,0)');
+        const alpha = Math.max(0, .72 - progress * .65);
+        ctx.fillStyle = explosion.lane === 'rival'
+          ? `rgba(166,117,255,${alpha})`
+          : `rgba(255,146,61,${alpha})`;
       }
-      ctx.fillStyle = flash;
       ctx.beginPath();
       ctx.arc(0, 0, 68 * ease + 5, 0, Math.PI * 2);
       ctx.fill();
@@ -2531,8 +2570,8 @@
       ctx.beginPath();
       ctx.arc(0, 0, 24 + ease * 58, 0, Math.PI * 2);
       ctx.stroke();
-      for (let ray = 0; ray < 10; ray += 1) {
-        const angle = ray * Math.PI / 5;
+      for (let ray = 0; ray < visualProfile.explosionRays; ray += 1) {
+        const angle = ray * Math.PI * 2 / visualProfile.explosionRays;
         const inner = 16 + ease * 18;
         const outer = 34 + ease * 75;
         ctx.beginPath();
@@ -2900,7 +2939,7 @@
       ctx.rotate(Math.PI / 4);
       ctx.fillStyle = count > 0 ? '#ff4658' : '#5a2931';
       ctx.shadowColor = '#ff4658';
-      ctx.shadowBlur = count > 0 ? 8 : 0;
+      ctx.shadowBlur = visualProfile.glow && count > 0 ? 8 : 0;
       ctx.fillRect(-5, -5, 10, 10);
       ctx.restore();
       ctx.fillStyle = '#fff4f5';
@@ -2925,7 +2964,7 @@
       ctx.lineWidth = 2.5;
       ctx.lineCap = 'round';
       ctx.shadowColor = accent;
-      ctx.shadowBlur = count > 0 ? 6 : 0;
+      ctx.shadowBlur = visualProfile.glow && count > 0 ? 6 : 0;
       ctx.beginPath();
       ctx.moveTo(x - 17, y + 6);
       ctx.lineTo(x - 7, y - 5);
@@ -2943,7 +2982,7 @@
     ctx.save();
     ctx.fillStyle = '#8af8ef';
     ctx.shadowColor = '#35d9cf';
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = visualProfile.glow ? 8 : 0;
     ctx.font = '900 10px ui-monospace, Consolas, monospace';
     ctx.textAlign = 'center';
     const playerX = flowActorFxX('player');
@@ -2965,7 +3004,7 @@
     ctx.save();
     ctx.fillStyle = '#d6b7ff';
     ctx.shadowColor = '#9a70ff';
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = visualProfile.glow ? 8 : 0;
     ctx.font = '900 9px ui-monospace, Consolas, monospace';
     ctx.textAlign = 'center';
     ctx.fillText('COMP', rivalX, rivalY - 92);
@@ -2990,16 +3029,18 @@
     const pulse = 1 + Math.sin(now * .009 + (player ? 0 : 1.7)) * .07;
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
-    const aura = ctx.createRadialGradient(x, y, 12, x, y, 96 * pulse);
-    aura.addColorStop(0, player ? 'rgba(90,255,239,.34)' : 'rgba(196,137,255,.32)');
-    aura.addColorStop(.52, player ? 'rgba(52,220,210,.13)' : 'rgba(157,91,231,.13)');
-    aura.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = aura;
-    ctx.fillRect(x - 110, y - 120, 220, 240);
+    if (visualProfile.glow) {
+      const aura = ctx.createRadialGradient(x, y, 12, x, y, 96 * pulse);
+      aura.addColorStop(0, player ? 'rgba(90,255,239,.34)' : 'rgba(196,137,255,.32)');
+      aura.addColorStop(.52, player ? 'rgba(52,220,210,.13)' : 'rgba(157,91,231,.13)');
+      aura.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = aura;
+      ctx.fillRect(x - 110, y - 120, 220, 240);
+    }
     ctx.strokeStyle = accent;
     ctx.lineWidth = 4;
     ctx.shadowColor = accent;
-    ctx.shadowBlur = 26;
+    ctx.shadowBlur = visualProfile.glow ? 26 : 0;
     ctx.beginPath();
     ctx.ellipse(x, y, 56 * pulse, 88 * pulse, 0, 0, Math.PI * 2);
     ctx.stroke();
@@ -3016,7 +3057,7 @@
     ctx.strokeStyle = 'rgba(4,7,12,.92)';
     ctx.fillStyle = accent;
     ctx.shadowColor = accent;
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = visualProfile.glow ? 10 : 0;
     const timer = `GUARD ${seconds}s`;
     ctx.strokeText(timer, x + 50, y - 62);
     ctx.fillText(timer, x + 50, y - 62);
@@ -3036,11 +3077,15 @@
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       ctx.globalAlpha = alpha * .7;
-      const flash = ctx.createRadialGradient(originX, originY, 20, originX, originY, 620);
-      flash.addColorStop(0, 'rgba(255,255,220,.95)');
-      flash.addColorStop(.2, 'rgba(255,205,74,.62)');
-      flash.addColorStop(1, 'rgba(255,70,40,0)');
-      ctx.fillStyle = flash;
+      if (visualProfile.glow) {
+        const flash = ctx.createRadialGradient(originX, originY, 20, originX, originY, 620);
+        flash.addColorStop(0, 'rgba(255,255,220,.95)');
+        flash.addColorStop(.2, 'rgba(255,205,74,.62)');
+        flash.addColorStop(1, 'rgba(255,70,40,0)');
+        ctx.fillStyle = flash;
+      } else {
+        ctx.fillStyle = `rgba(255,154,55,${alpha * .22})`;
+      }
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
     }
@@ -3060,7 +3105,7 @@
       ctx.strokeText(notice.text, x, y);
       ctx.fillStyle = notice.color;
       ctx.shadowColor = notice.color;
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = visualProfile.glow ? 12 : 0;
       ctx.fillText(notice.text, x, y);
       ctx.restore();
     }
@@ -3077,7 +3122,7 @@
       ctx.translate(projectile.x, projectile.y);
       ctx.rotate(Math.sin(game.elapsed * 6 + projectile.phase) * .08);
       ctx.shadowColor = palette[0];
-      ctx.shadowBlur = 11;
+      ctx.shadowBlur = visualProfile.glow ? 11 : 0;
       const trailY = -projectile.vy / Math.max(1, flowProjectileSpeed(now)) * 120;
       ctx.save();
       ctx.globalAlpha = .42;
@@ -3121,7 +3166,7 @@
       ctx.translate(pickup.x, y);
       ctx.rotate(game.elapsed * .75);
       ctx.shadowColor = accent;
-      ctx.shadowBlur = 22;
+      ctx.shadowBlur = visualProfile.glow ? 22 : 0;
       ctx.fillStyle = fill;
       ctx.strokeStyle = accent;
       ctx.lineWidth = 4;
@@ -3192,7 +3237,7 @@
       ctx.translate(core.x, y);
       ctx.scale(pulse, pulse);
       ctx.shadowColor = '#ff3f6b';
-      ctx.shadowBlur = 22;
+      ctx.shadowBlur = visualProfile.glow ? 22 : 0;
       ctx.fillStyle = '#4c1024';
       ctx.strokeStyle = '#ff6b87';
       ctx.lineWidth = 4;
@@ -3223,7 +3268,7 @@
       ctx.translate(pickup.x, y);
       ctx.rotate(game.elapsed * .9);
       ctx.shadowColor = colors[0];
-      ctx.shadowBlur = 20;
+      ctx.shadowBlur = visualProfile.glow ? 20 : 0;
       ctx.fillStyle = colors[1];
       ctx.strokeStyle = colors[0];
       ctx.lineWidth = 4;
@@ -3252,7 +3297,7 @@
       ctx.fillStyle = 'rgba(65,190,255,.08)';
       ctx.lineWidth = 4;
       ctx.shadowColor = '#62dfff';
-      ctx.shadowBlur = 18;
+      ctx.shadowBlur = visualProfile.glow ? 18 : 0;
       ctx.beginPath();
       ctx.ellipse(CONFIG.playerX, actorGroundY(game.player, now) - 82, 52, 88, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -3265,7 +3310,7 @@
       ctx.strokeStyle = 'rgba(196,161,255,.86)';
       ctx.lineWidth = 3;
       ctx.shadowColor = '#a675ff';
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = visualProfile.glow ? 15 : 0;
       ctx.beginPath();
       ctx.ellipse(CONFIG.playerX + rivalLeadOffset(), actorGroundY(game.rival, now) - 78,
         48, 82, 0, 0, Math.PI * 2);
@@ -3294,6 +3339,7 @@
 
   function drawFrame(now = performance.now()) {
     drawWorld();
+    window.NinjaRuntimeRenderFrame?.(now);
     ctx.clearRect(0, 0, W, H);
     if (isFlowMode()) {
       drawFlowObjects(now);
@@ -3325,7 +3371,10 @@
     }
     updateEffects(dt);
     sendOnlineState(dt, now);
-    drawFrame(now);
+    if (now - lastVisualFrameAt >= targetFrameMs - 1) {
+      lastVisualFrameAt = now;
+      drawFrame(now);
+    }
     if (game.running) requestAnimationFrame(loop);
   }
 
@@ -3476,6 +3525,7 @@
     game.rivalSpawnClock = 1.15;
     game.spawnDelay = CONFIG.startSpawnDelay;
     game.lastTime = 0;
+    lastVisualFrameAt = -Infinity;
     game.nextDuoObjectId = 1;
     game.kunais = [];
     game.pickups = [];
@@ -4133,6 +4183,7 @@
       playerName: game.playerName,
       rivalPlayerName: game.rivalPlayerName,
       enemyKunaisVisible: game.enemyKunaisVisible,
+      visualProfile: { ...visualProfile },
       score: game.score,
       combo: game.combo,
       lives: game.lives,

@@ -956,7 +956,7 @@ function updateAnim(now) {
   }
 }
 
-function render(now = 0) {
+function renderFrame(now = 0) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
 
@@ -966,7 +966,6 @@ function render(now = 0) {
     ctx.textAlign = 'center';
     ctx.fillText('Cargando asset_manifest.json', canvas.width / 2, canvas.height / 2);
     ctx.textAlign = 'left';
-    requestAnimationFrame(render);
     return;
   }
 
@@ -987,8 +986,19 @@ function render(now = 0) {
   drawStageOrigin();
   drawNoBonesNotice();
   drawAnimIndicator();
+}
+
+/* During gameplay game.js owns the stage render so the background, character
+   and effects are painted from the same animation frame. Outside a race this
+   lightweight loop keeps the lobby preview alive. */
+function render(now = 0) {
+  const runnerOwnsStage = document.body?.dataset.mode === 'runner' &&
+    window.NinjaRunnerScene?.ownsStageRendering?.();
+  if (!runnerOwnsStage) renderFrame(now);
   requestAnimationFrame(render);
 }
+
+window.NinjaRuntimeRenderFrame = renderFrame;
 
 function timelineLinkageNames(timeline) {
   return new Set((timeline?.layers || [])
