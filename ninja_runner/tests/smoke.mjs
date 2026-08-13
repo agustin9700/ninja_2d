@@ -293,6 +293,10 @@ assert.match(runtime, /function cachedRunnerPose\(/,
   'Falta cachear las poses compuestas de los ninjas');
 assert.match(runtime, /runnerPosePixelLimit/,
   'La cache de poses debe tener un limite de memoria');
+assert.match(runtime, /runnerMobileBudget \? 3000000 : 16000000/,
+  'La cache movil debe respetar un presupuesto seguro para Android');
+assert.match(runtime, /contextlost/,
+  'El runtime debe recuperarse si Android descarta una superficie Canvas');
 assert.match(game, /const WORLD_PAINTS = Object\.freeze/,
   'El fondo debe reutilizar gradientes en lugar de crearlos por fotograma');
 assert.match(runtime, /createImageBitmap\(image, \{ premultiplyAlpha: 'premultiply' \}\)/,

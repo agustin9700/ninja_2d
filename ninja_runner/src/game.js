@@ -314,7 +314,7 @@
     balanced: { particleLimit: 48, explosionLimit: 4, explosionRays: 4, backgroundFps: 20 },
     low: { particleLimit: 28, explosionLimit: 3, explosionRays: 3, backgroundFps: 15 }
   });
-  const qualityOrder = ['low', 'balanced', 'high'];
+  const qualityOrder = mobileVisualBudget ? ['low', 'balanced'] : ['high'];
   const performanceState = {
     enabled: perfEnabled,
     fps: 0,
@@ -336,6 +336,18 @@
     lastRenderedAt: 0
   };
   let perfHud = null;
+
+  for (const surface of [background, fx]) {
+    surface.addEventListener('contextlost', event => {
+      event.preventDefault();
+      window.NinjaRuntimePerformance?.clearPoseCache?.();
+    });
+    surface.addEventListener('contextrestored', () => {
+      window.NinjaRuntimePerformance?.clearPoseCache?.();
+      nextBackgroundFrameAt = -Infinity;
+      lastVisualFrameAt = -Infinity;
+    });
+  }
 
   function average(items, key) {
     if (!items.length) return 0;

@@ -43,13 +43,19 @@ let runnerPoseCache = new WeakMap();
 const runnerPoseEntries = new Set();
 const runnerMobileBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches ||
   window.matchMedia?.('(max-width: 600px)').matches);
-const runnerPoseEntryLimit = runnerMobileBudget ? 44 : 80;
-const runnerPosePixelLimit = runnerMobileBudget ? 7000000 : 16000000;
+const runnerPoseEntryLimit = runnerMobileBudget ? 36 : 80;
+const runnerPosePixelLimit = runnerMobileBudget ? 3000000 : 16000000;
 let runnerPosePixels = 0;
 let runnerPoseClock = 0;
 let runnerPoseHits = 0;
 let runnerPoseMisses = 0;
 let currentRenderStats = null;
+
+canvas.addEventListener('contextlost', event => {
+  event.preventDefault();
+  clearRunnerPoseCache();
+});
+canvas.addEventListener('contextrestored', () => clearRunnerPoseCache());
 
 // ----- Animación de agacharse -----
 const anim = {
@@ -684,7 +690,8 @@ function poseCacheSnapshot() {
   };
 }
 
-function screenBoundsForPose(commands, loadout) {
+function screenBoundsForPose(commands, loadout, viewScale) {
+  const sourceAnchor = stageToScreen(state.characterAnchorStage);
   let left = Infinity;
   let top = Infinity;
   let right = -Infinity;
@@ -702,10 +709,12 @@ function screenBoundsForPose(commands, loadout) {
     ];
     for (const point of points) {
       const screen = stageToScreen(point);
-      left = Math.min(left, screen.x);
-      top = Math.min(top, screen.y);
-      right = Math.max(right, screen.x);
-      bottom = Math.max(bottom, screen.y);
+      const relativeX = (screen.x - sourceAnchor.x) * viewScale;
+      const relativeY = (screen.y - sourceAnchor.y) * viewScale;
+      left = Math.min(left, relativeX);
+      top = Math.min(top, relativeY);
+      right = Math.max(right, relativeX);
+      bottom = Math.max(bottom, relativeY);
     }
   }
   if (![left, top, right, bottom].every(Number.isFinite)) return null;
@@ -720,7 +729,7 @@ function screenBoundsForPose(commands, loadout) {
   return { left, top, right, bottom, width, height };
 }
 
-function drawBasePart(target, command, loadout, offsetX = 0, offsetY = 0) {
+function drawBasePart(target, command, loadout, viewScale, sourceAnchor, poseLeft, poseTop) {
   if (isPartSuppressedByLoadout(command.partName, loadout)) return;
   const appearance = appearanceFor(command.partName, loadout);
   const image = appearance?.image;
@@ -729,7 +738,10 @@ function drawBasePart(target, command, loadout, offsetX = 0, offsetY = 0) {
   const registration = part.registrationPx || part.pivot || { x: image.width / 2, y: image.height / 2 };
   const rasterScale = finite(part.rasterPixelsPerSourceUnit ?? part.scaleFactor ?? state.manifest.raster?.scaleFactor, 1);
   target.save();
-  target.translate(state.origin.x + state.ox + offsetX, state.origin.y + state.oy + offsetY);
+  target.translate(-poseLeft, -poseTop);
+  target.scale(viewScale, viewScale);
+  target.translate(-sourceAnchor.x, -sourceAnchor.y);
+  target.translate(state.origin.x + state.ox, state.origin.y + state.oy);
   target.scale(state.scale, state.scale);
   target.transform(command.matrix.a, command.matrix.b, command.matrix.c, command.matrix.d,
     command.matrix.tx, command.matrix.ty);
@@ -755,14 +767,17 @@ function evictRunnerPoses() {
   }
 }
 
-function cachedRunnerPose(commands, loadout) {
+function cachedRunnerPose(commands, view) {
   if (!commands?.length) return null;
+  const loadout = view?.loadout;
+  const viewScale = finite(view?.scale, 1);
   let cache = runnerPoseCache.get(commands);
   if (!cache) {
     cache = new Map();
     runnerPoseCache.set(commands, cache);
   }
-  const key = `${loadoutCacheKey(loadout)}|${round(state.scale)}|${round(state.origin.x)}|${round(state.origin.y)}`;
+  const key = `${loadoutCacheKey(loadout)}|${round(viewScale)}|${round(state.scale)}|` +
+    `${round(state.origin.x)}|${round(state.origin.y)}`;
   let entry = cache.get(key);
   if (entry) {
     entry.usedAt = ++runnerPoseClock;
@@ -771,14 +786,17 @@ function cachedRunnerPose(commands, loadout) {
     return entry;
   }
 
-  const bounds = screenBoundsForPose(commands, loadout);
+  const bounds = screenBoundsForPose(commands, loadout, viewScale);
   if (!bounds) return null;
   const surface = document.createElement('canvas');
   surface.width = bounds.width;
   surface.height = bounds.height;
   const target = surface.getContext('2d', { alpha: true });
   if (!target) return null;
-  for (const command of commands) drawBasePart(target, command, loadout, -bounds.left, -bounds.top);
+  const sourceAnchor = stageToScreen(state.characterAnchorStage);
+  for (const command of commands) {
+    drawBasePart(target, command, loadout, viewScale, sourceAnchor, bounds.left, bounds.top);
+  }
   entry = {
     surface,
     left: bounds.left,
@@ -798,18 +816,14 @@ function cachedRunnerPose(commands, loadout) {
 }
 
 function drawRunnerPose(commands, view) {
-  const entry = cachedRunnerPose(commands, view?.loadout);
+  const entry = cachedRunnerPose(commands, view);
   if (!entry) {
     for (const command of commands) drawPart(command, view);
     return;
   }
-  const sourceAnchor = stageToScreen(state.characterAnchorStage);
-  const viewScale = finite(view?.scale, 1);
   ctx.save();
-  ctx.translate(finite(view?.x, sourceAnchor.x), finite(view?.y, sourceAnchor.y));
-  ctx.scale(viewScale, viewScale);
   ctx.globalAlpha = Math.max(0, Math.min(1, finite(view?.opacity, 1)));
-  ctx.drawImage(entry.surface, entry.left - sourceAnchor.x, entry.top - sourceAnchor.y);
+  ctx.drawImage(entry.surface, finite(view?.x) + entry.left, finite(view?.y) + entry.top);
   if (currentRenderStats) currentRenderStats.rasterDraws += 1;
   ctx.restore();
 }

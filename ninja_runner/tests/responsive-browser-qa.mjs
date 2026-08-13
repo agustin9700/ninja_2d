@@ -225,19 +225,36 @@ try {
         `${testCase.name}: la camara debe ampliar el contenido mediante un recorte vertical moderado`);
     }
     let sustainedPerformance = null;
+    let canvasHealth = null;
     if (testCase.name === 'landscape-flow') {
       await delay(4700);
       sustainedPerformance = JSON.parse(await evaluate(
         'JSON.stringify(window.__ninjaRunner.snapshot())'));
+      canvasHealth = JSON.parse(await evaluate(`JSON.stringify((() => {
+        const background = document.getElementById('background').getContext('2d');
+        const stage = document.getElementById('stage').getContext('2d');
+        const backgroundPixel = [...background.getImageData(500, 350, 1, 1).data];
+        const stagePixels = stage.getImageData(200, 100, 600, 500).data;
+        let visibleStagePixels = 0;
+        for (let index = 3; index < stagePixels.length; index += 4) {
+          if (stagePixels[index] > 0) visibleStagePixels += 1;
+        }
+        return { backgroundPixel, visibleStagePixels };
+      })())`));
       assert.equal(sustainedPerformance.running, true,
         'Duo movil no inicio despues de la cuenta regresiva');
+      assert.ok(canvasHealth.backgroundPixel[0] + canvasHealth.backgroundPixel[1] +
+        canvasHealth.backgroundPixel[2] > 30,
+      `Android perdio la superficie del fondo: ${canvasHealth.backgroundPixel}`);
+      assert.ok(canvasHealth.visibleStagePixels > 100,
+        `Android perdio la superficie de los personajes: ${canvasHealth.visibleStagePixels}`);
       assert.ok(sustainedPerformance.performance.fps >= 24,
         `Duo movil no mantiene un ritmo estable: ${sustainedPerformance.performance.fps} FPS`);
       assert.ok(sustainedPerformance.performance.poseCache.hitRate > .2,
         'Duo movil no reutiliza las poses cacheadas');
-      assert.ok(sustainedPerformance.performance.poseCache.entries <= 44,
+      assert.ok(sustainedPerformance.performance.poseCache.entries <= 36,
         'La cache movil supera su limite de entradas');
-      assert.ok(sustainedPerformance.performance.poseCache.pixels <= 7000000,
+      assert.ok(sustainedPerformance.performance.poseCache.pixels <= 3000000,
         'La cache movil supera su presupuesto de memoria');
     }
     if (testCase.name === 'desktop-competitive') {
@@ -272,7 +289,9 @@ try {
       ...(sustainedPerformance ? {
         fps: Math.round(sustainedPerformance.performance.fps * 10) / 10,
         poseHitRate: Math.round(sustainedPerformance.performance.poseCache.hitRate * 1000) / 1000,
-        poseEntries: sustainedPerformance.performance.poseCache.entries
+        poseEntries: sustainedPerformance.performance.poseCache.entries,
+        backgroundPixel: canvasHealth.backgroundPixel.slice(0, 3),
+        visibleStagePixels: canvasHealth.visibleStagePixels
       } : {}),
       bounds: layout.buttons.map(button =>
         [button.id, Math.round(button.rect.left), Math.round(button.rect.top),
