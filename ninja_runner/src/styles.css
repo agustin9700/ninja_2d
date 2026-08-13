@@ -173,6 +173,11 @@ canvas {
 #stage { z-index: 1; }
 #fx { z-index: 2; pointer-events: none; }
 
+/* Android can drop lower accelerated Canvas layers after rotating. In mobile
+   landscape game.js composites them into #fx, leaving only one visible layer. */
+body.single-canvas-render #background,
+body.single-canvas-render #stage { display: none; }
+
 #hud {
   position: absolute;
   inset: 0 0 auto;

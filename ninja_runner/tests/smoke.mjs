@@ -301,6 +301,10 @@ assert.match(game, /function recoverCanvasSurfaces\(/,
   'El juego debe reconstruir sus Canvas al rotar Android');
 assert.match(game, /orientationchange/,
   'Falta detectar el cambio de orientacion del telefono');
+assert.match(game, /function syncCanvasCompositionMode\(/,
+  'Horizontal movil debe usar composicion de un solo Canvas');
+assert.match(game, /ctx\.drawImage\(background, 0, 0, W, H\)/,
+  'El Canvas visible debe recibir el fondo en horizontal');
 assert.match(game, /let WORLD_PAINTS = createWorldPaints\(\)/,
   'El fondo debe reutilizar gradientes en lugar de crearlos por fotograma');
 assert.match(runtime, /createImageBitmap\(image, \{ premultiplyAlpha: 'premultiply' \}\)/,

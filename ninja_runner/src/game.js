@@ -3,6 +3,7 @@
 
   const background = document.getElementById('background');
   const bg = background.getContext('2d', { alpha: false, desynchronized: true });
+  const stage = document.getElementById('stage');
   const fx = document.getElementById('fx');
   const ctx = fx.getContext('2d', { alpha: true, desynchronized: true });
   const W = fx.width;
@@ -22,11 +23,22 @@
     particleLimit: prefersReducedMotion ? 24 : (mobileVisualBudget ? 48 : 160),
     explosionLimit: mobileVisualBudget ? 4 : 10,
     explosionRays: mobileVisualBudget ? 4 : 10,
-    backgroundFps: mobileVisualBudget ? 20 : 60
+    backgroundFps: mobileVisualBudget ? 20 : 60,
+    composition: 'layers'
   };
   let targetFrameMs = 1000 / visualProfile.targetFps;
   let lastVisualFrameAt = -Infinity;
   let nextBackgroundFrameAt = -Infinity;
+  let singleCanvasComposition = false;
+
+  function syncCanvasCompositionMode() {
+    singleCanvasComposition = mobileVisualBudget && window.innerWidth > window.innerHeight;
+    visualProfile.composition = singleCanvasComposition ? 'single-canvas' : 'layers';
+    document.body.classList.toggle('single-canvas-render', singleCanvasComposition);
+    return singleCanvasComposition;
+  }
+
+  syncCanvasCompositionMode();
 
   const CONFIG = Object.freeze({
     playerX: 420,
@@ -367,6 +379,7 @@
     if (!mobileVisualBudget) return;
     clearTimeout(canvasRecoveryTimer);
     canvasRecoveryTimer = setTimeout(() => {
+      syncCanvasCompositionMode();
       window.NinjaRuntimePerformance?.clearPoseCache?.();
       resetCanvasSurface(background);
       resetCanvasSurface(fx);
@@ -452,7 +465,8 @@
       `FPS ${performanceState.fps.toFixed(1)}  P95 ${performanceState.p95FrameMs.toFixed(1)}ms`,
       `LOG ${performanceState.updateMs.toFixed(1)}  BG ${performanceState.backgroundMs.toFixed(1)}  ` +
         `NINJAS ${performanceState.characterMs.toFixed(1)}  FX ${performanceState.effectsMs.toFixed(1)}`,
-      `${visualProfile.tier.toUpperCase()}  BG ${visualProfile.backgroundFps}fps  ` +
+      `${visualProfile.tier.toUpperCase()}  ${singleCanvasComposition ? 'SINGLE' : 'LAYERS'}  ` +
+        `BG ${visualProfile.backgroundFps}fps  ` +
         `POSES ${Math.round((cache.hitRate || 0) * 100)}%/${cache.entries || 0}`
     ].join('\n');
   }
@@ -3559,6 +3573,12 @@
     const characterMs = performance.now() - characterStartedAt;
     const effectsStartedAt = performance.now();
     ctx.clearRect(0, 0, W, H);
+    if (singleCanvasComposition) {
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(background, 0, 0, W, H);
+      ctx.drawImage(stage, 0, 0, W, H);
+    }
     if (isFlowMode()) {
       drawFlowObjects(now);
     } else {

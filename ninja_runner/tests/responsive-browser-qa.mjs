@@ -233,13 +233,22 @@ try {
       canvasHealth = JSON.parse(await evaluate(`JSON.stringify((() => {
         const background = document.getElementById('background').getContext('2d');
         const stage = document.getElementById('stage').getContext('2d');
+        const fx = document.getElementById('fx').getContext('2d');
         const backgroundPixel = [...background.getImageData(500, 350, 1, 1).data];
+        const compositePixel = [...fx.getImageData(500, 350, 1, 1).data];
         const stagePixels = stage.getImageData(200, 100, 600, 500).data;
         let visibleStagePixels = 0;
         for (let index = 3; index < stagePixels.length; index += 4) {
           if (stagePixels[index] > 0) visibleStagePixels += 1;
         }
-        return { backgroundPixel, visibleStagePixels };
+        return {
+          backgroundPixel,
+          compositePixel,
+          visibleStagePixels,
+          backgroundDisplay: getComputedStyle(document.getElementById('background')).display,
+          stageDisplay: getComputedStyle(document.getElementById('stage')).display,
+          fxDisplay: getComputedStyle(document.getElementById('fx')).display
+        };
       })())`));
       assert.equal(sustainedPerformance.running, true,
         'Duo movil no inicio despues de la cuenta regresiva');
@@ -248,6 +257,15 @@ try {
       `Android perdio la superficie del fondo: ${canvasHealth.backgroundPixel}`);
       assert.ok(canvasHealth.visibleStagePixels > 100,
         `Android perdio la superficie de los personajes: ${canvasHealth.visibleStagePixels}`);
+      assert.ok(canvasHealth.compositePixel[0] + canvasHealth.compositePixel[1] +
+        canvasHealth.compositePixel[2] > 30,
+      `El Canvas visible no recibio el fondo: ${canvasHealth.compositePixel}`);
+      assert.equal(sustainedPerformance.visualProfile.composition, 'single-canvas',
+        'Duo horizontal debe usar un unico Canvas visible');
+      assert.deepEqual(
+        [canvasHealth.backgroundDisplay, canvasHealth.stageDisplay, canvasHealth.fxDisplay],
+        ['none', 'none', 'block'],
+        'Android horizontal debe componer solamente la capa FX');
       assert.ok(sustainedPerformance.performance.fps >= 24,
         `Duo movil no mantiene un ritmo estable: ${sustainedPerformance.performance.fps} FPS`);
       assert.ok(sustainedPerformance.performance.poseCache.hitRate > .2,
@@ -269,7 +287,7 @@ try {
       });
       await delay(900);
       const rotatedHealth = JSON.parse(await evaluate(`JSON.stringify((() => {
-        const pixel = [...document.getElementById('background').getContext('2d')
+        const pixel = [...document.getElementById('fx').getContext('2d')
           .getImageData(500, 350, 1, 1).data];
         return {
           pixel,
@@ -315,6 +333,7 @@ try {
         poseHitRate: Math.round(sustainedPerformance.performance.poseCache.hitRate * 1000) / 1000,
         poseEntries: sustainedPerformance.performance.poseCache.entries,
         backgroundPixel: canvasHealth.backgroundPixel.slice(0, 3),
+        compositePixel: canvasHealth.compositePixel.slice(0, 3),
         visibleStagePixels: canvasHealth.visibleStagePixels
       } : {}),
       bounds: layout.buttons.map(button =>
