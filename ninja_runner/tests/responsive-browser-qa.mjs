@@ -116,6 +116,13 @@ try {
         viewport: document.getElementById('gameViewport').getBoundingClientRect().toJSON(),
         canvas: document.getElementById('fx').getBoundingClientRect().toJSON()
       },
+      raceHud: (() => {
+        const element = document.getElementById('raceHud');
+        return {
+          display: getComputedStyle(element).display,
+          rect: element.getBoundingClientRect().toJSON()
+        };
+      })(),
       swordCounter: (() => {
         const element = document.getElementById('flowSwordCounter');
         return {
@@ -149,6 +156,8 @@ try {
       `${testCase.name}: frame pacing incorrecto`);
     assert.equal(layout.visualProfile.glow, !testCase.mobile,
       `${testCase.name}: los blurs caros no respetan el presupuesto visual`);
+    assert.equal(layout.visualProfile.backgroundFps, testCase.mobile ? 20 : 60,
+      `${testCase.name}: frecuencia inicial del fondo incorrecta`);
     assert.ok(layout.scrollWidth <= layout.innerWidth,
       `${testCase.name}: existe overflow horizontal (${layout.scrollWidth}px)`);
     assert.deepEqual(layout.buttons.map(button => button.id), testCase.ids,
@@ -198,6 +207,15 @@ try {
         `${testCase.name}: Ataque debe quedar separado del joystick`);
     }
     if (testCase.mobile && testCase.width > testCase.height) {
+      if (['flow', 'duo'].includes(testCase.mode)) {
+        assert.equal(layout.raceHud.display, 'none',
+          `${testCase.name}: el panel redundante de Duo debe dejar libre el combate`);
+      } else {
+        assert.ok(layout.raceHud.rect.right <= layout.innerWidth * .38,
+          `${testCase.name}: el HUD de carrera invade el centro del combate`);
+        assert.ok(layout.raceHud.rect.top >= 90,
+          `${testCase.name}: el HUD de carrera se superpone a vidas y espadas`);
+      }
       assert.ok(layout.camera.viewport.width >= layout.innerWidth * .8,
         `${testCase.name}: la camara horizontal todavia desperdicia demasiado ancho`);
       const canvasRatio = layout.camera.canvas.width / layout.camera.canvas.height;
@@ -205,6 +223,22 @@ try {
         `${testCase.name}: el canvas se deformo al ampliar la camara (${canvasRatio})`);
       assert.ok(layout.camera.canvas.height > layout.camera.viewport.height,
         `${testCase.name}: la camara debe ampliar el contenido mediante un recorte vertical moderado`);
+    }
+    let sustainedPerformance = null;
+    if (testCase.name === 'landscape-flow') {
+      await delay(4700);
+      sustainedPerformance = JSON.parse(await evaluate(
+        'JSON.stringify(window.__ninjaRunner.snapshot())'));
+      assert.equal(sustainedPerformance.running, true,
+        'Duo movil no inicio despues de la cuenta regresiva');
+      assert.ok(sustainedPerformance.performance.fps >= 24,
+        `Duo movil no mantiene un ritmo estable: ${sustainedPerformance.performance.fps} FPS`);
+      assert.ok(sustainedPerformance.performance.poseCache.hitRate > .2,
+        'Duo movil no reutiliza las poses cacheadas');
+      assert.ok(sustainedPerformance.performance.poseCache.entries <= 44,
+        'La cache movil supera su limite de entradas');
+      assert.ok(sustainedPerformance.performance.poseCache.pixels <= 7000000,
+        'La cache movil supera su presupuesto de memoria');
     }
     if (testCase.name === 'desktop-competitive') {
       await delay(3300);
@@ -235,6 +269,11 @@ try {
     results.push({
       name: testCase.name,
       controls: layout.buttons.length,
+      ...(sustainedPerformance ? {
+        fps: Math.round(sustainedPerformance.performance.fps * 10) / 10,
+        poseHitRate: Math.round(sustainedPerformance.performance.poseCache.hitRate * 1000) / 1000,
+        poseEntries: sustainedPerformance.performance.poseCache.entries
+      } : {}),
       bounds: layout.buttons.map(button =>
         [button.id, Math.round(button.rect.left), Math.round(button.rect.top),
           Math.round(button.rect.right), Math.round(button.rect.bottom)])

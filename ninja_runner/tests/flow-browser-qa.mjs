@@ -6,7 +6,7 @@ const delay = milliseconds => new Promise(resolve => setTimeout(resolve, millise
 const chromePath = process.env.CHROME_PATH ||
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const gameUrl = process.env.FLOW_QA_URL ||
-  'http://127.0.0.1:8080/?mode=flow&autostart=1&qa=1';
+  'http://127.0.0.1:8080/?mode=flow&autostart=1&qa=1&perf=1';
 const debugPort = 9555;
 const profileDir = `C:\\tmp\\ninja-flow-browser-qa-${process.pid}`;
 const chrome = spawn(chromePath, [
@@ -78,6 +78,14 @@ try {
     'El jugador debe comenzar Duo con dos espadazos');
   assert.equal(before.rivalSwordCharges, 2,
     'El companero debe comenzar Duo con dos espadazos');
+  assert.equal(before.performance.enabled, true,
+    'El parametro perf=1 debe activar la telemetria');
+  assert.ok(before.performance.fps > 0 && before.performance.p95FrameMs >= 0,
+    'La telemetria debe publicar FPS y P95');
+  assert.ok(before.performance.poseCache.entries > 0,
+    'Duo debe guardar poses compuestas en cache');
+  assert.ok(before.performance.poseCache.hits > 0 && before.performance.poseCache.hitRate > .2,
+    `La cache de poses no se esta reutilizando: ${JSON.stringify(before.performance.poseCache)}`);
   const joystickInput = JSON.parse(await evaluate(`JSON.stringify((() => {
     const pad = document.getElementById('flowJoystick');
     const wasHidden = pad.hidden;
@@ -421,6 +429,7 @@ try {
     blastDestroyed: blastIds.length,
     backgroundMoved: backgroundAfter !== backgroundBefore.hash,
     hitFeedback: directHit.lives === livesBeforeHit - 1,
+    performance: before.performance,
     exceptions: exceptions.length
   }));
 } finally {

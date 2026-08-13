@@ -1040,6 +1040,26 @@ body[data-game-type=flow] .controls-grid {
 
 #enginePanel { position: fixed; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
 
+#perfHud {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 20;
+  min-width: 250px;
+  padding: 7px 9px;
+  border: 1px solid rgba(104, 247, 234, .42);
+  border-radius: 6px;
+  background: rgba(4, 8, 13, .9);
+  color: #8af8ef;
+  font: 700 9px/1.45 ui-monospace, Consolas, monospace;
+  white-space: pre;
+  pointer-events: none;
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  #perfHud { right: 104px; bottom: 7px; min-width: 220px; font-size: 8px; }
+}
+
 @keyframes pulse { 50% { opacity: .4; transform: scale(.7); } }
 
 @media (pointer: coarse), (max-width: 600px) {
@@ -1351,7 +1371,29 @@ html, body { overscroll-behavior: none; }
   }
   .lives-card { grid-column: 1; grid-row: 1; }
   .score-card { grid-column: 3; grid-row: 1; }
-  #raceHud { display: grid; grid-column: 2; grid-row: 1; width: clamp(190px, 32vw, 270px); }
+  /* Keep the combat lane clear on phones. This compact card sits behind the
+     runners, below the lives/sword HUD, instead of covering the screen centre. */
+  #raceHud {
+    position: absolute;
+    top: 108px;
+    left: max(10px, env(safe-area-inset-left));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: clamp(176px, 25vw, 205px);
+    gap: 3px;
+    padding: 6px 7px;
+    border-radius: 6px;
+    background: rgba(7, 10, 17, .82);
+    backdrop-filter: none;
+  }
+  /* Duo already shows lives/swords over each runner and in the top-left HUD.
+     Removing this duplicated card gives the joystick and combat the full lane. */
+  body[data-game-type=flow] #raceHud { display: none; }
+  .race-row { grid-template-columns: 52px minmax(30px, 1fr) 25px; gap: 4px; font-size: 6px; }
+  .race-row strong { font-size: 6px; }
+  #latencyHud { gap: 3px; padding-left: 4px; font-size: 6px; }
+  #flowHud, #duoHud { gap: 3px 4px; margin-top: 1px; padding-top: 3px; font-size: 6px; }
+  #flowHud > strong { max-width: 72%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   #score { font-size: 20px; }
   #toast { top: 58px; }
   .enemy-kunai-toggle { top: 58px; right: max(10px, env(safe-area-inset-right)); }

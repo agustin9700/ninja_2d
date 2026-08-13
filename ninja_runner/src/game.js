@@ -11,17 +11,22 @@
   const mobileVisualBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches ||
     window.matchMedia?.('(max-width: 600px)').matches);
   const touchCapable = Boolean(window.matchMedia?.('(pointer: coarse)').matches || navigator.maxTouchPoints > 0);
-  const qaMode = new URLSearchParams(window.location.search).get('qa') === '1';
-  const visualProfile = Object.freeze({
+  const queryParams = new URLSearchParams(window.location.search);
+  const qaMode = queryParams.get('qa') === '1';
+  const perfEnabled = queryParams.get('perf') === '1';
+  const visualProfile = {
     name: mobileVisualBudget ? 'mobile' : 'desktop',
+    tier: mobileVisualBudget ? 'balanced' : 'high',
     targetFps: mobileVisualBudget ? 30 : 60,
     glow: !mobileVisualBudget && !prefersReducedMotion,
-    particleLimit: prefersReducedMotion ? 24 : (mobileVisualBudget ? 64 : 160),
-    explosionLimit: mobileVisualBudget ? 5 : 10,
-    explosionRays: mobileVisualBudget ? 5 : 10
-  });
-  const targetFrameMs = 1000 / visualProfile.targetFps;
+    particleLimit: prefersReducedMotion ? 24 : (mobileVisualBudget ? 48 : 160),
+    explosionLimit: mobileVisualBudget ? 4 : 10,
+    explosionRays: mobileVisualBudget ? 4 : 10,
+    backgroundFps: mobileVisualBudget ? 20 : 60
+  };
+  let targetFrameMs = 1000 / visualProfile.targetFps;
   let lastVisualFrameAt = -Infinity;
+  let nextBackgroundFrameAt = -Infinity;
 
   const CONFIG = Object.freeze({
     playerX: 420,
@@ -303,6 +308,139 @@
   const isDuoMode = () => game.gameType === 'duo';
   const isFlowMode = () => game.gameType === 'flow';
   const isCoopMode = () => isDuoMode() || isFlowMode();
+
+  const QUALITY_PRESETS = Object.freeze({
+    high: { particleLimit: 64, explosionLimit: 5, explosionRays: 5, backgroundFps: 30 },
+    balanced: { particleLimit: 48, explosionLimit: 4, explosionRays: 4, backgroundFps: 20 },
+    low: { particleLimit: 28, explosionLimit: 3, explosionRays: 3, backgroundFps: 15 }
+  });
+  const qualityOrder = ['low', 'balanced', 'high'];
+  const performanceState = {
+    enabled: perfEnabled,
+    fps: 0,
+    frameMs: 0,
+    p95FrameMs: 0,
+    updateMs: 0,
+    backgroundMs: 0,
+    characterMs: 0,
+    effectsMs: 0,
+    droppedFrames: 0,
+    longFrames: 0,
+    backgroundFps: visualProfile.backgroundFps,
+    poseCache: { entries: 0, pixels: 0, hits: 0, misses: 0, hitRate: 0 },
+    windowStartedAt: performance.now(),
+    windowFrames: 0,
+    samples: [],
+    badWindows: 0,
+    goodWindows: 0,
+    lastRenderedAt: 0
+  };
+  let perfHud = null;
+
+  function average(items, key) {
+    if (!items.length) return 0;
+    return items.reduce((total, item) => total + (Number(item[key]) || 0), 0) / items.length;
+  }
+
+  function percentile(items, key, ratio) {
+    if (!items.length) return 0;
+    const values = items.map(item => Number(item[key]) || 0).sort((a, b) => a - b);
+    return values[Math.min(values.length - 1, Math.floor(values.length * ratio))];
+  }
+
+  function applyQualityTier(tier) {
+    if (!mobileVisualBudget || !QUALITY_PRESETS[tier] || visualProfile.tier === tier) return false;
+    Object.assign(visualProfile, QUALITY_PRESETS[tier], { tier });
+    targetFrameMs = 1000 / visualProfile.targetFps;
+    nextBackgroundFrameAt = -Infinity;
+    if (game.particles.length > visualProfile.particleLimit) {
+      game.particles.splice(0, game.particles.length - visualProfile.particleLimit);
+    }
+    performanceState.backgroundFps = visualProfile.backgroundFps;
+    return true;
+  }
+
+  function updateAdaptiveQuality() {
+    if (!mobileVisualBudget || performanceState.windowFrames < 8) return;
+    const overloaded = performanceState.fps < visualProfile.targetFps * .86 ||
+      performanceState.p95FrameMs > targetFrameMs * .86;
+    const comfortable = performanceState.fps >= visualProfile.targetFps * .96 &&
+      performanceState.p95FrameMs < targetFrameMs * .58;
+    performanceState.badWindows = overloaded ? performanceState.badWindows + 1 : 0;
+    performanceState.goodWindows = comfortable ? performanceState.goodWindows + 1 : 0;
+    const currentIndex = qualityOrder.indexOf(visualProfile.tier);
+    if (performanceState.badWindows >= 2 && currentIndex > 0) {
+      applyQualityTier(qualityOrder[currentIndex - 1]);
+      performanceState.badWindows = 0;
+      performanceState.goodWindows = 0;
+    } else if (performanceState.goodWindows >= 7 && currentIndex < qualityOrder.length - 1) {
+      applyQualityTier(qualityOrder[currentIndex + 1]);
+      performanceState.badWindows = 0;
+      performanceState.goodWindows = 0;
+    }
+  }
+
+  function renderPerformanceHud() {
+    if (!perfEnabled) return;
+    if (!perfHud) {
+      perfHud = document.createElement('output');
+      perfHud.id = 'perfHud';
+      perfHud.setAttribute('aria-label', 'Rendimiento del juego');
+      document.getElementById('stageBox')?.append(perfHud);
+    }
+    const cache = performanceState.poseCache || {};
+    perfHud.textContent = [
+      `FPS ${performanceState.fps.toFixed(1)}  P95 ${performanceState.p95FrameMs.toFixed(1)}ms`,
+      `LOG ${performanceState.updateMs.toFixed(1)}  BG ${performanceState.backgroundMs.toFixed(1)}  ` +
+        `NINJAS ${performanceState.characterMs.toFixed(1)}  FX ${performanceState.effectsMs.toFixed(1)}`,
+      `${visualProfile.tier.toUpperCase()}  BG ${visualProfile.backgroundFps}fps  ` +
+        `POSES ${Math.round((cache.hitRate || 0) * 100)}%/${cache.entries || 0}`
+    ].join('\n');
+  }
+
+  function finishPerformanceWindow(now) {
+    const elapsed = Math.max(1, now - performanceState.windowStartedAt);
+    const samples = performanceState.samples;
+    performanceState.fps = performanceState.windowFrames * 1000 / elapsed;
+    performanceState.frameMs = average(samples, 'totalMs');
+    performanceState.p95FrameMs = percentile(samples, 'totalMs', .95);
+    performanceState.updateMs = average(samples, 'updateMs');
+    performanceState.backgroundMs = average(samples, 'backgroundMs');
+    performanceState.characterMs = average(samples, 'characterMs');
+    performanceState.effectsMs = average(samples, 'effectsMs');
+    updateAdaptiveQuality();
+    renderPerformanceHud();
+    performanceState.windowStartedAt = now;
+    performanceState.windowFrames = 0;
+    performanceState.samples = [];
+  }
+
+  function recordPerformance(now, updateMs, timings) {
+    const interval = performanceState.lastRenderedAt ? now - performanceState.lastRenderedAt : targetFrameMs;
+    performanceState.lastRenderedAt = now;
+    performanceState.windowFrames += 1;
+    performanceState.samples.push({ updateMs, ...timings });
+    if (interval > targetFrameMs * 1.55) performanceState.droppedFrames += 1;
+    if (timings.totalMs > 50) performanceState.longFrames += 1;
+    if (timings.poseCache) performanceState.poseCache = { ...timings.poseCache };
+    if (now - performanceState.windowStartedAt >= 1000) finishPerformanceWindow(now);
+  }
+
+  function performanceSnapshot() {
+    return {
+      enabled: performanceState.enabled,
+      fps: performanceState.fps,
+      frameMs: performanceState.frameMs,
+      p95FrameMs: performanceState.p95FrameMs,
+      updateMs: performanceState.updateMs,
+      backgroundMs: performanceState.backgroundMs,
+      characterMs: performanceState.characterMs,
+      effectsMs: performanceState.effectsMs,
+      droppedFrames: performanceState.droppedFrames,
+      longFrames: performanceState.longFrames,
+      poseCache: { ...performanceState.poseCache }
+    };
+  }
 
   const lifeNodes = Array.from({ length: 3 }, () => {
     const life = document.createElement('span');
@@ -3338,8 +3476,28 @@
   }
 
   function drawFrame(now = performance.now()) {
-    drawWorld();
-    window.NinjaRuntimeRenderFrame?.(now);
+    const frameStartedAt = performance.now();
+    let backgroundMs = 0;
+    let backgroundRendered = false;
+    const backgroundFrameMs = 1000 / Math.max(1, visualProfile.backgroundFps);
+    if (!game.running || now >= nextBackgroundFrameAt - 1) {
+      const backgroundStartedAt = performance.now();
+      drawWorld();
+      backgroundMs = performance.now() - backgroundStartedAt;
+      backgroundRendered = true;
+      if (game.running) {
+        if (!Number.isFinite(nextBackgroundFrameAt) || nextBackgroundFrameAt === -Infinity) {
+          nextBackgroundFrameAt = now + backgroundFrameMs;
+        } else {
+          do nextBackgroundFrameAt += backgroundFrameMs;
+          while (nextBackgroundFrameAt <= now);
+        }
+      }
+    }
+    const characterStartedAt = performance.now();
+    const runtimeStats = window.NinjaRuntimeRenderFrame?.(now) || {};
+    const characterMs = performance.now() - characterStartedAt;
+    const effectsStartedAt = performance.now();
     ctx.clearRect(0, 0, W, H);
     if (isFlowMode()) {
       drawFlowObjects(now);
@@ -3353,10 +3511,23 @@
     drawSlash(now);
     drawExplosions(now);
     drawParticles();
+    const effectsMs = performance.now() - effectsStartedAt;
+    return {
+      totalMs: performance.now() - frameStartedAt,
+      backgroundMs,
+      backgroundRendered,
+      characterMs,
+      effectsMs,
+      rasterDraws: runtimeStats.rasterDraws || 0,
+      poseHits: runtimeStats.poseHits || 0,
+      poseMisses: runtimeStats.poseMisses || 0,
+      poseCache: runtimeStats.poseCache || window.NinjaRuntimePerformance?.snapshot?.()
+    };
   }
 
   function loop(now) {
     if (!game.running) return;
+    const updateStartedAt = performance.now();
     const dt = game.lastTime ? Math.min(.05, Math.max(0, (now - game.lastTime) / 1000)) : 0;
     game.lastTime = now;
     updateShieldTimers(now);
@@ -3371,9 +3542,10 @@
     }
     updateEffects(dt);
     sendOnlineState(dt, now);
+    const updateMs = performance.now() - updateStartedAt;
     if (now - lastVisualFrameAt >= targetFrameMs - 1) {
       lastVisualFrameAt = now;
-      drawFrame(now);
+      recordPerformance(now, updateMs, drawFrame(now));
     }
     if (game.running) requestAnimationFrame(loop);
   }
@@ -3526,6 +3698,11 @@
     game.spawnDelay = CONFIG.startSpawnDelay;
     game.lastTime = 0;
     lastVisualFrameAt = -Infinity;
+    nextBackgroundFrameAt = -Infinity;
+    performanceState.windowStartedAt = performance.now();
+    performanceState.windowFrames = 0;
+    performanceState.samples = [];
+    performanceState.lastRenderedAt = 0;
     game.nextDuoObjectId = 1;
     game.kunais = [];
     game.pickups = [];
@@ -4184,6 +4361,7 @@
       rivalPlayerName: game.rivalPlayerName,
       enemyKunaisVisible: game.enemyKunaisVisible,
       visualProfile: { ...visualProfile },
+      performance: performanceSnapshot(),
       score: game.score,
       combo: game.combo,
       lives: game.lives,

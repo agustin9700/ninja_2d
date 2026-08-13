@@ -39,6 +39,17 @@ const appearanceCache = new Map();
 const suppressionCache = new Map();
 const runnerCommandCache = new WeakMap();
 const timelineMetricsCache = new WeakMap();
+let runnerPoseCache = new WeakMap();
+const runnerPoseEntries = new Set();
+const runnerMobileBudget = Boolean(window.matchMedia?.('(pointer: coarse)').matches ||
+  window.matchMedia?.('(max-width: 600px)').matches);
+const runnerPoseEntryLimit = runnerMobileBudget ? 44 : 80;
+const runnerPosePixelLimit = runnerMobileBudget ? 7000000 : 16000000;
+let runnerPosePixels = 0;
+let runnerPoseClock = 0;
+let runnerPoseHits = 0;
+let runnerPoseMisses = 0;
+let currentRenderStats = null;
 
 // ----- Animación de agacharse -----
 const anim = {
@@ -240,6 +251,7 @@ async function loadOutfitPacks() {
   state.outfitPacks.clear();
   appearanceCache.clear();
   suppressionCache.clear();
+  clearRunnerPoseCache();
   if (document.body?.dataset.mode !== 'runner') return;
 
   const response = await fetch('assets/outfits.json');
@@ -278,6 +290,7 @@ async function loadOutfitPacks() {
   state.outfitRegistry = registry;
   appearanceCache.clear();
   suppressionCache.clear();
+  clearRunnerPoseCache();
 }
 
 function loadoutCacheKey(loadout) {
@@ -646,6 +659,158 @@ function drawPart(command, view = null) {
   // The PNG is measured in raster pixels; the matrix is measured in Animate source units.
   ctx.scale(1 / rasterScale, 1 / rasterScale);
   ctx.drawImage(image, -finite(registration.x), -finite(registration.y));
+  if (currentRenderStats) currentRenderStats.rasterDraws += 1;
+  ctx.restore();
+}
+
+function clearRunnerPoseCache() {
+  for (const entry of runnerPoseEntries) {
+    entry.surface.width = 1;
+    entry.surface.height = 1;
+  }
+  runnerPoseEntries.clear();
+  runnerPoseCache = new WeakMap();
+  runnerPosePixels = 0;
+}
+
+function poseCacheSnapshot() {
+  const requests = runnerPoseHits + runnerPoseMisses;
+  return {
+    entries: runnerPoseEntries.size,
+    pixels: runnerPosePixels,
+    hits: runnerPoseHits,
+    misses: runnerPoseMisses,
+    hitRate: requests ? runnerPoseHits / requests : 0
+  };
+}
+
+function screenBoundsForPose(commands, loadout) {
+  let left = Infinity;
+  let top = Infinity;
+  let right = -Infinity;
+  let bottom = -Infinity;
+  for (const command of commands) {
+    if (isPartSuppressedByLoadout(command.partName, loadout)) continue;
+    const appearance = appearanceFor(command.partName, loadout);
+    if (!appearance?.part || !appearance?.image) continue;
+    const bounds = sourceBounds(appearance.part);
+    const points = [
+      transformPoint(command.matrix, bounds.left, bounds.top),
+      transformPoint(command.matrix, bounds.right, bounds.top),
+      transformPoint(command.matrix, bounds.right, bounds.bottom),
+      transformPoint(command.matrix, bounds.left, bounds.bottom)
+    ];
+    for (const point of points) {
+      const screen = stageToScreen(point);
+      left = Math.min(left, screen.x);
+      top = Math.min(top, screen.y);
+      right = Math.max(right, screen.x);
+      bottom = Math.max(bottom, screen.y);
+    }
+  }
+  if (![left, top, right, bottom].every(Number.isFinite)) return null;
+  const padding = 6;
+  left = Math.floor(left - padding);
+  top = Math.floor(top - padding);
+  right = Math.ceil(right + padding);
+  bottom = Math.ceil(bottom + padding);
+  const width = Math.max(1, right - left);
+  const height = Math.max(1, bottom - top);
+  if (width > canvas.width || height > canvas.height || width * height > 600000) return null;
+  return { left, top, right, bottom, width, height };
+}
+
+function drawBasePart(target, command, loadout, offsetX = 0, offsetY = 0) {
+  if (isPartSuppressedByLoadout(command.partName, loadout)) return;
+  const appearance = appearanceFor(command.partName, loadout);
+  const image = appearance?.image;
+  const part = appearance?.part;
+  if (!image || !part) return;
+  const registration = part.registrationPx || part.pivot || { x: image.width / 2, y: image.height / 2 };
+  const rasterScale = finite(part.rasterPixelsPerSourceUnit ?? part.scaleFactor ?? state.manifest.raster?.scaleFactor, 1);
+  target.save();
+  target.translate(state.origin.x + state.ox + offsetX, state.origin.y + state.oy + offsetY);
+  target.scale(state.scale, state.scale);
+  target.transform(command.matrix.a, command.matrix.b, command.matrix.c, command.matrix.d,
+    command.matrix.tx, command.matrix.ty);
+  target.globalAlpha = Math.max(0, Math.min(1, finite(command.element.colorAlphaPercent, 100) / 100));
+  target.scale(1 / rasterScale, 1 / rasterScale);
+  target.drawImage(image, -finite(registration.x), -finite(registration.y));
+  if (currentRenderStats) currentRenderStats.rasterDraws += 1;
+  target.restore();
+}
+
+function evictRunnerPoses() {
+  while (runnerPoseEntries.size > runnerPoseEntryLimit || runnerPosePixels > runnerPosePixelLimit) {
+    let oldest = null;
+    for (const entry of runnerPoseEntries) {
+      if (!oldest || entry.usedAt < oldest.usedAt) oldest = entry;
+    }
+    if (!oldest) break;
+    oldest.owner.delete(oldest.key);
+    runnerPoseEntries.delete(oldest);
+    runnerPosePixels -= oldest.pixels;
+    oldest.surface.width = 1;
+    oldest.surface.height = 1;
+  }
+}
+
+function cachedRunnerPose(commands, loadout) {
+  if (!commands?.length) return null;
+  let cache = runnerPoseCache.get(commands);
+  if (!cache) {
+    cache = new Map();
+    runnerPoseCache.set(commands, cache);
+  }
+  const key = `${loadoutCacheKey(loadout)}|${round(state.scale)}|${round(state.origin.x)}|${round(state.origin.y)}`;
+  let entry = cache.get(key);
+  if (entry) {
+    entry.usedAt = ++runnerPoseClock;
+    runnerPoseHits += 1;
+    if (currentRenderStats) currentRenderStats.poseHits += 1;
+    return entry;
+  }
+
+  const bounds = screenBoundsForPose(commands, loadout);
+  if (!bounds) return null;
+  const surface = document.createElement('canvas');
+  surface.width = bounds.width;
+  surface.height = bounds.height;
+  const target = surface.getContext('2d', { alpha: true });
+  if (!target) return null;
+  for (const command of commands) drawBasePart(target, command, loadout, -bounds.left, -bounds.top);
+  entry = {
+    surface,
+    left: bounds.left,
+    top: bounds.top,
+    pixels: bounds.width * bounds.height,
+    owner: cache,
+    key,
+    usedAt: ++runnerPoseClock
+  };
+  cache.set(key, entry);
+  runnerPoseEntries.add(entry);
+  runnerPosePixels += entry.pixels;
+  runnerPoseMisses += 1;
+  if (currentRenderStats) currentRenderStats.poseMisses += 1;
+  evictRunnerPoses();
+  return entry;
+}
+
+function drawRunnerPose(commands, view) {
+  const entry = cachedRunnerPose(commands, view?.loadout);
+  if (!entry) {
+    for (const command of commands) drawPart(command, view);
+    return;
+  }
+  const sourceAnchor = stageToScreen(state.characterAnchorStage);
+  const viewScale = finite(view?.scale, 1);
+  ctx.save();
+  ctx.translate(finite(view?.x, sourceAnchor.x), finite(view?.y, sourceAnchor.y));
+  ctx.scale(viewScale, viewScale);
+  ctx.globalAlpha = Math.max(0, Math.min(1, finite(view?.opacity, 1)));
+  ctx.drawImage(entry.surface, entry.left - sourceAnchor.x, entry.top - sourceAnchor.y);
+  if (currentRenderStats) currentRenderStats.rasterDraws += 1;
   ctx.restore();
 }
 
@@ -957,6 +1122,8 @@ function updateAnim(now) {
 }
 
 function renderFrame(now = 0) {
+  const startedAt = performance.now();
+  currentRenderStats = { rasterDraws: 0, poseHits: 0, poseMisses: 0 };
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
 
@@ -966,7 +1133,9 @@ function renderFrame(now = 0) {
     ctx.textAlign = 'center';
     ctx.fillText('Cargando asset_manifest.json', canvas.width / 2, canvas.height / 2);
     ctx.textAlign = 'left';
-    return;
+    const loadingStats = { durationMs: performance.now() - startedAt, ...currentRenderStats };
+    currentRenderStats = null;
+    return loadingStats;
   }
 
   updateAnim(now);
@@ -977,7 +1146,7 @@ function renderFrame(now = 0) {
     for (const view of views.sort((a, b) => finite(a.y) - finite(b.y))) {
       let commands = state.commands;
       if (view.role === 'rival') commands = commandsForRunnerView(view, now);
-      for (const command of commands) drawPart(command, view);
+      drawRunnerPose(commands, view);
     }
   } else {
     for (const command of state.commands) drawPart(command);
@@ -986,6 +1155,13 @@ function renderFrame(now = 0) {
   drawStageOrigin();
   drawNoBonesNotice();
   drawAnimIndicator();
+  const result = {
+    durationMs: performance.now() - startedAt,
+    ...currentRenderStats,
+    poseCache: poseCacheSnapshot()
+  };
+  currentRenderStats = null;
+  return result;
 }
 
 /* During gameplay game.js owns the stage render so the background, character
@@ -999,6 +1175,10 @@ function render(now = 0) {
 }
 
 window.NinjaRuntimeRenderFrame = renderFrame;
+window.NinjaRuntimePerformance = Object.freeze({
+  clearPoseCache: clearRunnerPoseCache,
+  snapshot: poseCacheSnapshot
+});
 
 function timelineLinkageNames(timeline) {
   return new Set((timeline?.layers || [])

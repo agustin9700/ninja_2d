@@ -61,8 +61,8 @@ assert.match(styles, /#gameViewport canvas \{[\s\S]{0,180}height:\s*auto/,
 assert.match(styles, /\.flow-joystick-knob[\s\S]*?will-change:\s*transform/,
   'La perilla del joystick debe moverse en una capa acelerada');
 
-assert.doesNotMatch(styles, /#raceHud\s*\{\s*display:\s*none/,
-  'El HUD no debe desaparecer en dispositivos tactiles');
+assert.match(styles, /body\[data-game-type=flow\] #raceHud\s*\{\s*display:\s*none/,
+  'Duo horizontal debe quitar el panel redundante del area de combate');
 assert.match(styles, /@media \(min-width: 601px\)[\s\S]*?#touchControls\s*\{[\s\S]*?display:\s*flex/,
   'Los controles clicables deben permanecer visibles en PC');
 assert.match(styles, /#duoHud > i::after[\s\S]*?left:\s*35%/,
@@ -283,6 +283,16 @@ assert.match(runtime, /ownsStageRendering/,
   'El runtime debe ceder el render del personaje durante la partida');
 assert.match(game, /function compactInPlace\(/,
   'Los efectos deben reciclar sus arrays para evitar pausas de GC');
+assert.match(game, /function recordPerformance\(/,
+  'Falta medir el costo real de cada frame');
+assert.match(game, /function updateAdaptiveQuality\(/,
+  'Falta ajustar la calidad automaticamente en movil');
+assert.match(game, /backgroundFps: mobileVisualBudget \? 20 : 60/,
+  'El fondo movil debe iniciar desacoplado del render de personajes');
+assert.match(runtime, /function cachedRunnerPose\(/,
+  'Falta cachear las poses compuestas de los ninjas');
+assert.match(runtime, /runnerPosePixelLimit/,
+  'La cache de poses debe tener un limite de memoria');
 assert.match(game, /const WORLD_PAINTS = Object\.freeze/,
   'El fondo debe reutilizar gradientes en lugar de crearlos por fotograma');
 assert.match(runtime, /createImageBitmap\(image, \{ premultiplyAlpha: 'premultiply' \}\)/,
