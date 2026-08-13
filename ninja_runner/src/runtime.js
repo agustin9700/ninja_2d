@@ -1189,8 +1189,17 @@ function render(now = 0) {
 }
 
 window.NinjaRuntimeRenderFrame = renderFrame;
+function resetRunnerSurface() {
+  clearRunnerPoseCache();
+  const width = canvas.width;
+  const height = canvas.height;
+  canvas.width = width;
+  canvas.height = height;
+  return state.loaded ? renderFrame(performance.now()) : null;
+}
 window.NinjaRuntimePerformance = Object.freeze({
   clearPoseCache: clearRunnerPoseCache,
+  resetSurface: resetRunnerSurface,
   snapshot: poseCacheSnapshot
 });
 

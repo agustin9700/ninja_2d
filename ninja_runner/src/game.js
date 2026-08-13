@@ -89,22 +89,26 @@
     return gradient;
   }
 
-  const raceGlowPaint = bg.createRadialGradient(785, 106, 5, 785, 106, 145);
-  raceGlowPaint.addColorStop(0, 'rgba(235,239,255,.15)');
-  raceGlowPaint.addColorStop(1, 'rgba(235,239,255,0)');
-  const WORLD_PAINTS = Object.freeze({
-    flowSky: linearPaint(0, 190, [[0, '#101b24'], [1, '#2c3c38']]),
-    flowWall: linearPaint(78, 182, [[0, '#6d715e'], [1, '#373b33']]),
-    flowEarth: linearPaint(145, 640, [[0, '#77715b'], [.45, '#5c5848'], [1, '#32332e']]),
-    raceSky: linearPaint(0, H, [[0, '#111a2c'], [.5, '#0d1220'], [1, '#07090e']]),
-    raceGlow: raceGlowPaint,
-    rivalLane: linearPaint(145, CONFIG.rivalGroundY + 18, [
-      [0, 'rgba(18,20,34,.78)'], [1, 'rgba(10,12,22,.94)']
-    ]),
-    playerLane: linearPaint(CONFIG.laneDividerY, CONFIG.playerGroundY + 18, [
-      [0, 'rgba(12,16,25,.84)'], [1, 'rgba(8,11,18,.97)']
-    ])
-  });
+  function createWorldPaints() {
+    const raceGlowPaint = bg.createRadialGradient(785, 106, 5, 785, 106, 145);
+    raceGlowPaint.addColorStop(0, 'rgba(235,239,255,.15)');
+    raceGlowPaint.addColorStop(1, 'rgba(235,239,255,0)');
+    return Object.freeze({
+      flowSky: linearPaint(0, 190, [[0, '#101b24'], [1, '#2c3c38']]),
+      flowWall: linearPaint(78, 182, [[0, '#6d715e'], [1, '#373b33']]),
+      flowEarth: linearPaint(145, 640, [[0, '#77715b'], [.45, '#5c5848'], [1, '#32332e']]),
+      raceSky: linearPaint(0, H, [[0, '#111a2c'], [.5, '#0d1220'], [1, '#07090e']]),
+      raceGlow: raceGlowPaint,
+      rivalLane: linearPaint(145, CONFIG.rivalGroundY + 18, [
+        [0, 'rgba(18,20,34,.78)'], [1, 'rgba(10,12,22,.94)']
+      ]),
+      playerLane: linearPaint(CONFIG.laneDividerY, CONFIG.playerGroundY + 18, [
+        [0, 'rgba(12,16,25,.84)'], [1, 'rgba(8,11,18,.97)']
+      ])
+    });
+  }
+
+  let WORLD_PAINTS = createWorldPaints();
 
   const elements = {
     lives: document.getElementById('lives'),
@@ -326,6 +330,7 @@
     effectsMs: 0,
     droppedFrames: 0,
     longFrames: 0,
+    canvasRecoveries: 0,
     backgroundFps: visualProfile.backgroundFps,
     poseCache: { entries: 0, pixels: 0, hits: 0, misses: 0, hitRate: 0 },
     windowStartedAt: performance.now(),
@@ -336,6 +341,8 @@
     lastRenderedAt: 0
   };
   let perfHud = null;
+  let canvasRecoveryTimer = 0;
+  let landscapeViewport = window.innerWidth > window.innerHeight;
 
   for (const surface of [background, fx]) {
     surface.addEventListener('contextlost', event => {
@@ -348,6 +355,46 @@
       lastVisualFrameAt = -Infinity;
     });
   }
+
+  function resetCanvasSurface(surface) {
+    const width = surface.width;
+    const height = surface.height;
+    surface.width = width;
+    surface.height = height;
+  }
+
+  function recoverCanvasSurfaces() {
+    if (!mobileVisualBudget) return;
+    clearTimeout(canvasRecoveryTimer);
+    canvasRecoveryTimer = setTimeout(() => {
+      window.NinjaRuntimePerformance?.clearPoseCache?.();
+      resetCanvasSurface(background);
+      resetCanvasSurface(fx);
+      WORLD_PAINTS = createWorldPaints();
+      window.NinjaRuntimePerformance?.resetSurface?.();
+      nextBackgroundFrameAt = -Infinity;
+      lastVisualFrameAt = -Infinity;
+      performanceState.canvasRecoveries += 1;
+      if (!game.running) requestAnimationFrame(() => drawFrame());
+    }, 240);
+  }
+
+  function handleViewportOrientation() {
+    const nextLandscape = window.innerWidth > window.innerHeight;
+    if (nextLandscape === landscapeViewport) return;
+    landscapeViewport = nextLandscape;
+    recoverCanvasSurfaces();
+  }
+
+  window.addEventListener('orientationchange', recoverCanvasSurfaces, { passive: true });
+  window.addEventListener('resize', handleViewportOrientation, { passive: true });
+  window.screen?.orientation?.addEventListener?.('change', recoverCanvasSurfaces);
+  window.addEventListener('pageshow', event => {
+    if (event.persisted) recoverCanvasSurfaces();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) recoverCanvasSurfaces();
+  });
 
   function average(items, key) {
     if (!items.length) return 0;
@@ -450,6 +497,7 @@
       effectsMs: performanceState.effectsMs,
       droppedFrames: performanceState.droppedFrames,
       longFrames: performanceState.longFrames,
+      canvasRecoveries: performanceState.canvasRecoveries,
       poseCache: { ...performanceState.poseCache }
     };
   }
@@ -4133,6 +4181,7 @@
     game.outfitRegistry = detail.outfitRegistry || window.NinjaOutfitRegistry || game.outfitRegistry;
     renderLoadout();
     elements.loadStatus.textContent = `${count} piezas, ${detail.outfitPacks || 4} variantes y 7 animaciones listas`;
+    if (mobileVisualBudget && window.innerWidth > window.innerHeight) recoverCanvasSurfaces();
     if (autoStartRequested) {
       autoStartRequested = false;
       setTimeout(() => launchGame('bot'), 80);

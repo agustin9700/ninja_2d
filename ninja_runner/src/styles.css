@@ -1152,11 +1152,6 @@ html, body { overscroll-behavior: none; }
   contain: layout paint style;
 }
 
-#gameViewport canvas {
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
 .mobile-controls-note { display: none; }
 
 #touchControls button {

@@ -297,7 +297,11 @@ assert.match(runtime, /runnerMobileBudget \? 3000000 : 16000000/,
   'La cache movil debe respetar un presupuesto seguro para Android');
 assert.match(runtime, /contextlost/,
   'El runtime debe recuperarse si Android descarta una superficie Canvas');
-assert.match(game, /const WORLD_PAINTS = Object\.freeze/,
+assert.match(game, /function recoverCanvasSurfaces\(/,
+  'El juego debe reconstruir sus Canvas al rotar Android');
+assert.match(game, /orientationchange/,
+  'Falta detectar el cambio de orientacion del telefono');
+assert.match(game, /let WORLD_PAINTS = createWorldPaints\(\)/,
   'El fondo debe reutilizar gradientes en lugar de crearlos por fotograma');
 assert.match(runtime, /createImageBitmap\(image, \{ premultiplyAlpha: 'premultiply' \}\)/,
   'Los PNG deben decodificarse como bitmaps listos para Canvas');

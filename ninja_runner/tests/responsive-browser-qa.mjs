@@ -257,6 +257,30 @@ try {
       assert.ok(sustainedPerformance.performance.poseCache.pixels <= 3000000,
         'La cache movil supera su presupuesto de memoria');
     }
+    if (testCase.name === 'portrait-flow') {
+      await call('Emulation.setDeviceMetricsOverride', {
+        width: 844,
+        height: 390,
+        deviceScaleFactor: 1,
+        mobile: true,
+        screenWidth: 844,
+        screenHeight: 390,
+        screenOrientation: { type: 'landscapePrimary', angle: 90 }
+      });
+      await delay(900);
+      const rotatedHealth = JSON.parse(await evaluate(`JSON.stringify((() => {
+        const pixel = [...document.getElementById('background').getContext('2d')
+          .getImageData(500, 350, 1, 1).data];
+        return {
+          pixel,
+          recoveries: window.__ninjaRunner.snapshot().performance.canvasRecoveries
+        };
+      })())`));
+      assert.ok(rotatedHealth.recoveries > 0,
+        'Rotar de vertical a horizontal no reconstruyo los Canvas');
+      assert.ok(rotatedHealth.pixel[0] + rotatedHealth.pixel[1] + rotatedHealth.pixel[2] > 30,
+        `El fondo quedo negro despues de rotar: ${rotatedHealth.pixel}`);
+    }
     if (testCase.name === 'desktop-competitive') {
       await delay(3300);
       const accepted = [];
